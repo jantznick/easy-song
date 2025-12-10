@@ -1,0 +1,34 @@
+Your task is to analyze the song lyrics for "[Song Title]" by [Artist].
+
+Provide a detailed analysis for each line. Your response must be a JSON object containing a single key, "analysis", which is an array of objects.
+
+Each object in the "analysis" array must have three keys:
+1. "spanish": The original Spanish lyric for that single line.
+2. "english": A direct English translation for that line.
+3. "explanation": A detailed explanation of the meaning, culture, or slang for that specific line.
+
+**Explanation Grouping:**
+To explain a phrase that spans multiple lines, you can set the `explanation` value to `null` for the initial lines. The next line with a non-null `explanation` should then explain the entire group of lines.
+
+Here is an example of the required JSON structure:
+```json
+{
+  "analysis": [
+    {
+      "spanish": "Y este frío, ¿cuándo se acaba?",
+      "english": "And this cold, when does it end?",
+      "explanation": "This opening line sets a melancholic tone."
+    },
+    {
+      "spanish": "Colón me dicen el malo",
+      "english": "They call me Colón the bad one",
+      "explanation": null
+    },
+    {
+      "spanish": "porque pasan los años y sigo dando palo",
+      "english": "because the years pass and I'm still a hit-maker",
+      "explanation": "This is a two-line boast comparing the artist to Willie Colón."
+    }
+  ]
+}
+```
