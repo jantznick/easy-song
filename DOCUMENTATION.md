@@ -39,13 +39,13 @@ Key components:
 
 This outlines the planned features for the user's learning journey, broken down into distinct "modes".
 
-### Mode 1: Discovery (Partially Implemented)
+### Mode 1: Discovery (Implemented)
 
 *   **Goal:** The user browses and selects a song.
 *   **Flow:** The user opens the app to a library of songs, filterable by artist, genre, or difficulty. They select a song to begin.
 *   **Current Status:** A basic song list is implemented.
 
-### Mode 2: Karaoke (Partially Implemented)
+### Mode 2: Karaoke (Implemented)
 
 *   **Goal:** The user gets an initial feel for the song by listening and following the lyrics.
 *   **Flow:** The YouTube music video plays. Below it, the lyrics appear and are highlighted line-by-line in sync with the music. The user can optionally toggle a direct English translation.
