@@ -72,3 +72,66 @@ Next, set up and run the frontend application in a separate terminal.
     npm run dev
     ```
     The application will be available at `http://localhost:5173` (or another port if 5173 is in use).
+
+## Deployment
+
+For deploying to production, see [DEPLOYMENT.md](./DEPLOYMENT.md) for detailed instructions on:
+- Deploying to Render as a static site
+- Setting up Backblaze B2 for data file hosting
+- Configuring CORS and environment variables
+
+## Static File Hosting (S3/Cloudflare R2/etc.)
+
+Instead of running a backend API server, you can host your song data files in S3, Cloudflare R2, or any static file hosting service. This eliminates the need for a backend server.
+
+### Setup Steps
+
+1. **Generate the songs list file:**
+   ```bash
+   cd backend
+   npm run generate-songs-list
+   ```
+   This creates `backend/data/songs-list.json` containing summaries of all songs.
+
+2. **Upload files to your storage service:**
+   
+   Upload your files with the following structure:
+   ```
+   your-bucket/
+   ├── songs-list.json          # Generated list of all songs
+   ├── songs/
+   │   ├── {videoId1}.json
+   │   ├── {videoId2}.json
+   │   └── ...
+   └── study/
+       ├── {videoId1}.json      # Optional study data
+       ├── {videoId2}.json
+       └── ...
+   ```
+
+3. **Configure the frontend:**
+   
+   Create a `.env` file in the `frontend` directory:
+   ```env
+   VITE_API_MODE=static
+   VITE_STATIC_BASE_URL=https://your-bucket.s3.amazonaws.com
+   ```
+   
+   Or for Cloudflare R2 with a custom domain:
+   ```env
+   VITE_API_MODE=static
+   VITE_STATIC_BASE_URL=https://cdn.yourdomain.com
+   ```
+
+4. **Rebuild the frontend:**
+   ```bash
+   cd frontend
+   npm run build
+   ```
+
+### Notes
+
+- The `songs-list.json` file must be regenerated whenever you add or remove songs.
+- Study data files are optional - if a study file doesn't exist for a song, Study mode will gracefully handle it.
+- Make sure your storage service allows CORS requests from your frontend domain.
+- For S3, you may need to set appropriate CORS headers on your bucket.

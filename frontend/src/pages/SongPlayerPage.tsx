@@ -64,8 +64,20 @@ const SongPlayerPage: FC = () => {
     const containerEl = lyricsContainerRef.current;
 
     if (activeLineEl && containerEl) {
-      const top = activeLineEl.offsetTop;
-      containerEl.scrollTo({ top, behavior: 'smooth' });
+      // Get the ul element (parent of the line items)
+      const ulElement = activeLineEl.parentElement;
+      
+      if (ulElement) {
+        // Calculate position: line's offsetTop (relative to ul) + ul's offsetTop (relative to container)
+        const lineTop = activeLineEl.offsetTop + ulElement.offsetTop;
+        
+        // Scroll to position the active line at the top of the container
+        // Subtracting a small offset (16px) for better visual spacing from the top
+        containerEl.scrollTo({ 
+          top: Math.max(0, lineTop - 16),
+          behavior: 'smooth' 
+        });
+      }
     }
   }, [activeLineIndex]);
 
