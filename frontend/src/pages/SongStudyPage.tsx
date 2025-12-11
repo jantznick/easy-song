@@ -320,12 +320,23 @@ const SongStudyPage: FC = () => {
               <svg className="w-3 h-3 sm:w-4 sm:h-4 lg:w-5 lg:h-5 transform group-hover:-translate-x-1 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
               </svg>
-              <span className="hidden sm:inline">Back to Karaoke</span>
+              <span className="hidden sm:inline">Back to Play Along</span>
               <span className="sm:hidden">Back</span>
             </Link>
+            <div className="px-3 py-1 rounded-full bg-secondary/10 border border-secondary/20">
+              <span className="text-xs sm:text-sm font-medium text-secondary flex items-center gap-1.5">
+                <svg className="w-3 h-3 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                </svg>
+                Study Mode
+              </span>
+            </div>
           </div>
           <h1 className="text-xs sm:text-lg lg:text-xl xl:text-2xl 2xl:text-3xl font-bold text-text-primary leading-tight">{song.title}</h1>
           <p className="text-xs sm:text-sm lg:text-base xl:text-lg text-text-secondary mt-0.5 sm:mt-1">{song.artist}</p>
+          <p className="text-xs sm:text-sm text-text-muted mt-2 sm:mt-3 max-w-2xl">
+            Deep dive into the lyrics with detailed explanations, cultural context, and section-by-section breakdowns.
+          </p>
         </header>
 
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-2 sm:gap-4 lg:gap-8">
