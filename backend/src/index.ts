@@ -33,6 +33,7 @@ app.get('/api/songs', async (req, res) => {
             videoId: songData.videoId,
             title: songData.title,
             artist: songData.artist,
+            thumbnailUrl: songData.thumbnailUrl,
           };
         })
     );

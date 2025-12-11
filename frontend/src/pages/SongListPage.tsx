@@ -1,13 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-
-interface SongSummary {
-  videoId: string;
-  title: string;
-  artist: string;
-}
-
-const API_URL = 'http://localhost:3001/api';
+import type { SongSummary } from '../types/song';
+import { fetchSongs } from '../utils/api';
 
 const containerStyle: React.CSSProperties = {
   maxWidth: '800px',
@@ -25,8 +19,22 @@ const listStyle: React.CSSProperties = {
 };
 
 const listItemStyle: React.CSSProperties = {
+  display: 'flex',
+  alignItems: 'center',
   padding: '10px 0',
   borderBottom: '1px solid #eee',
+};
+
+const thumbnailStyle: React.CSSProperties = {
+    width: '120px',
+    height: '90px',
+    objectFit: 'cover',
+    borderRadius: '4px',
+    marginRight: '20px',
+};
+
+const songInfoStyle: React.CSSProperties = {
+    flexGrow: 1,
 };
 
 const SongListPage: React.FC = () => {
@@ -34,13 +42,9 @@ const SongListPage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchSongs = async () => {
+    const getSongs = async () => {
       try {
-        const response = await fetch(`${API_URL}/songs`);
-        if (!response.ok) {
-          throw new Error(`Network response was not ok (${response.status})`);
-        }
-        const data = await response.json();
+        const data = await fetchSongs();
         setSongs(data);
       } catch (e) {
         if (e instanceof Error) {
@@ -52,7 +56,7 @@ const SongListPage: React.FC = () => {
       }
     };
 
-    fetchSongs();
+    getSongs();
   }, []);
 
   if (error) {
@@ -66,8 +70,12 @@ const SongListPage: React.FC = () => {
       <ul style={listStyle}>
         {songs.map(song => (
           <li key={song.videoId} style={listItemStyle}>
-            <Link to={`/songs/${song.videoId}`}>
-              <strong>{song.title}</strong> by {song.artist}
+            <Link to={`/songs/${song.videoId}`} style={{ display: 'flex', alignItems: 'center', textDecoration: 'none', color: 'inherit', width: '100%' }}>
+              <img src={song.thumbnailUrl} alt={song.title} style={thumbnailStyle} />
+              <div style={songInfoStyle}>
+                <strong>{song.title}</strong>
+                <p style={{ margin: '4px 0 0', color: '#666' }}>by {song.artist}</p>
+              </div>
             </Link>
           </li>
         ))}
@@ -77,3 +85,4 @@ const SongListPage: React.FC = () => {
 };
 
 export default SongListPage;
+

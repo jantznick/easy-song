@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import YouTube from 'react-youtube';
+import type { Song } from '../types/song';
+import { fetchSongById } from '../utils/api';
 
 // The YouTubePlayer type is not a named export, so we define what we need.
 interface YouTubePlayer {
@@ -21,15 +23,6 @@ interface SongSection {
   title: string;
   lines: LyricLine[];
 }
-
-interface Song {
-  videoId: string;
-  title: string;
-  artist: string;
-  sections: SongSection[];
-}
-
-const API_URL = 'http://localhost:3001/api';
 
 const containerStyle: React.CSSProperties = {
   maxWidth: '800px',
@@ -70,13 +63,9 @@ const SongPlayerPage: React.FC = () => {
   useEffect(() => {
     if (!videoId) return;
 
-    const fetchSong = async () => {
+    const getSong = async () => {
       try {
-        const response = await fetch(`${API_URL}/songs/${videoId}`);
-        if (!response.ok) {
-          throw new Error(`Song not found or network error (${response.status})`);
-        }
-        const data = await response.json();
+        const data = await fetchSongById(videoId);
         setSong(data);
       } catch (e) {
         if (e instanceof Error) {
@@ -88,7 +77,7 @@ const SongPlayerPage: React.FC = () => {
       }
     };
 
-    fetchSong();
+    getSong();
 
     // Cleanup interval on component unmount
     return () => {

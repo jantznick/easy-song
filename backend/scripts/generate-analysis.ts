@@ -48,6 +48,8 @@ async function main() {
     const videoInfo = await youtube.getInfo(videoId);
     const title = videoInfo.basic_info.title || 'Unknown Title';
     const artist = videoInfo.basic_info.author || 'Unknown Artist';
+    // Extract the best available thumbnail URL
+    const thumbnailUrl = videoInfo.basic_info.thumbnail?.pop()?.url || '';
 
     // 4. Format lyrics into a simple text block for the prompt
     const lyricsText = structuredLyrics.map(seg => seg.text).join('\n');
@@ -103,6 +105,7 @@ async function main() {
         videoId: videoId,
         title: title,
         artist: artist,
+        thumbnailUrl: thumbnailUrl,
         sections: [{
             title: "Lyrics",
             lines: finalLines,
