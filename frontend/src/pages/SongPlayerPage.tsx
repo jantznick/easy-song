@@ -18,6 +18,7 @@ const SongPlayerPage: FC = () => {
   const [song, setSong] = useState<Song | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [activeLineIndex, setActiveLineIndex] = useState<number | null>(null);
+  const [showTranslations, setShowTranslations] = useState<boolean>(false);
 
   const playerRef = useRef<YouTubePlayer | null>(null);
   const lyricsContainerRef = useRef<HTMLDivElement | null>(null);
@@ -136,19 +137,41 @@ const SongPlayerPage: FC = () => {
             <div className="lg:col-span-2">
                 <Card className="h-full flex flex-col">
                     <div className="px-6 py-4 border-b border-border">
-                        <h2 className="text-xl font-semibold text-text-primary flex items-center gap-2">
-                          <svg className="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3" />
-                          </svg>
-                          Lyrics
-                        </h2>
+                        <div className="flex items-center justify-between">
+                          <h2 className="text-xl font-semibold text-text-primary flex items-center gap-2">
+                            <svg className="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3" />
+                            </svg>
+                            Lyrics
+                          </h2>
+                          <label className="flex items-center gap-3 cursor-pointer group">
+                            <span className="text-sm text-text-secondary group-hover:text-text-primary transition-colors duration-200">
+                              English Translation
+                            </span>
+                            <div className="relative">
+                              <input
+                                type="checkbox"
+                                checked={showTranslations}
+                                onChange={(e) => setShowTranslations(e.target.checked)}
+                                className="sr-only"
+                              />
+                              <div className={`w-14 h-7 rounded-full transition-colors duration-200 ${
+                                showTranslations ? 'bg-primary' : 'bg-surface-hover'
+                              }`}>
+                                <div className={`absolute top-1 left-1 w-5 h-5 bg-white rounded-full transition-transform duration-200 transform ${
+                                  showTranslations ? 'translate-x-7' : 'translate-x-0'
+                                }`} />
+                              </div>
+                            </div>
+                          </label>
+                        </div>
                     </div>
                     <div className="max-h-[75vh] overflow-y-auto p-4 lg:p-6" ref={lyricsContainerRef}>
                         <ul className="space-y-3 list-none">
                         {allLines.map((line, index) => (
                             <li
                             key={index}
-                            ref={el => lineRefs.current[index] = el}
+                            ref={el => { lineRefs.current[index] = el; }}
                             className={`p-4 rounded-lg cursor-pointer transition-all duration-200 text-lg leading-relaxed ${
                                 activeLineIndex === index 
                                 ? 'bg-gradient-to-r from-primary/20 to-primary/10 text-primary font-semibold shadow-lg shadow-primary/10 border-l-4 border-primary transform scale-[1.02]' 
@@ -160,7 +183,14 @@ const SongPlayerPage: FC = () => {
                                 }
                             }}
                             >
-                            {line.spanish}
+                            <div className="flex flex-col gap-1">
+                              <span>{line.spanish}</span>
+                              {showTranslations && line.english && (
+                                <span className="text-sm text-text-muted italic mt-1">
+                                  {line.english}
+                                </span>
+                              )}
+                            </div>
                             </li>
                         ))}
                         </ul>
