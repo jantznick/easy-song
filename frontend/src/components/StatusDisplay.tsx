@@ -1,4 +1,5 @@
 import type { FC } from 'react';
+import Card from './Card';
 
 interface StatusDisplayProps {
   error?: string | null;

@@ -23,7 +23,7 @@ const SongPlayerPage: FC = () => {
   const playerRef = useRef<YouTubePlayer | null>(null);
   const lyricsContainerRef = useRef<HTMLDivElement | null>(null);
   const lineRefs = useRef<(HTMLLIElement | null)[]>([]);
-  const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  const intervalRef = useRef<number | null>(null);
   
   const allLines = useMemo(() => {
     if (!song) return [];

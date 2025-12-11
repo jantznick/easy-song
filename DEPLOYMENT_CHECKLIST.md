@@ -5,10 +5,11 @@ Use this checklist when deploying to Render + Backblaze B2.
 ## Pre-Deployment
 
 - [ ] Generate `songs-list.json`: `cd backend && npm run generate-songs-list`
-- [ ] Upload all files to Backblaze B2 with correct structure:
+- [ ] Upload all files to Backblaze B2 with correct structure (all at bucket root):
   - [ ] `songs-list.json` in bucket root
-  - [ ] All `songs/{videoId}.json` files
-  - [ ] All `study/{videoId}.json` files (if any)
+  - [ ] `songs/` folder at bucket root with all `{videoId}.json` files inside
+  - [ ] `study/` folder at bucket root with all `{videoId}.json` files inside (if any)
+  - [ ] **Important:** Do NOT put folders inside a `data/` folder - they go directly at root
 - [ ] Note your B2 public URL format
 - [ ] Configure B2 bucket as public
 - [ ] Set up B2 CORS rules (add Render domain after deployment)

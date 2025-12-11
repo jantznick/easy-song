@@ -20,19 +20,21 @@ This guide walks you through deploying the Easy Song frontend as a static site o
 
 2. **Upload files to Backblaze B2:**
    
-   Upload your files to your B2 bucket with this structure:
+   Upload your files to your B2 bucket **at the root level** with this structure:
    ```
-   your-bucket/
-   ├── songs-list.json          # From backend/data/songs-list.json
-   ├── songs/
-   │   ├── {videoId1}.json
+   your-bucket/                    (root of bucket)
+   ├── songs-list.json             # Upload from backend/data/songs-list.json
+   ├── songs/                      # Create this folder at root
+   │   ├── {videoId1}.json         # Upload from backend/data/songs/{videoId1}.json
    │   ├── {videoId2}.json
    │   └── ...
-   └── study/
-       ├── {videoId1}.json      # Optional study data
+   └── study/                      # Create this folder at root
+       ├── {videoId1}.json         # Upload from backend/data/study/{videoId1}.json (optional)
        ├── {videoId2}.json
        └── ...
    ```
+   
+   **Important:** All folders (`songs/` and `study/`) go at the **root level** of your bucket, right next to `songs-list.json`. Do NOT put them inside a `data/` folder.
 
 3. **Get your B2 public URL:**
    - In Backblaze B2, go to your bucket
@@ -185,21 +187,31 @@ To allow your Render site to fetch files from B2, configure CORS:
 
 ## File Structure Reference
 
+### In Your Repository (Backend):
 ```
-your-repo/
-├── frontend/
-│   ├── src/
-│   ├── public/
-│   │   └── _redirects          # For client-side routing
-│   ├── package.json
-│   └── vite.config.ts
-├── backend/
-│   └── data/
-│       ├── songs-list.json     # Generated, upload to B2 root
-│       ├── songs/              # Upload contents to B2/songs/
-│       └── study/              # Upload contents to B2/study/
-└── DEPLOYMENT.md
+backend/
+└── data/
+    ├── songs-list.json         # Generated file
+    ├── songs/                  # Local folder with song files
+    │   └── {videoId}.json
+    └── study/                  # Local folder with study files
+        └── {videoId}.json
 ```
+
+### In Backblaze B2 (Bucket Root):
+```
+your-bucket/                    ← Root of your B2 bucket
+├── songs-list.json             ← Upload from backend/data/songs-list.json
+├── songs/                      ← Create folder, upload files from backend/data/songs/
+│   └── {videoId}.json
+└── study/                      ← Create folder, upload files from backend/data/study/
+    └── {videoId}.json
+```
+
+**Key Point:** The `songs/` and `study/` folders go directly at the bucket root, not inside a `data/` folder. The API expects:
+- `{BASE_URL}/songs-list.json`
+- `{BASE_URL}/songs/{videoId}.json`
+- `{BASE_URL}/study/{videoId}.json`
 
 ## Cost Considerations
 

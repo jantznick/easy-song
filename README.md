@@ -95,19 +95,21 @@ Instead of running a backend API server, you can host your song data files in S3
 
 2. **Upload files to your storage service:**
    
-   Upload your files with the following structure:
+   Upload your files **at the root level** of your bucket with this structure:
    ```
-   your-bucket/
+   your-bucket/                  (root of bucket)
    ├── songs-list.json          # Generated list of all songs
-   ├── songs/
+   ├── songs/                   # Folder at root level
    │   ├── {videoId1}.json
    │   ├── {videoId2}.json
    │   └── ...
-   └── study/
+   └── study/                   # Folder at root level
        ├── {videoId1}.json      # Optional study data
        ├── {videoId2}.json
        └── ...
    ```
+   
+   **Note:** The `songs/` and `study/` folders go directly at the bucket root, not inside a `data/` folder.
 
 3. **Configure the frontend:**
    
