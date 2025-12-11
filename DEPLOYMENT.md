@@ -86,12 +86,14 @@ To allow your Render site to fetch files from B2, configure CORS:
    - Click **New +** → **Static Site**
    - Connect your GitHub repository
 
-3. **Configure the build settings:**
+3. **Configure the build settings (IMPORTANT - these must be exact):**
    - **Name:** `easy-song` (or your preferred name)
    - **Branch:** `main` (or your default branch)
    - **Root Directory:** `frontend`
    - **Build Command:** `npm install && npm run build`
    - **Publish Directory:** `dist`
+
+   **Note:** Since Root Directory is `frontend`, the Publish Directory `dist` refers to `frontend/dist` (where Vite outputs the build).
 
 4. **Add Environment Variables:**
    Click **Environment** and add:
@@ -105,15 +107,17 @@ To allow your Render site to fetch files from B2, configure CORS:
    VITE_STATIC_BASE_URL=https://f004.backblazeb2.com/file/my-music-bucket
    ```
 
-5. **Advanced Settings:**
-   - **Headers:** Render automatically handles client-side routing for React Router
-   - The `_redirects` file in `frontend/public/` is included as a backup (uses Netlify format)
-   - **Custom Headers:** You can add custom headers if needed for security
-
-6. **Deploy:**
+5. **Deploy:**
    - Click **Create Static Site**
-   - Render will build and deploy your site
+   - **Check the build logs** - make sure the build completes successfully
+   - Look for "Build successful" and verify `dist` folder was created
    - Your site will be available at `https://your-app-name.onrender.com`
+
+6. **If you see "Not Found":**
+   - Check build logs to ensure build completed
+   - Verify the build created a `dist` folder with `index.html` inside
+   - Make sure Publish Directory is exactly `dist` (not `./dist` or `frontend/dist`)
+   - The `_redirects` file in `public/` will be copied to `dist/` automatically by Vite
 
 ## Step 4: Verify Deployment
 
