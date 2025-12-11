@@ -1,7 +1,7 @@
 import { Routes, Route } from 'react-router-dom';
 import SongListPage from './pages/SongListPage';
 import SongPlayerPage from './pages/SongPlayerPage';
-import './App.css';
+import './styles/index.css';
 
 function App() {
   return (
