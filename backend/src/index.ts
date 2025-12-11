@@ -7,6 +7,7 @@ const app = express();
 const PORT = process.env.PORT || 3001; // Use port 3001 for the backend
 
 const SONGS_DIR = path.resolve(__dirname, '../data/songs');
+const STUDY_DIR = path.resolve(__dirname, '../data/study');
 
 // Middleware
 app.use(cors()); // Allow requests from our frontend
@@ -62,7 +63,27 @@ app.get('/api/songs/:videoId', async (req, res) => {
   }
 });
 
+/**
+ * Endpoint to get the study data for a single song by its videoId.
+ * Returns structured sections for Study mode.
+ */
+app.get('/api/songs/:videoId/study', async (req, res) => {
+  const { videoId } = req.params;
+  const filePath = path.join(STUDY_DIR, `${videoId}.json`);
+
+  try {
+    const fileContent = await fs.readFile(filePath, 'utf-8');
+    const studyData = JSON.parse(fileContent);
+    res.json(studyData);
+  } catch (error) {
+    // If the file doesn't exist, return 404
+    console.error(`Error fetching study data for ${videoId}:`, error);
+    res.status(404).json({ error: 'Study data not found.' });
+  }
+});
+
 // Start the server
-app.listen(PORT, () => {
+app.listen(PORT, '0.0.0.0', () => {
   console.log(`✅ Backend server is running at http://localhost:${PORT}`);
+  console.log(`   Also accessible on your local network at http://<your-ip>:${PORT}`);
 });

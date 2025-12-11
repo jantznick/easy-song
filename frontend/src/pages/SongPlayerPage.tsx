@@ -106,15 +106,26 @@ const SongPlayerPage: FC = () => {
     <main className="min-h-screen p-4 sm:p-6 lg:p-8">
       <div className="max-w-7xl mx-auto">
         <header className="mb-8">
-            <Link 
-              to="/" 
-              className="inline-flex items-center gap-2 text-text-secondary hover:text-primary transition-colors duration-200 group font-medium mb-6"
-            >
-              <svg className="w-5 h-5 transform group-hover:-translate-x-1 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-              </svg>
-              <span>Back to Song List</span>
-            </Link>
+            <div className="flex items-center justify-between mb-6">
+              <Link 
+                to="/" 
+                className="inline-flex items-center gap-2 text-text-secondary hover:text-primary transition-colors duration-200 group font-medium"
+              >
+                <svg className="w-5 h-5 transform group-hover:-translate-x-1 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                </svg>
+                <span>Back to Song List</span>
+              </Link>
+              <Link
+                to={`/songs/${song.videoId}/study`}
+                className="inline-flex items-center gap-2 px-4 py-2 bg-primary hover:bg-primary-hover text-white rounded-lg transition-colors duration-200 font-medium"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                </svg>
+                <span>Study Mode</span>
+              </Link>
+            </div>
             <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-text-primary leading-tight">{song.title}</h1>
         </header>
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
