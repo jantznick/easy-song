@@ -11,6 +11,7 @@ import StatusDisplay from '../components/StatusDisplay';
 interface YouTubePlayer {
   getCurrentTime(): number;
   seekTo(seconds: number, allowSeekAhead: boolean): void;
+  playVideo(): void;
 }
 
 const SongPlayerPage: FC = () => {
@@ -64,20 +65,19 @@ const SongPlayerPage: FC = () => {
     const containerEl = lyricsContainerRef.current;
 
     if (activeLineEl && containerEl) {
-      // Get the ul element (parent of the line items)
-      const ulElement = activeLineEl.parentElement;
+      // Calculate position relative to the scrollable container
+      const lineRect = activeLineEl.getBoundingClientRect();
+      const containerRect = containerEl.getBoundingClientRect();
       
-      if (ulElement) {
-        // Calculate position: line's offsetTop (relative to ul) + ul's offsetTop (relative to container)
-        const lineTop = activeLineEl.offsetTop + ulElement.offsetTop;
-        
-        // Scroll to position the active line at the top of the container
-        // Subtracting a small offset (16px) for better visual spacing from the top
-        containerEl.scrollTo({ 
-          top: Math.max(0, lineTop - 16),
-          behavior: 'smooth' 
-        });
-      }
+      // Calculate how much we need to scroll within the container
+      const scrollTop = containerEl.scrollTop;
+      const lineOffsetFromContainerTop = lineRect.top - containerRect.top + scrollTop;
+      
+      // Scroll the container (not the whole page) to position the line at the top
+      containerEl.scrollTo({
+        top: lineOffsetFromContainerTop - 16, // 16px padding from top
+        behavior: 'smooth'
+      });
     }
   }, [activeLineIndex]);
 
@@ -203,6 +203,7 @@ const SongPlayerPage: FC = () => {
                             onClick={() => {
                                 if(playerRef.current) {
                                 playerRef.current.seekTo(line.start_ms / 1000, true);
+                                playerRef.current.playVideo();
                                 }
                             }}
                             >

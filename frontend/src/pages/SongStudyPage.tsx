@@ -23,9 +23,11 @@ const SongStudyPage: FC = () => {
   const [expandedSections, setExpandedSections] = useState<Set<number>>(new Set());
   const [completedSections, setCompletedSections] = useState<Set<number>>(new Set());
   const [playingSection, setPlayingSection] = useState<number | null>(null);
+  const [isPlayerPlaying, setIsPlayerPlaying] = useState<boolean>(false);
   const [playbackTimeouts, setPlaybackTimeouts] = useState<ReturnType<typeof setTimeout>[]>([]);
   const [expandedExplanations, setExpandedExplanations] = useState<Set<number>>(new Set());
   const [activeLineIndex, setActiveLineIndex] = useState<number | null>(null);
+  const [activeSectionIndex, setActiveSectionIndex] = useState<number | null>(null);
 
   const playerRef = useRef<YouTubePlayer | null>(null);
   const contentContainerRef = useRef<HTMLDivElement | null>(null);
@@ -105,6 +107,9 @@ const SongStudyPage: FC = () => {
   };
 
   const onPlayerStateChange = (event: { data: number }) => {
+    // Track player state: 1 = playing, 2 = paused, 0 = ended
+    setIsPlayerPlaying(event.data === 1);
+    
     if (event.data === 1) { // playing
       // Start checking current time and scrolling to active line
       intervalRef.current = setInterval(() => {
@@ -127,8 +132,10 @@ const SongStudyPage: FC = () => {
         
         if (foundLineIndex !== null && foundSectionIndex !== null) {
           // Only update if it's a different line to avoid constant re-renders
-          if (activeLineIndex !== foundLineIndex || !expandedSections.has(foundSectionIndex)) {
+          const lineChanged = activeLineIndex !== foundLineIndex || activeSectionIndex !== foundSectionIndex || !expandedSections.has(foundSectionIndex);
+          if (lineChanged) {
             setActiveLineIndex(foundLineIndex);
+            setActiveSectionIndex(foundSectionIndex);
             
             // Make sure the section is expanded
             if (foundSectionIndex !== null && !expandedSections.has(foundSectionIndex)) {
@@ -142,39 +149,7 @@ const SongStudyPage: FC = () => {
             }
           }
           
-          // Scroll to the active line - position it at the top of the container
-          const lineKey = `${foundSectionIndex}-${foundLineIndex}`;
-          const lineElement = lineRefs.current.get(lineKey);
-          const containerElement = contentContainerRef.current;
-          
-          if (lineElement && containerElement) {
-            // Get the line's offsetTop relative to the container's scrollable content
-            // offsetTop gives us the position relative to the offsetParent
-            let lineOffsetTop = 0;
-            let currentElement: HTMLElement | null = lineElement;
-            
-            // Traverse up to find the position relative to the container
-            while (currentElement && currentElement !== containerElement) {
-              lineOffsetTop += currentElement.offsetTop;
-              currentElement = currentElement.offsetParent as HTMLElement | null;
-            }
-            
-            // Get the container's padding-top if any
-            const containerStyles = window.getComputedStyle(containerElement);
-            const paddingTop = parseInt(containerStyles.paddingTop) || 0;
-            
-            // Calculate target scroll position to put line at the top
-            const targetScrollTop = lineOffsetTop - paddingTop;
-            const currentScrollTop = containerElement.scrollTop;
-            
-            // Only scroll if we're not already at the right position (within 10px tolerance)
-            if (Math.abs(currentScrollTop - targetScrollTop) > 10) {
-              containerElement.scrollTo({
-                top: targetScrollTop,
-                behavior: 'smooth'
-              });
-            }
-          }
+          // Scroll will be handled by useEffect when activeLineIndex changes
         }
       }, 250);
     } else { // paused, ended, etc.
@@ -182,8 +157,42 @@ const SongStudyPage: FC = () => {
         clearInterval(intervalRef.current);
         intervalRef.current = null;
       }
+      // Clear playing section when paused or ended
+      if (event.data === 2 || event.data === 0) { // paused or ended
+        setPlayingSection(null);
+      }
     }
   };
+
+  // Scroll to active line when it changes
+  useEffect(() => {
+    if (activeLineIndex === null || activeSectionIndex === null) return;
+
+    const lineKey = `${activeSectionIndex}-${activeLineIndex}`;
+    const lineElement = lineRefs.current.get(lineKey);
+    const containerElement = contentContainerRef.current;
+
+    if (lineElement && containerElement) {
+      // Use setTimeout to ensure DOM is updated after state changes
+      setTimeout(() => {
+        // Calculate position relative to the scrollable container using getBoundingClientRect
+        const lineRect = lineElement.getBoundingClientRect();
+        const containerRect = containerElement.getBoundingClientRect();
+        
+        // Calculate how much we need to scroll within the container
+        const scrollTop = containerElement.scrollTop;
+        const lineOffsetFromContainerTop = lineRect.top - containerRect.top + scrollTop;
+        
+        // Scroll to position the line at the top of the container
+        const targetScrollTop = lineOffsetFromContainerTop - 16; // 16px padding from top
+        
+        containerElement.scrollTo({
+          top: Math.max(0, targetScrollTop),
+          behavior: 'smooth'
+        });
+      }, 100); // Small delay to ensure DOM is ready
+    }
+  }, [activeLineIndex, activeSectionIndex]);
 
   // Cleanup interval on unmount
   useEffect(() => {
@@ -229,6 +238,12 @@ const SongStudyPage: FC = () => {
   const playSection = async (section: StructuredSection, sectionIndex: number) => {
     if (!playerRef.current || section.lines.length === 0) return;
     
+    // If already playing this section, pause instead
+    if (playingSection === sectionIndex && isPlayerPlaying) {
+      playerRef.current.pauseVideo();
+      return;
+    }
+    
     // Clear any existing timeouts and intervals
     playbackTimeouts.forEach(timeout => clearTimeout(timeout));
     setPlaybackTimeouts([]);
@@ -239,6 +254,7 @@ const SongStudyPage: FC = () => {
     
     setPlayingSection(sectionIndex);
     setActiveLineIndex(null);
+    setActiveSectionIndex(null);
     
     // Simply seek to start and play - the onPlayerStateChange handler will handle scrolling
     playerRef.current.seekTo(section.lines[0].start_ms / 1000, true);
@@ -252,6 +268,7 @@ const SongStudyPage: FC = () => {
       setCompletedSections(prev => new Set([...prev, sectionIndex]));
       setPlayingSection(null);
       setActiveLineIndex(null);
+    setActiveSectionIndex(null);
       if (playerRef.current) {
         playerRef.current.pauseVideo();
       }
@@ -370,7 +387,88 @@ const SongStudyPage: FC = () => {
                 </div>
               </div>
 
-              {/* Content for Selected Section - Directly Below Pills */}
+              {/* Section Explanation and Buttons - Separate Container */}
+              {Array.from(expandedSections).length > 0 && (() => {
+                const firstExpandedIndex = Array.from(expandedSections)[0];
+                if (firstExpandedIndex < sections.length) {
+                  const section = sections[firstExpandedIndex];
+                  const isExplanationExpanded = expandedExplanations.has(firstExpandedIndex);
+                  return (
+                    <Card className="mb-4">
+                      <div className="p-3 sm:p-4 lg:p-6 space-y-3 sm:space-y-4">
+                        {section.sectionExplanation && (
+                          <div className="border border-border rounded-lg overflow-hidden">
+                            <button
+                              onClick={() => {
+                                const newExpanded = new Set(expandedExplanations);
+                                if (newExpanded.has(firstExpandedIndex)) {
+                                  newExpanded.delete(firstExpandedIndex);
+                                } else {
+                                  newExpanded.add(firstExpandedIndex);
+                                }
+                                setExpandedExplanations(newExpanded);
+                              }}
+                              className="w-full px-3 sm:px-4 py-2 sm:py-3 bg-primary/10 hover:bg-primary/20 transition-colors flex items-center justify-between"
+                            >
+                              <span className="text-xs sm:text-sm font-medium text-text-primary">Section Explanation</span>
+                              <svg 
+                                className={`w-4 h-4 text-primary transition-transform duration-200 ${
+                                  isExplanationExpanded ? 'rotate-180' : ''
+                                }`}
+                                fill="none" 
+                                stroke="currentColor" 
+                                viewBox="0 0 24 24"
+                              >
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                              </svg>
+                            </button>
+                            {isExplanationExpanded && (
+                              <div className="p-3 sm:p-4 border-t border-border">
+                                <p className="text-xs sm:text-sm lg:text-base text-text-primary leading-relaxed">{section.sectionExplanation}</p>
+                              </div>
+                            )}
+                          </div>
+                        )}
+                        
+                        {/* Play All / Pause Button */}
+                        <div className="flex items-center gap-2 sm:gap-3">
+                          <button
+                            onClick={() => playSection(section, firstExpandedIndex)}
+                            className="flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1.5 sm:py-2 bg-primary hover:bg-primary-hover text-white rounded-lg transition-colors duration-200 text-xs sm:text-sm font-medium"
+                          >
+                            {playingSection === firstExpandedIndex && isPlayerPlaying ? (
+                              <>
+                                <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                                  <path d="M6 4h4v16H6V4zm8 0h4v16h-4V4z" />
+                                </svg>
+                                <span>Pause</span>
+                              </>
+                            ) : (
+                              <>
+                                <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                                  <path d="M8 5v14l11-7z" />
+                                </svg>
+                                <span>Play All</span>
+                              </>
+                            )}
+                          </button>
+                          {completedSections.has(firstExpandedIndex) && (
+                            <button
+                              onClick={() => expandNextSection(firstExpandedIndex)}
+                              className="flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1.5 sm:py-2 bg-secondary hover:bg-secondary/80 text-white rounded-lg transition-colors duration-200 text-xs sm:text-sm font-medium"
+                            >
+                              <span>Next →</span>
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    </Card>
+                  );
+                }
+                return null;
+              })()}
+
+              {/* Scrollable Lyrics Content */}
               <div 
                 ref={contentContainerRef}
                 className="flex-1 overflow-y-auto max-h-[calc(100vh-200px)] sm:max-h-[calc(100vh-300px)]"
@@ -378,78 +476,9 @@ const SongStudyPage: FC = () => {
                 {Array.from(expandedSections).map((sectionIndex) => {
                   if (sectionIndex < sections.length) {
                     const section = sections[sectionIndex];
-                    const isExplanationExpanded = expandedExplanations.has(sectionIndex);
                     return (
                       <Card key={sectionIndex} className="overflow-hidden">
-                        <div className="p-3 sm:p-4 lg:p-6 space-y-3 sm:space-y-4 lg:space-y-6">
-                          {section.sectionExplanation && (
-                            <div className="border border-border rounded-lg overflow-hidden">
-                              <button
-                                onClick={() => {
-                                  const newExpanded = new Set(expandedExplanations);
-                                  if (newExpanded.has(sectionIndex)) {
-                                    newExpanded.delete(sectionIndex);
-                                  } else {
-                                    newExpanded.add(sectionIndex);
-                                  }
-                                  setExpandedExplanations(newExpanded);
-                                }}
-                                className="w-full px-3 sm:px-4 py-2 sm:py-3 bg-primary/10 hover:bg-primary/20 transition-colors flex items-center justify-between"
-                              >
-                                <span className="text-xs sm:text-sm font-medium text-text-primary">Section Explanation</span>
-                                <svg 
-                                  className={`w-4 h-4 text-primary transition-transform duration-200 ${
-                                    isExplanationExpanded ? 'rotate-180' : ''
-                                  }`}
-                                  fill="none" 
-                                  stroke="currentColor" 
-                                  viewBox="0 0 24 24"
-                                >
-                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                                </svg>
-                              </button>
-                              {isExplanationExpanded && (
-                                <div className="p-3 sm:p-4 border-t border-border">
-                                  <p className="text-xs sm:text-sm lg:text-base text-text-primary leading-relaxed">{section.sectionExplanation}</p>
-                                </div>
-                              )}
-                            </div>
-                          )}
-                          
-                          {/* Play All Button */}
-                          <div className="flex items-center gap-2 sm:gap-3 pb-3 sm:pb-4 border-b border-border">
-                            <button
-                              onClick={() => playSection(section, sectionIndex)}
-                              disabled={playingSection === sectionIndex}
-                              className="flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1.5 sm:py-2 bg-primary hover:bg-primary-hover disabled:bg-primary/50 disabled:cursor-not-allowed text-white rounded-lg transition-colors duration-200 text-xs sm:text-sm font-medium"
-                            >
-                              {playingSection === sectionIndex ? (
-                                <>
-                                  <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
-                                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                                  </svg>
-                                  <span>Playing...</span>
-                                </>
-                              ) : (
-                                <>
-                                  <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-                                    <path d="M8 5v14l11-7z" />
-                                  </svg>
-                                  <span>Play All</span>
-                                </>
-                              )}
-                            </button>
-                            {completedSections.has(sectionIndex) && (
-                              <button
-                                onClick={() => expandNextSection(sectionIndex)}
-                                className="flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1.5 sm:py-2 bg-secondary hover:bg-secondary/80 text-white rounded-lg transition-colors duration-200 text-xs sm:text-sm font-medium"
-                              >
-                                <span>Next →</span>
-                              </button>
-                            )}
-                          </div>
-                          
+                        <div className="p-3 sm:p-4 lg:p-6">
                           <div className="space-y-3 sm:space-y-4">
                             {section.lines.map((line, lineIndex) => {
                               const lineKey = `${sectionIndex}-${lineIndex}`;
