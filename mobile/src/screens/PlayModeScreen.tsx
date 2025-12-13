@@ -58,6 +58,11 @@ export default function PlayModeScreen({ route }: Props) {
     };
   }, [videoId]);
 
+  // Sync showTranslations with preference when preferences load from storage
+  useEffect(() => {
+    setShowTranslations(preferences.display.defaultTranslation);
+  }, [preferences.display.defaultTranslation]);
+
   // Autoplay: Start playing when song loads if autoplay is enabled
   useEffect(() => {
     if (!isLoading && song && preferences.playback.autoplay) {
@@ -70,8 +75,9 @@ export default function PlayModeScreen({ route }: Props) {
   }, [isLoading, song, preferences.playback.autoplay]);
 
   // Auto-scroll to active line (matches frontend implementation)
+  // Only scrolls if autoscroll preference is enabled
   useEffect(() => {
-    if (activeLineIndex === null) return;
+    if (activeLineIndex === null || !preferences.playback.autoscroll) return;
 
     const activeLineRef = lineRefs.current[activeLineIndex];
     const containerRef = lyricsContainerRef.current;
@@ -92,7 +98,7 @@ export default function PlayModeScreen({ route }: Props) {
         }
       );
     }
-  }, [activeLineIndex]);
+  }, [activeLineIndex, preferences.playback.autoscroll]);
 
   // Handle player state change - start/stop interval for tracking progress
   const onPlayerStateChange = (event: string) => {

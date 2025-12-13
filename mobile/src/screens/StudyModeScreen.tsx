@@ -8,6 +8,7 @@ import StatusDisplay from '../components/StatusDisplay';
 import VideoPlayer from '../components/VideoPlayer';
 import type { Song, StudyData, StructuredSection, StructuredLine, LyricLine } from '../types/song';
 import type { SongDetailTabParamList } from '../types/navigation';
+import { useUser } from '../hooks/useUser';
 
 type Props = BottomTabScreenProps<SongDetailTabParamList, 'StudyMode'>;
 
@@ -41,6 +42,7 @@ const stopVideo = (player: any, endTime: number, setPlaying: (playing: boolean) 
 export default function StudyModeScreen({ route }: Props) {
   const { videoId } = route.params;
   const navigation = useNavigation();
+  const { preferences } = useUser();
   const [song, setSong] = useState<Song | null>(null);
   const [playing, setPlaying] = useState<boolean>(false);
   const [studyData, setStudyData] = useState<StudyData | null>(null);
@@ -114,8 +116,9 @@ export default function StudyModeScreen({ route }: Props) {
   };
 
   // Auto-scroll to active line
+  // Only scrolls if autoscroll preference is enabled
   useEffect(() => {
-    if (activeLineIndex === null) return;
+    if (activeLineIndex === null || !preferences.playback.autoscroll) return;
 
     const lineKey = expandedSectionIndex !== null 
       ? `${expandedSectionIndex}-${activeLineIndex}` 
@@ -140,7 +143,7 @@ export default function StudyModeScreen({ route }: Props) {
         }
       );
     }
-  }, [activeLineIndex, expandedSectionIndex]);
+  }, [activeLineIndex, expandedSectionIndex, preferences.playback.autoscroll]);
 
   // Handle player state change - start/stop interval for tracking progress
   const onPlayerStateChange = (event: string) => {

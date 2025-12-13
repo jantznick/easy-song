@@ -10,10 +10,10 @@ This document tracks the implementation status of each setting feature.
   - [x] Auto-play video when screen loads if enabled
   - [x] Test with different songs
 
-- [ ] **Auto-scroll Lyrics** - Auto-scroll to active lyric line
-  - [ ] Connect to PlayModeScreen
-  - [ ] Connect to StudyModeScreen
-  - [ ] Respect preference when highlighting active lines
+- [x] **Auto-scroll Lyrics** - Auto-scroll to active lyric line
+  - [x] Connect to PlayModeScreen
+  - [x] Connect to StudyModeScreen
+  - [x] Respect preference when highlighting active lines
   - [ ] Test scrolling behavior
 
 - [ ] **Loop Song** - Auto-replay when song ends
