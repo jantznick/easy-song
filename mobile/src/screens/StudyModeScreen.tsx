@@ -1,81 +1,64 @@
-import { useState, useEffect, useRef, useMemo } from 'react';
-import { View, Text, SafeAreaView, ScrollView, TouchableOpacity, ActivityIndicator, Dimensions } from 'react-native';
+import { useState, useEffect, useRef } from 'react';
+import { View, Text, SafeAreaView, ScrollView, TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import type { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
-import YoutubePlayer from 'react-native-youtube-iframe';
-import { fetchSongById, fetchStudyData } from '../utils/api';
+import { fetchSongById, fetchStudyData, computeAdditionalContent } from '../utils/api';
+import StatusDisplay from '../components/StatusDisplay';
+import VideoPlayer from '../components/VideoPlayer';
 import type { Song, StudyData, StructuredSection, StructuredLine, LyricLine } from '../types/song';
 import type { SongDetailTabParamList } from '../types/navigation';
 
 type Props = BottomTabScreenProps<SongDetailTabParamList, 'StudyMode'>;
 
-const { width: SCREEN_WIDTH } = Dimensions.get('window');
-const VIDEO_HEIGHT = (SCREEN_WIDTH * 9) / 16; // 16:9 aspect ratio
+const stopVideo = (player: any, endTime: number, setPlaying: (playing: boolean) => void, onComplete?: () => void) => {
+  const interval = setInterval(async () => {
+    if (!player.current) {
+      clearInterval(interval);
+      return;
+    }
+    try {
+      const currentTime = await player.current.getCurrentTime();
+      const currentTimeMs = currentTime * 1000;
+      console.log('currentTimeMs', currentTimeMs);
+      
+      if (currentTimeMs >= endTime) {
+        console.log('currentTimeMs >= endTime', currentTimeMs, endTime);
+        setPlaying(false);
+        clearInterval(interval);
+        if (onComplete) {
+          onComplete();
+        }
+      }
+    } catch (error) {
+      console.error('Error checking current time:', error);
+      clearInterval(interval);
+    }
+  }, 100);
+  
+  return interval;
+}
+
 
 export default function StudyModeScreen({ route }: Props) {
   const { videoId } = route.params;
   const navigation = useNavigation();
   const [song, setSong] = useState<Song | null>(null);
+  const [playing, setPlaying] = useState<boolean>(false);
   const [studyData, setStudyData] = useState<StudyData | null>(null);
+  const [additionalContent, setAdditionalContent] = useState<LyricLine[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [playing, setPlaying] = useState(false);
   const [expandedSectionIndex, setExpandedSectionIndex] = useState<number | null>(null);
   const [expandedExplanations, setExpandedExplanations] = useState<Set<number>>(new Set());
-  const [completedSections, setCompletedSections] = useState<Set<number>>(new Set());
-  const [playingSection, setPlayingSection] = useState<number | null>(null);
   const [activeLineIndex, setActiveLineIndex] = useState<number | null>(null);
-  const [activeSectionIndex, setActiveSectionIndex] = useState<number | null>(null);
-  
-  // Sync refs with state for button display
-  useEffect(() => {
-    playingSectionRef.current = playingSection;
-  }, [playingSection]);
-  
-  useEffect(() => {
-    playingRef.current = playing;
-  }, [playing]);
+  const [completedSections, setCompletedSections] = useState<Set<number>>(new Set());
 
-  const playerRef = useRef<any>(null);
   const contentScrollRef = useRef<ScrollView>(null);
+  const videoPlayerRef = useRef<any>(null);
+  const stopVideoIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const progressIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const lineRefs = useRef<{ [key: string]: View | null }>({});
-  const intervalRef = useRef<NodeJS.Timeout | null>(null);
-  const playbackTimeouts = useRef<NodeJS.Timeout[]>([]);
-  // Use refs for state that needs to be checked in callbacks to avoid stale closures
-  const playingSectionRef = useRef<number | null>(null);
-  const playingRef = useRef<boolean>(false);
-
-  // Get all lines from original song for gap detection
-  const allOriginalLines = useMemo(() => {
-    if (!song) return [];
-    return song.sections.flatMap(section => section.lines);
-  }, [song]);
-
-  // Get all covered time ranges from structured sections
-  const coveredTimeRanges = useMemo(() => {
-    if (!studyData) return [];
-    const ranges: Array<{ start: number; end: number }> = [];
-    studyData.structuredSections.forEach(section => {
-      section.lines.forEach(line => {
-        ranges.push({ start: line.start_ms, end: line.end_ms });
-      });
-    });
-    return ranges;
-  }, [studyData]);
-
-  // Find lines not covered by structured sections
-  const additionalContent = useMemo(() => {
-    if (!studyData || allOriginalLines.length === 0) return [];
-    
-    return allOriginalLines.filter(line => {
-      return !coveredTimeRanges.some(range => {
-        return (line.start_ms >= range.start && line.start_ms <= range.end) ||
-               (line.end_ms >= range.start && line.end_ms <= range.end) ||
-               (line.start_ms <= range.start && line.end_ms >= range.end);
-      });
-    });
-  }, [studyData, allOriginalLines, coveredTimeRanges]);
 
   useEffect(() => {
     const loadData = async () => {
@@ -87,6 +70,7 @@ export default function StudyModeScreen({ route }: Props) {
         
         setSong(songData);
         setStudyData(studyDataResult);
+        setAdditionalContent(computeAdditionalContent(songData, studyDataResult));
         
         // Auto-expand first section if study data exists
         if (studyDataResult && studyDataResult.structuredSections.length > 0) {
@@ -108,205 +92,150 @@ export default function StudyModeScreen({ route }: Props) {
     loadData();
 
     return () => {
-      if (intervalRef.current) {
-        clearInterval(intervalRef.current);
+      if (stopVideoIntervalRef.current) {
+        clearInterval(stopVideoIntervalRef.current);
       }
-      playbackTimeouts.current.forEach(timeout => clearTimeout(timeout));
+      if (progressIntervalRef.current) {
+        clearInterval(progressIntervalRef.current);
+      }
     };
   }, [videoId]);
 
-  // Handle player state change - track active line
-  const onPlayerStateChange = (event: string) => {
-    if (event === 'playing') {
-      setPlaying(true);
-      playingRef.current = true;
-      
-      // Only start interval if we're playing a section (not just a single line)
-      if (playingSectionRef.current !== null) {
-        // Clear any existing interval first
-        if (intervalRef.current) {
-          clearInterval(intervalRef.current);
-        }
-        intervalRef.current = setInterval(async () => {
-          if (!playerRef.current || !studyData || playingSectionRef.current === null) {
-            if (intervalRef.current) {
-              clearInterval(intervalRef.current);
-              intervalRef.current = null;
-            }
-            return;
-          }
-          try {
-            const currentTime = await playerRef.current.getCurrentTime();
-            const currentTimeMs = currentTime * 1000;
-            
-            let foundLineIndex: number | null = null;
-            let foundSectionIndex: number | null = null;
-            
-            studyData.structuredSections.forEach((section, sectionIdx) => {
-              section.lines.forEach((line, lineIdx) => {
-                if (currentTimeMs >= line.start_ms && currentTimeMs <= line.end_ms) {
-                  foundLineIndex = lineIdx;
-                  foundSectionIndex = sectionIdx;
-                }
-              });
-            });
-            
-            if (foundLineIndex !== null && foundSectionIndex !== null) {
-              // Update active line and section
-              setActiveLineIndex(foundLineIndex);
-              setActiveSectionIndex(foundSectionIndex);
-              
-              // Auto-expand section if not already expanded
-              setExpandedSectionIndex(prevExpanded => {
-                if (prevExpanded !== foundSectionIndex) {
-                  setExpandedExplanations(prevExp => new Set([...prevExp, foundSectionIndex!]));
-                }
-                return foundSectionIndex;
-              });
-            }
-          } catch (error) {
-            console.error('Error getting current time:', error);
-          }
-        }, 250);
-      }
-    } else if (event === 'paused' || event === 'ended') {
-      setPlaying(false);
-      playingRef.current = false;
-      if (intervalRef.current) {
-        clearInterval(intervalRef.current);
-        intervalRef.current = null;
-      }
-      if (event === 'ended') {
-        setPlayingSection(null);
-        playingSectionRef.current = null;
-        setActiveLineIndex(null);
-        setActiveSectionIndex(null);
-      }
+  // Get all lines from current section for active line tracking
+  const getCurrentSectionLines = (): (StructuredLine | LyricLine)[] => {
+    if (expandedSectionIndex === null || !studyData) return [];
+    
+    const sections = studyData.structuredSections || [];
+    
+    if (expandedSectionIndex < sections.length) {
+      return sections[expandedSectionIndex].lines;
+    } else if (expandedSectionIndex === sections.length) {
+      return additionalContent;
     }
+    return [];
   };
 
   // Auto-scroll to active line
   useEffect(() => {
-    if (activeLineIndex === null || activeSectionIndex === null || !contentScrollRef.current) return;
+    if (activeLineIndex === null) return;
 
-    // Small delay to ensure DOM is updated
-    setTimeout(() => {
-      const lineKey = `${activeSectionIndex}-${activeLineIndex}`;
-      const lineRef = lineRefs.current[lineKey];
-      if (lineRef && contentScrollRef.current) {
-        lineRef.measureLayout(
-          contentScrollRef.current as any,
-          (x, y, width, height) => {
-            if (contentScrollRef.current) {
-              contentScrollRef.current.scrollTo({
-                y: Math.max(0, y - 16),
-                animated: true,
-              });
-            }
-          },
-          () => {
-            // Error callback - layout measurement failed
-          }
-        );
-      }
-    }, 100);
-  }, [activeLineIndex, activeSectionIndex]);
-
-  const playLine = (startMs: number, endMs: number) => {
-    if (!playerRef.current) return;
+    const lineKey = expandedSectionIndex !== null 
+      ? `${expandedSectionIndex}-${activeLineIndex}` 
+      : null;
     
-    // Clear existing timeouts and intervals
-    playbackTimeouts.current.forEach(timeout => clearTimeout(timeout));
-    playbackTimeouts.current = [];
-    if (intervalRef.current) {
-      clearInterval(intervalRef.current);
-      intervalRef.current = null;
+    if (!lineKey) return;
+
+    const activeLineRef = lineRefs.current[lineKey];
+    const containerRef = contentScrollRef.current;
+
+    if (activeLineRef && containerRef) {
+      activeLineRef.measureLayout(
+        containerRef as any,
+        (x, y, width, height) => {
+          containerRef.scrollTo({
+            y: Math.max(0, y - 16),
+            animated: true,
+          });
+        },
+        () => {
+          // Error callback - layout measurement failed
+        }
+      );
     }
-    
-    // Clear section playing state when playing individual line
-    setPlayingSection(null);
-    playingSectionRef.current = null;
-    setActiveLineIndex(null);
-    setActiveSectionIndex(null);
-    
-    // Seek and play
-    playerRef.current.seekTo(startMs / 1000, true);
-    setPlaying(true);
-    playingRef.current = true;
-    
-    // Auto-pause at end - duration is in milliseconds
-    const durationMs = endMs - startMs;
-    const timeout = setTimeout(() => {
-      setPlaying(false);
-      playingRef.current = false;
-      playbackTimeouts.current = playbackTimeouts.current.filter(t => t !== timeout);
-    }, durationMs);
-    
-    playbackTimeouts.current.push(timeout);
+  }, [activeLineIndex, expandedSectionIndex]);
+
+  // Handle player state change - start/stop interval for tracking progress
+  const onPlayerStateChange = (event: string) => {
+    if (event === 'playing') {
+      // Start interval to check current time
+      progressIntervalRef.current = setInterval(async () => {
+        if (!videoPlayerRef.current) return;
+        
+        const currentLines = getCurrentSectionLines();
+        if (currentLines.length === 0) return;
+        
+        try {
+          const currentTime = await videoPlayerRef.current.getCurrentTime();
+          const currentTimeMs = currentTime * 1000;
+          
+          const currentLineIndex = currentLines.findIndex(
+            line => currentTimeMs >= line.start_ms && currentTimeMs <= line.end_ms
+          );
+          
+          if (currentLineIndex !== -1) {
+            setActiveLineIndex(currentLineIndex);
+          } else {
+            setActiveLineIndex(null);
+          }
+        } catch (error) {
+          console.error('Error getting current time:', error);
+        }
+      }, 250);
+    } else {
+      // Paused, ended, etc. - clear interval and update playing state
+      if (progressIntervalRef.current) {
+        clearInterval(progressIntervalRef.current);
+        progressIntervalRef.current = null;
+      }
+      // Update playing state when video pauses or ends
+      if (event === 'paused' || event === 'ended') {
+        setPlaying(false);
+      }
+    }
   };
 
-  const playSection = async (section: StructuredSection, sectionIndex: number) => {
-    if (!playerRef.current || section.lines.length === 0) return;
+  // Reset active line when section changes
+  useEffect(() => {
+    setActiveLineIndex(null);
+    setPlaying(false);
+  }, [expandedSectionIndex]);
+
+  const handlePlayAllClick = () => {
+    if (expandedSectionIndex === null) return;
     
-    // If already playing this section, pause instead
-    if (playingSectionRef.current === sectionIndex && playingRef.current) {
-      // Force pause by setting play to false immediately
-      playingRef.current = false;
+    // If already playing, pause
+    if (playing) {
       setPlaying(false);
-      setPlayingSection(null);
-      playingSectionRef.current = null;
-      if (intervalRef.current) {
-        clearInterval(intervalRef.current);
-        intervalRef.current = null;
+      if (stopVideoIntervalRef.current) {
+        clearInterval(stopVideoIntervalRef.current);
+        stopVideoIntervalRef.current = null;
       }
-      // Clear timeouts
-      playbackTimeouts.current.forEach(timeout => clearTimeout(timeout));
-      playbackTimeouts.current = [];
       return;
     }
     
-    // Clear existing timeouts and intervals
-    playbackTimeouts.current.forEach(timeout => clearTimeout(timeout));
-    playbackTimeouts.current = [];
-    if (intervalRef.current) {
-      clearInterval(intervalRef.current);
-      intervalRef.current = null;
+    let firstLine: StructuredLine | LyricLine | null = null;
+    let lastLine: StructuredLine | LyricLine | null = null;
+    
+    if (expandedSectionIndex < sections.length) {
+      const section = sections[expandedSectionIndex];
+      if (section.lines.length > 0) {
+        firstLine = section.lines[0];
+        lastLine = section.lines[section.lines.length - 1];
+      }
+    } else if (expandedSectionIndex === sections.length && additionalContent.length > 0) {
+      firstLine = additionalContent[0];
+      lastLine = additionalContent[additionalContent.length - 1];
     }
     
-    // Set section state BEFORE seeking/playing
-    setPlayingSection(sectionIndex);
-    playingSectionRef.current = sectionIndex;
-    setActiveLineIndex(null);
-    setActiveSectionIndex(null);
+    if (!firstLine || !lastLine) return;
     
-    // Seek to start
-    const startTime = section.lines[0].start_ms / 1000;
-    playerRef.current.seekTo(startTime, true);
+    // Clear any existing interval
+    if (stopVideoIntervalRef.current) {
+      clearInterval(stopVideoIntervalRef.current);
+    }
     
-    // Set playing state - the player will start playing
+    videoPlayerRef.current?.seekTo(firstLine.start_ms / 1000, true);
     setPlaying(true);
-    playingRef.current = true;
-    
-    // Mark as completed when reaching end - duration is in milliseconds
-    const lastLine = section.lines[section.lines.length - 1];
-    const totalDurationMs = lastLine.end_ms - section.lines[0].start_ms;
-    
-    const completeTimeout = setTimeout(() => {
-      setCompletedSections(prev => new Set([...prev, sectionIndex]));
-      setPlayingSection(null);
-      playingSectionRef.current = null;
-      setActiveLineIndex(null);
-      setActiveSectionIndex(null);
-      setPlaying(false);
-      playingRef.current = false;
-      if (intervalRef.current) {
-        clearInterval(intervalRef.current);
-        intervalRef.current = null;
+    stopVideoIntervalRef.current = stopVideo(
+      videoPlayerRef, 
+      lastLine.end_ms, 
+      setPlaying,
+      () => {
+        // Mark section as completed when playback finishes
+        setCompletedSections(prev => new Set([...prev, expandedSectionIndex]));
+        setActiveLineIndex(null);
       }
-      playbackTimeouts.current = playbackTimeouts.current.filter(t => t !== completeTimeout);
-    }, totalDurationMs);
-    
-    playbackTimeouts.current.push(completeTimeout);
+    );
   };
 
   const expandNextSection = (currentSectionIndex: number) => {
@@ -315,32 +244,33 @@ export default function StudyModeScreen({ route }: Props) {
     const nextIndex = currentSectionIndex + 1;
     if (nextIndex < allSections) {
       setExpandedSectionIndex(nextIndex);
-      if (nextIndex < studyData.structuredSections.length) {
-        setExpandedExplanations(prev => new Set([...prev, nextIndex]));
-      }
+      setExpandedExplanations(prev => new Set([...prev, nextIndex]));
+      setActiveLineIndex(null);
     }
   };
 
-  if (isLoading) {
-    return (
-      <SafeAreaView className="flex-1 bg-background">
-        <View className="flex-1 items-center justify-center">
-          <ActivityIndicator size="large" color="#6366F1" />
-          <Text className="mt-4 text-text-secondary text-base">Loading study data...</Text>
-        </View>
-      </SafeAreaView>
-    );
-  }
+  const handleLinePlayClick = (line: StructuredLine | LyricLine, lineIndex: number) => {
+    console.log('Line play clicked:', {
+      sectionIndex: expandedSectionIndex,
+      lineIndex: lineIndex,
+      spanish: line.spanish,
+      english: line.english,
+      start_ms: line.start_ms,
+      end_ms: line.end_ms,
+      explanation: 'explanation' in line ? line.explanation : undefined,
+    });
+    // Clear any existing interval
+    if (stopVideoIntervalRef.current) {
+      clearInterval(stopVideoIntervalRef.current);
+    }
+    
+    videoPlayerRef.current?.seekTo(line.start_ms / 1000, true);
+    setPlaying(true);
+    stopVideoIntervalRef.current = stopVideo(videoPlayerRef, line.end_ms, setPlaying);
+  };
 
-  if (error || !song) {
-    return (
-      <SafeAreaView className="flex-1 bg-background">
-        <View className="flex-1 items-center justify-center px-4">
-          <Text className="text-red-400 text-center mb-2 text-lg font-semibold">Error</Text>
-          <Text className="text-text-secondary text-center text-base">{error || 'Song not found'}</Text>
-        </View>
-      </SafeAreaView>
-    );
+  if (isLoading || error || !song) {
+    return <StatusDisplay loading={isLoading} error={error || (!song ? 'Song not found' : null)} loadingText="Loading study data..." />;
   }
 
   const sections = studyData?.structuredSections || [];
@@ -369,18 +299,7 @@ export default function StudyModeScreen({ route }: Props) {
       </View>
 
       {/* Fixed Video Player */}
-      <View>
-        <View className="bg-black" style={{ height: VIDEO_HEIGHT }}>
-          <YoutubePlayer
-            ref={playerRef}
-            height={VIDEO_HEIGHT}
-            width={SCREEN_WIDTH}
-            videoId={videoId}
-            play={playing}
-            onChangeState={onPlayerStateChange}
-          />
-        </View>
-      </View>
+      <VideoPlayer ref={videoPlayerRef} videoId={videoId} play={playing} onChangeState={onPlayerStateChange} />
 
       {/* Fixed Section Pills - Completely Separate Container */}
       {hasStudyData && (
@@ -475,27 +394,29 @@ export default function StudyModeScreen({ route }: Props) {
             </View>
           )}
 
-          {/* Play All Button */}
+          {/* Play All Button and Next Section Button */}
           <View className="flex-row items-center gap-3">
             <TouchableOpacity
-              onPress={() => playSection(currentSection, expandedSectionIndex!)}
+              onPress={handlePlayAllClick}
               className="flex-row items-center gap-2 px-4 py-2 bg-primary rounded-lg"
             >
               <Ionicons
-                name={playingSection === expandedSectionIndex && playing ? 'pause' : 'play'}
+                name={playing ? "pause" : "play"}
                 size={20}
                 color="#ffffff"
               />
               <Text className="text-sm font-medium text-white">
-                {playingSection === expandedSectionIndex && playing ? 'Pause' : 'Play All'}
+                {playing ? "Pause" : "Play All"}
               </Text>
             </TouchableOpacity>
-            {completedSections.has(expandedSectionIndex!) && (
+            {expandedSectionIndex !== null && completedSections.has(expandedSectionIndex) && (
               <TouchableOpacity
-                onPress={() => expandNextSection(expandedSectionIndex!)}
+                onPress={() => expandNextSection(expandedSectionIndex)}
                 className="flex-row items-center gap-2 px-4 py-2 bg-secondary rounded-lg"
               >
-                <Text className="text-sm font-medium text-white">Next →</Text>
+                <Text className="text-sm font-medium text-white">
+                  Next →
+                </Text>
               </TouchableOpacity>
             )}
           </View>
@@ -518,33 +439,29 @@ export default function StudyModeScreen({ route }: Props) {
                     <View>
                       {sections[expandedSectionIndex].lines.map((line, lineIndex) => {
                         const lineKey = `${expandedSectionIndex}-${lineIndex}`;
-                        const isActive = activeLineIndex === lineIndex && activeSectionIndex === expandedSectionIndex;
+                        const isActive = activeLineIndex === lineIndex && expandedSectionIndex < sections.length;
                         return (
                           <View
                             key={lineIndex}
                             ref={(ref) => {
                               lineRefs.current[lineKey] = ref;
                             }}
-                            style={[
-                              {
-                                paddingBottom: 16,
-                                marginBottom: 16,
-                                borderBottomWidth: lineIndex < sections[expandedSectionIndex].lines.length - 1 ? 1 : 0,
-                                borderBottomColor: '#334155',
-                              },
-                              isActive && {
-                                backgroundColor: 'rgba(99, 102, 241, 0.1)',
-                                borderRadius: 8,
-                                padding: 12,
-                                marginBottom: 12,
-                                borderLeftWidth: 4,
-                                borderLeftColor: '#6366F1',
-                              }
-                            ]}
+                            style={{
+                              paddingBottom: 16,
+                              marginBottom: 16,
+                              borderBottomWidth: lineIndex < sections[expandedSectionIndex].lines.length - 1 ? 1 : 0,
+                              borderBottomColor: '#334155',
+                              borderLeftWidth: 4,
+                              borderLeftColor: isActive ? '#6366F1' : 'transparent',
+                              backgroundColor: isActive ? 'rgba(99, 102, 241, 0.2)' : 'transparent',
+                              paddingLeft: isActive ? 12 : 0,
+                              marginLeft: isActive ? -4 : 0,
+                              borderRadius: isActive ? 8 : 0,
+                            }}
                           >
                             <View className="flex-row items-start gap-3">
                               <TouchableOpacity
-                                onPress={() => playLine(line.start_ms, line.end_ms)}
+                                onPress={() => handleLinePlayClick(line, lineIndex)}
                                 className="mt-1 p-2"
                               >
                                 <Ionicons name="play" size={20} color="#6366F1" />
@@ -552,7 +469,7 @@ export default function StudyModeScreen({ route }: Props) {
                               <View className="flex-1">
                                 <Text style={{
                                   fontSize: 16,
-                                  fontWeight: '500',
+                                  fontWeight: isActive ? '600' : '500',
                                   color: isActive ? '#6366F1' : '#F1F5F9',
                                   marginBottom: 4,
                                 }}>
@@ -586,55 +503,68 @@ export default function StudyModeScreen({ route }: Props) {
                       <Text className="text-sm text-text-muted mb-4 italic">
                         These lines weren't included in the structured sections above.
                       </Text>
-                      {additionalContent.map((line, lineIndex) => (
-                        <View
-                          key={lineIndex}
-                          style={{
-                            paddingBottom: 16,
-                            marginBottom: 16,
-                            borderBottomWidth: lineIndex < additionalContent.length - 1 ? 1 : 0,
-                            borderBottomColor: '#334155',
-                          }}
-                        >
-                          <View className="flex-row items-start gap-3">
-                            <TouchableOpacity
-                              onPress={() => playLine(line.start_ms, line.end_ms)}
-                              className="mt-1 p-2"
-                            >
-                              <Ionicons name="play" size={20} color="#6366F1" />
-                            </TouchableOpacity>
-                            <View className="flex-1">
-                              <Text style={{
-                                fontSize: 16,
-                                fontWeight: '500',
-                                color: '#F1F5F9',
-                                marginBottom: 4,
-                              }}>
-                                {line.spanish}
-                              </Text>
-                              {line.english && (
+                      {additionalContent.map((line, lineIndex) => {
+                        const lineKey = `${expandedSectionIndex}-${lineIndex}`;
+                        const isActive = activeLineIndex === lineIndex && expandedSectionIndex === sections.length;
+                        return (
+                          <View
+                            key={lineIndex}
+                            ref={(ref) => {
+                              lineRefs.current[lineKey] = ref;
+                            }}
+                            style={{
+                              paddingBottom: 16,
+                              marginBottom: 16,
+                              borderBottomWidth: lineIndex < additionalContent.length - 1 ? 1 : 0,
+                              borderBottomColor: '#334155',
+                              borderLeftWidth: 4,
+                              borderLeftColor: isActive ? '#6366F1' : 'transparent',
+                              backgroundColor: isActive ? 'rgba(99, 102, 241, 0.2)' : 'transparent',
+                              paddingLeft: isActive ? 12 : 0,
+                              marginLeft: isActive ? -4 : 0,
+                              borderRadius: isActive ? 8 : 0,
+                            }}
+                          >
+                            <View className="flex-row items-start gap-3">
+                              <TouchableOpacity
+                                onPress={() => handleLinePlayClick(line, lineIndex)}
+                                className="mt-1 p-2"
+                              >
+                                <Ionicons name="play" size={20} color="#6366F1" />
+                              </TouchableOpacity>
+                              <View className="flex-1">
                                 <Text style={{
-                                  fontSize: 14,
-                                  color: '#94A3B8',
-                                  fontStyle: 'italic',
+                                  fontSize: 16,
+                                  fontWeight: isActive ? '600' : '500',
+                                  color: isActive ? '#6366F1' : '#F1F5F9',
+                                  marginBottom: 4,
                                 }}>
-                                  {line.english}
+                                  {line.spanish}
                                 </Text>
-                              )}
-                              {line.explanation && (
-                                <Text style={{
-                                  fontSize: 13,
-                                  color: '#64748B',
-                                  lineHeight: 20,
-                                  marginTop: 8,
-                                }}>
-                                  {line.explanation}
-                                </Text>
-                              )}
+                                {line.english && (
+                                  <Text style={{
+                                    fontSize: 14,
+                                    color: '#94A3B8',
+                                    fontStyle: 'italic',
+                                  }}>
+                                    {line.english}
+                                  </Text>
+                                )}
+                                {line.explanation && (
+                                  <Text style={{
+                                    fontSize: 13,
+                                    color: '#64748B',
+                                    lineHeight: 20,
+                                    marginTop: 8,
+                                  }}>
+                                    {line.explanation}
+                                  </Text>
+                                )}
+                              </View>
                             </View>
                           </View>
-                        </View>
-                      ))}
+                        );
+                      })}
                     </View>
                   ) : null}
                 </View>

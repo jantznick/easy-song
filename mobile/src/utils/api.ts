@@ -1,4 +1,4 @@
-import type { Song, SongSummary, StudyData } from '../types/song';
+import type { Song, SongSummary, StudyData, LyricLine } from '../types/song';
 
 // Configuration: Set to 'api' for Express backend, or 'static' for S3/static file hosting
 // For mobile, we'll default to API mode but can be configured via environment variables
@@ -79,4 +79,31 @@ export const fetchStudyData = async (videoId: string): Promise<StudyData | null>
     }
     return response.json();
 };
+
+/**
+ * Computes additional content (lines not covered by structured sections).
+ * @param song The song data.
+ * @param studyData The study data with structured sections.
+ * @returns An array of lyric lines that are not covered by structured sections.
+ */
+export function computeAdditionalContent(song: Song | null, studyData: StudyData | null): LyricLine[] {
+  if (!song || !studyData) return [];
+  
+  const allOriginalLines = song.sections.flatMap(section => section.lines);
+  
+  const coveredTimeRanges: Array<{ start: number; end: number }> = [];
+  studyData.structuredSections.forEach(section => {
+    section.lines.forEach(line => {
+      coveredTimeRanges.push({ start: line.start_ms, end: line.end_ms });
+    });
+  });
+  
+  return allOriginalLines.filter(line => {
+    return !coveredTimeRanges.some(range => {
+      return (line.start_ms >= range.start && line.start_ms <= range.end) ||
+             (line.end_ms >= range.start && line.end_ms <= range.end) ||
+             (line.start_ms <= range.start && line.end_ms >= range.end);
+    });
+  });
+}
 

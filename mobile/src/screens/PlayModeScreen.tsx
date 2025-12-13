@@ -1,16 +1,13 @@
 import { useEffect, useState, useRef, useMemo } from 'react';
-import { View, Text, ScrollView, ActivityIndicator, TouchableOpacity, SafeAreaView, Dimensions, Switch } from 'react-native';
+import { View, Text, ScrollView, ActivityIndicator, TouchableOpacity, SafeAreaView, Switch } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import type { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
-import YoutubePlayer from 'react-native-youtube-iframe';
 import { fetchSongById } from '../utils/api';
+import VideoPlayer from '../components/VideoPlayer';
 import type { Song, SongSection, LyricLine } from '../types/song';
 import type { SongDetailTabParamList } from '../types/navigation';
 
 type Props = BottomTabScreenProps<SongDetailTabParamList, 'PlayMode'>;
-
-const { width: SCREEN_WIDTH } = Dimensions.get('window');
-const VIDEO_HEIGHT = (SCREEN_WIDTH * 9) / 16; // 16:9 aspect ratio
 
 export default function PlayModeScreen({ route }: Props) {
   const { videoId } = route.params;
@@ -77,8 +74,8 @@ export default function PlayModeScreen({ route }: Props) {
             animated: true,
           });
         },
-        (error) => {
-          console.error('Error measuring layout:', error);
+        () => {
+          // Error callback - layout measurement failed
         }
       );
     }
@@ -166,24 +163,20 @@ export default function PlayModeScreen({ route }: Props) {
       {/* Fixed Content - Video and Song Info */}
       <View>
         {/* YouTube Video Player */}
-        <View className="bg-black" style={{ height: VIDEO_HEIGHT }}>
-          <YoutubePlayer
-            ref={playerRef}
-            height={VIDEO_HEIGHT}
-            width={SCREEN_WIDTH}
-            videoId={videoId}
-            play={playing}
-            onChangeState={(event) => {
-              if (event === 'playing') {
-                setPlaying(true);
-              } else if (event === 'paused' || event === 'ended') {
-                setPlaying(false);
-              }
-              // Handle active line tracking
-              onPlayerStateChange(event);
-            }}
-          />
-        </View>
+        <VideoPlayer
+          ref={playerRef}
+          videoId={videoId}
+          play={playing}
+          onChangeState={(event) => {
+            if (event === 'playing') {
+              setPlaying(true);
+            } else if (event === 'paused' || event === 'ended') {
+              setPlaying(false);
+            }
+            // Handle active line tracking
+            onPlayerStateChange(event);
+          }}
+        />
 
         {/* Song Info */}
         <View className="px-5 pt-6 pb-6">
