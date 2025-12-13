@@ -6,7 +6,11 @@
     "back": "Back",
     "save": "Save",
     "cancel": "Cancel",
-    "done": "Done"
+    "done": "Done",
+    "next": "Next",
+    "previous": "Previous",
+    "close": "Close",
+    "version": "Version"
   },
   "songs": {
     "title": "Songs",
@@ -14,7 +18,31 @@
     "noSongs": "No songs available",
     "noSongsDescription": "Check back soon for new content!",
     "error": "Failed to fetch songs",
-    "errorDescription": "An unknown error occurred."
+    "errorDescription": "An unknown error occurred.",
+    "loadingSong": "Loading song...",
+    "songNotFound": "Song not found",
+    "failedToFetchSong": "Failed to fetch song"
+  },
+  "playMode": {
+    "lyrics": "Lyrics",
+    "showTranslations": "Show translations"
+  },
+  "studyMode": {
+    "title": "Study Mode",
+    "loadingData": "Loading study data...",
+    "songNotFound": "Song not found",
+    "failedToFetchData": "Failed to fetch data",
+    "studyContent": "Study Content",
+    "showTranslations": "Show translations",
+    "sectionExplanation": "Section Explanation",
+    "playAll": "Play All",
+    "pause": "Pause",
+    "nextSection": "Next",
+    "additional": "Additional",
+    "selectSection": "Select a section above to view its content",
+    "studyDataNotAvailable": "Study data is not available",
+    "studyDataNotAvailableDescription": "The structured study format will be available once the data is generated.",
+    "additionalContentNote": "These lines weren't included in the structured sections above."
   },
   "settings": {
     "title": "Settings",
@@ -34,14 +62,26 @@
       "defaultTranslation": "Default Translation",
       "defaultTranslationDescription": "Show translations by default",
       "theme": "Theme",
-      "themeDescription": "App theme preference"
+      "themeDescription": "App theme preference",
+      "light": "Light",
+      "dark": "Dark",
+      "system": "System"
     },
     "language": {
       "title": "Language",
       "learning": "Learning Language",
       "learningDescription": "Language being learned",
-      "interface": "Interface Language",
-      "interfaceDescription": "App UI language"
+      "interface": "App Language",
+      "interfaceDescription": "App UI language",
+      "learningLanguage": "Learning Language",
+      "interfaceLanguage": "App Language",
+      "names": {
+        "en": "English",
+        "es": "Spanish",
+        "zh": "Chinese (Mandarin)",
+        "fr": "French",
+        "de": "German"
+      }
     },
     "profile": {
       "title": "User Profile",
@@ -49,8 +89,116 @@
       "email": "Email",
       "changePassword": "Change Password",
       "signIn": "Sign In",
-      "signOut": "Sign Out"
+      "signOut": "Sign Out",
+      "notSignedIn": "Not signed in",
+      "account": "Account",
+      "name": "Name",
+      "signInToSync": "Sign in to sync your progress",
+      "signOutOfAccount": "Sign out of your account"
+    },
+    "about": {
+      "title": "About",
+      "appVersion": "App Version",
+      "helpSupport": "Help & Support",
+      "termsOfService": "Terms of Service",
+      "privacyPolicy": "Privacy Policy"
     }
+  },
+  "profile": {
+    "editName": "Edit Name",
+    "editEmail": "Edit Email",
+    "enterName": "Enter your name",
+    "enterEmail": "Enter your email",
+    "nameCannotBeEmpty": "Name cannot be empty",
+    "emailCannotBeEmpty": "Email cannot be empty",
+    "invalidEmail": "Please enter a valid email address",
+    "failedToUpdateName": "Failed to update name",
+    "failedToUpdateEmail": "Failed to update email",
+    "failedToSignOut": "Failed to sign out",
+    "password": "Password",
+    "emailAndPasswordRequired": "Email and password are required",
+    "failedToSignIn": "Failed to sign in. Please try again."
+  },
+  "history": {
+    "title": "Song History",
+    "noHistory": "No song history yet",
+    "noHistoryDescription": "Start playing songs to see your history here",
+    "viewAll": "View All",
+    "previous": "Previous",
+    "next": "Next",
+    "loadMore": "Load More",
+    "page": "Page",
+    "of": "of",
+    "noHistoryShort": "No history",
+    "playMode": "Play Mode",
+    "studyMode": "Study Mode"
+  },
+  "tabs": {
+    "play": "Play",
+    "study": "Study",
+    "settings": "Settings"
+  },
+  "help": {
+    "title": "Help & Support",
+    "gettingStarted": "Getting Started",
+    "howToUse": "How to use the app",
+    "howToUseDescription": "Easy Song helps you Learn languages through music. Browse songs, watch videos, and study lyrics with translations and explanations.",
+    "playMode": "Play Mode",
+    "playModeDescription": "Watch the video and follow along with highlighted lyrics. Tap any lyric to jump to that part of the song. Toggle translations on or off as needed.",
+    "studyMode": "Study Mode",
+    "studyModeDescription": "Dive deeper into each song with structured sections. Each section includes explanations, line-by-line playback, and detailed translations.",
+    "faq": "Frequently Asked Questions",
+    "changeLanguage": "How do I change the language?",
+    "changeLanguageAnswer": "Go to Settings → Language to change your learning language or interface language.",
+    "downloadSongs": "Can I download songs for offline use?",
+    "downloadSongsAnswer": "Currently, songs require an internet connection to play. Offline functionality may be available in future updates.",
+    "saveProgress": "How do I save my progress?",
+    "saveProgressAnswer": "Sign in to your account to sync your progress across devices. Your learning history and preferences will be saved automatically.",
+    "videoNotPlaying": "The video isn't playing",
+    "videoNotPlayingAnswer": "Make sure you have a stable internet connection. If the issue persists, try closing and reopening the app, or restarting your device.",
+    "contactSupport": "Contact Support",
+    "contactSupportDescription": "Need more help? Our support team is here to assist you.",
+    "supportEmail": "hi@creativeendurancelab.com"
+  },
+  "about": {
+    "title": "About",
+    "appName": "Easy Song",
+    "version": "Version 1.0.0",
+    "description": "Learn languages through music. Watch videos, study lyrics, and improve your language skills with structured lessons.",
+    "developmentStudio": "Creative Endurance Lab, LLC",
+    "studioName": "Your Studio Name",
+    "studioDescription": "We're passionate about creating innovative language learning tools that make education engaging and accessible.",
+    "contactEmail": "hi@creativeendurancelab.com",
+    "website": "creativeendurancelab.com",
+    
+    "versionHistory": "Version History",
+    "credits": "Credits",
+    "creditsDescription": "Easy Song uses YouTube videos for educational purposes. All song content, including lyrics and translations, is provided for language learning.",
+    "creditsDescription2": "Video content is provided by YouTube and is the property of their respective owners.",
+    "version1_0_0": "Version 1.0.0",
+    "version1_0_0Date": "January 2025",
+    "version1_0_0Changes": [
+      "Initial release of Easy Song",
+      "Play Mode with YouTube video integration",
+      "Study Mode with structured sections and explanations",
+      "Lyric highlighting and auto-scrolling",
+      "Translation toggle functionality",
+      "User settings and preferences",
+      "Multi-language support"
+    ],
+    "version0_9_0": "Version 0.9.0",
+    "version0_9_0Date": "December 2024",
+    "version0_9_0Changes": [
+      "Beta testing release",
+      "Core playback functionality",
+      "Basic study mode features"
+    ],
+    "version0_8_0": "Version 0.8.0",
+    "version0_8_0Date": "November 2024",
+    "version0_8_0Changes": [
+      "Initial development build",
+      "Song list and navigation",
+      "Video player integration"
+    ]
   }
 }
-

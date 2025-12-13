@@ -8,6 +8,7 @@ import type { RootStackParamList } from '../types/navigation';
 import { useUser } from '../hooks/useUser';
 import { useTheme } from '../contexts/ThemeContext';
 import { useThemeClasses } from '../utils/themeClasses';
+import { useTranslation } from '../hooks/useTranslation';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'UserProfileSettings'>;
 
@@ -71,6 +72,7 @@ export default function UserProfileSettingsScreen({ route }: Props) {
   const { profile, updateProfile, isAuthenticated, signIn, signOut, songHistory } = useUser();
   const { colors, isDark } = useTheme();
   const theme = useThemeClasses();
+  const { t } = useTranslation();
   const [showNameModal, setShowNameModal] = useState(false);
   const [showEmailModal, setShowEmailModal] = useState(false);
   const [showSignInModal, setShowSignInModal] = useState(false);
@@ -93,7 +95,7 @@ export default function UserProfileSettingsScreen({ route }: Props) {
         >
           <Text className={theme.text('text-text-primary', 'text-[#F1F5F9]') + ' text-2xl'}>←</Text>
         </TouchableOpacity>
-        <Text className={theme.text('text-text-primary', 'text-[#F1F5F9]') + ' text-lg font-semibold flex-1'}>Settings</Text>
+        <Text className={theme.text('text-text-primary', 'text-[#F1F5F9]') + ' text-lg font-semibold flex-1'}>{t('settings.title')}</Text>
       </View>
 
       <ScrollView 
@@ -114,7 +116,7 @@ export default function UserProfileSettingsScreen({ route }: Props) {
                     {profile.name}
                   </Text>
                   <Text className={theme.text('text-text-secondary', 'text-[#94A3B8]') + ' text-sm'}>
-                    {isAuthenticated ? profile.email : 'Not signed in'}
+                    {isAuthenticated ? profile.email : t('settings.profile.notSignedIn')}
                   </Text>
                 </View>
               </View>
@@ -122,10 +124,10 @@ export default function UserProfileSettingsScreen({ route }: Props) {
           </View>
 
           {/* Account Settings */}
-          <SettingsSection title="Account">
+          <SettingsSection title={t('settings.profile.account')}>
             <SettingItem
               icon="person"
-              title="Name"
+              title={t('settings.profile.name')}
               subtitle={profile.name}
               showArrow
               onPress={() => {
@@ -135,7 +137,7 @@ export default function UserProfileSettingsScreen({ route }: Props) {
             />
             <SettingItem
               icon="mail"
-              title="Email"
+              title={t('settings.profile.email')}
               subtitle={profile.email}
               showArrow
               onPress={() => {
@@ -146,7 +148,7 @@ export default function UserProfileSettingsScreen({ route }: Props) {
             {isAuthenticated && (
               <SettingItem
                 icon="lock-closed"
-                title="Change Password"
+                title={t('settings.profile.changePassword')}
                 showArrow
                 onPress={() => {}}
               />
@@ -154,8 +156,8 @@ export default function UserProfileSettingsScreen({ route }: Props) {
             {!isAuthenticated ? (
               <SettingItem
                 icon="log-in"
-                title="Sign In"
-                subtitle="Sign in to sync your progress"
+                title={t('settings.profile.signIn')}
+                subtitle={t('settings.profile.signInToSync')}
                 showArrow
                 onPress={() => {
                   setSignInEmail('');
@@ -167,14 +169,14 @@ export default function UserProfileSettingsScreen({ route }: Props) {
             ) : (
               <SettingItem
                 icon="log-out"
-                title="Sign Out"
-                subtitle="Sign out of your account"
+                title={t('settings.profile.signOut')}
+                subtitle={t('settings.profile.signOutOfAccount')}
                 showArrow
                 onPress={async () => {
                   try {
                     await signOut();
                   } catch (error) {
-                    Alert.alert('Error', 'Failed to sign out');
+                    Alert.alert(t('common.error'), t('profile.failedToSignOut'));
                   }
                 }}
               />
@@ -185,14 +187,14 @@ export default function UserProfileSettingsScreen({ route }: Props) {
           <View className="mb-6">
             <View className="flex-row items-center justify-between px-5 py-2">
               <Text className={theme.text('text-text-muted', 'text-[#64748B]') + ' text-xs font-semibold uppercase tracking-wide'}>
-                Song History
+                {t('history.title')}
               </Text>
             </View>
             <View className={theme.bg('bg-surface', 'bg-[#1E293B]') + ' ' + theme.border('border-border', 'border-[#334155]') + ' rounded-xl border overflow-hidden'}>
               {songHistory.length === 0 ? (
                 <View className="py-8 px-5 items-center">
                   <Text className={theme.text('text-text-muted', 'text-[#64748B]') + ' text-sm'}>
-                    No song history yet
+                    {t('history.noHistory')}
                   </Text>
                 </View>
               ) : (
@@ -233,7 +235,7 @@ export default function UserProfileSettingsScreen({ route }: Props) {
                     <View className="flex-row items-center">
                       <View className="bg-primary/10 px-2 py-0.5 rounded mr-2">
                         <Text className="text-xs font-medium text-primary">
-                          {item.mode}
+                          {item.mode === 'Play Mode' ? t('history.playMode') : t('history.studyMode')}
                         </Text>
                       </View>
                       <Text className={theme.text('text-text-muted', 'text-[#64748B]') + ' text-xs'}>
@@ -251,7 +253,7 @@ export default function UserProfileSettingsScreen({ route }: Props) {
                   activeOpacity={0.7}
                   className={theme.border('border-border', 'border-[#334155]') + ' flex-row items-center justify-center py-4 px-5 border-t'}
                 >
-                  <Text className="text-base font-medium mr-2 text-primary">View All</Text>
+                  <Text className="text-base font-medium mr-2 text-primary">{t('history.viewAll')}</Text>
                   <Ionicons name="chevron-forward" size={20} color="#6366F1" />
                 </TouchableOpacity>
               )}
@@ -280,7 +282,7 @@ export default function UserProfileSettingsScreen({ route }: Props) {
             paddingBottom: 40,
           }}>
             <View className="flex-row items-center justify-between mb-4">
-              <Text style={{ fontSize: 20, fontWeight: 'bold', color: colors['text-primary'] }}>Edit Name</Text>
+              <Text style={{ fontSize: 20, fontWeight: 'bold', color: colors['text-primary'] }}>{t('profile.editName')}</Text>
               <TouchableOpacity onPress={() => setShowNameModal(false)}>
                 <Ionicons name="close" size={24} color={colors['text-primary']} />
               </TouchableOpacity>
@@ -288,7 +290,7 @@ export default function UserProfileSettingsScreen({ route }: Props) {
             <TextInput
               value={nameValue}
               onChangeText={setNameValue}
-              placeholder="Enter your name"
+              placeholder={t('profile.enterName')}
               placeholderTextColor={colors['text-muted']}
               style={{
                 borderWidth: 1,
@@ -305,7 +307,7 @@ export default function UserProfileSettingsScreen({ route }: Props) {
             <TouchableOpacity
               onPress={async () => {
                 if (!nameValue.trim()) {
-                  Alert.alert('Error', 'Name cannot be empty');
+                  Alert.alert(t('common.error'), t('profile.nameCannotBeEmpty'));
                   return;
                 }
                 setIsSaving(true);
@@ -313,7 +315,7 @@ export default function UserProfileSettingsScreen({ route }: Props) {
                   await updateProfile({ name: nameValue.trim() });
                   setShowNameModal(false);
                 } catch (error) {
-                  Alert.alert('Error', 'Failed to update name');
+                  Alert.alert(t('common.error'), t('profile.failedToUpdateName'));
                 } finally {
                   setIsSaving(false);
                 }
@@ -329,7 +331,7 @@ export default function UserProfileSettingsScreen({ route }: Props) {
               {isSaving ? (
                 <ActivityIndicator color="#fff" />
               ) : (
-                <Text style={{ color: '#fff', fontSize: 16, fontWeight: '600' }}>Save</Text>
+                <Text style={{ color: '#fff', fontSize: 16, fontWeight: '600' }}>{t('common.save')}</Text>
               )}
             </TouchableOpacity>
           </View>
@@ -356,7 +358,7 @@ export default function UserProfileSettingsScreen({ route }: Props) {
             paddingBottom: 40,
           }}>
             <View className="flex-row items-center justify-between mb-4">
-              <Text style={{ fontSize: 20, fontWeight: 'bold', color: colors['text-primary'] }}>Edit Email</Text>
+              <Text style={{ fontSize: 20, fontWeight: 'bold', color: colors['text-primary'] }}>{t('profile.editEmail')}</Text>
               <TouchableOpacity onPress={() => setShowEmailModal(false)}>
                 <Ionicons name="close" size={24} color={colors['text-primary']} />
               </TouchableOpacity>
@@ -364,7 +366,7 @@ export default function UserProfileSettingsScreen({ route }: Props) {
             <TextInput
               value={emailValue}
               onChangeText={setEmailValue}
-              placeholder="Enter your email"
+              placeholder={t('profile.enterEmail')}
               placeholderTextColor={colors['text-muted']}
               keyboardType="email-address"
               autoCapitalize="none"
@@ -383,13 +385,13 @@ export default function UserProfileSettingsScreen({ route }: Props) {
             <TouchableOpacity
               onPress={async () => {
                 if (!emailValue.trim()) {
-                  Alert.alert('Error', 'Email cannot be empty');
+                  Alert.alert(t('common.error'), t('profile.emailCannotBeEmpty'));
                   return;
                 }
                 // Basic email validation
                 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
                 if (!emailRegex.test(emailValue.trim())) {
-                  Alert.alert('Error', 'Please enter a valid email address');
+                  Alert.alert(t('common.error'), t('profile.invalidEmail'));
                   return;
                 }
                 setIsSaving(true);
@@ -397,7 +399,7 @@ export default function UserProfileSettingsScreen({ route }: Props) {
                   await updateProfile({ email: emailValue.trim() });
                   setShowEmailModal(false);
                 } catch (error) {
-                  Alert.alert('Error', 'Failed to update email');
+                  Alert.alert(t('common.error'), t('profile.failedToUpdateEmail'));
                 } finally {
                   setIsSaving(false);
                 }
@@ -413,7 +415,7 @@ export default function UserProfileSettingsScreen({ route }: Props) {
               {isSaving ? (
                 <ActivityIndicator color="#fff" />
               ) : (
-                <Text style={{ color: '#fff', fontSize: 16, fontWeight: '600' }}>Save</Text>
+                <Text style={{ color: '#fff', fontSize: 16, fontWeight: '600' }}>{t('common.save')}</Text>
               )}
             </TouchableOpacity>
           </View>
@@ -440,7 +442,7 @@ export default function UserProfileSettingsScreen({ route }: Props) {
             paddingBottom: 40,
           }}>
             <View className="flex-row items-center justify-between mb-4">
-              <Text style={{ fontSize: 20, fontWeight: 'bold', color: colors['text-primary'] }}>Sign In</Text>
+              <Text style={{ fontSize: 20, fontWeight: 'bold', color: colors['text-primary'] }}>{t('settings.profile.signIn')}</Text>
               <TouchableOpacity onPress={() => setShowSignInModal(false)}>
                 <Ionicons name="close" size={24} color={colors['text-primary']} />
               </TouchableOpacity>
@@ -465,7 +467,7 @@ export default function UserProfileSettingsScreen({ route }: Props) {
                 setSignInEmail(text);
                 setSignInError(null);
               }}
-              placeholder="Email"
+              placeholder={t('settings.profile.email')}
               placeholderTextColor={colors['text-muted']}
               keyboardType="email-address"
               autoCapitalize="none"
@@ -489,7 +491,7 @@ export default function UserProfileSettingsScreen({ route }: Props) {
                 setSignInPassword(text);
                 setSignInError(null);
               }}
-              placeholder="Password"
+              placeholder={t('profile.password')}
               placeholderTextColor={colors['text-muted']}
               secureTextEntry
               style={{
@@ -507,7 +509,7 @@ export default function UserProfileSettingsScreen({ route }: Props) {
             <TouchableOpacity
               onPress={async () => {
                 if (!signInEmail.trim() || !signInPassword.trim()) {
-                  setSignInError('Email and password are required');
+                  setSignInError(t('profile.emailAndPasswordRequired'));
                   return;
                 }
                 
@@ -520,7 +522,7 @@ export default function UserProfileSettingsScreen({ route }: Props) {
                   setSignInEmail('');
                   setSignInPassword('');
                 } catch (error) {
-                  setSignInError(error instanceof Error ? error.message : 'Failed to sign in. Please try again.');
+                  setSignInError(error instanceof Error ? error.message : t('profile.failedToSignIn'));
                 } finally {
                   setIsSigningIn(false);
                 }
@@ -537,7 +539,7 @@ export default function UserProfileSettingsScreen({ route }: Props) {
               {isSigningIn ? (
                 <ActivityIndicator color="#fff" />
               ) : (
-                <Text style={{ color: '#fff', fontSize: 16, fontWeight: '600' }}>Sign In</Text>
+                <Text style={{ color: '#fff', fontSize: 16, fontWeight: '600' }}>{t('settings.profile.signIn')}</Text>
               )}
             </TouchableOpacity>
           </View>

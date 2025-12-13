@@ -6,7 +6,11 @@
     "back": "Retour",
     "save": "Enregistrer",
     "cancel": "Annuler",
-    "done": "Terminé"
+    "done": "Terminé",
+    "next": "Suivant",
+    "previous": "Précédent",
+    "close": "Fermer",
+    "version": "Version"
   },
   "songs": {
     "title": "Chansons",
@@ -14,7 +18,31 @@
     "noSongs": "Aucune chanson disponible",
     "noSongsDescription": "Revenez bientôt pour voir du nouveau contenu !",
     "error": "Échec du chargement des chansons",
-    "errorDescription": "Une erreur inconnue s'est produite."
+    "errorDescription": "Une erreur inconnue s'est produite.",
+    "loadingSong": "Chargement de la chanson...",
+    "songNotFound": "Chanson introuvable",
+    "failedToFetchSong": "Échec du chargement de la chanson"
+  },
+  "playMode": {
+    "lyrics": "Paroles",
+    "showTranslations": "Afficher les traductions"
+  },
+  "studyMode": {
+    "title": "Mode Étude",
+    "loadingData": "Chargement des données d'étude...",
+    "songNotFound": "Chanson introuvable",
+    "failedToFetchData": "Échec du chargement des données",
+    "studyContent": "Contenu d'Étude",
+    "showTranslations": "Afficher les traductions",
+    "sectionExplanation": "Explication de la Section",
+    "playAll": "Tout Lire",
+    "pause": "Pause",
+    "nextSection": "Suivant",
+    "additional": "Supplémentaire",
+    "selectSection": "Sélectionnez une section ci-dessus pour voir son contenu",
+    "studyDataNotAvailable": "Les données d'étude ne sont pas disponibles",
+    "studyDataNotAvailableDescription": "Le format d'étude structuré sera disponible une fois les données générées.",
+    "additionalContentNote": "Ces lignes n'ont pas été incluses dans les sections structurées ci-dessus."
   },
   "settings": {
     "title": "Paramètres",
@@ -34,14 +62,26 @@
       "defaultTranslation": "Traduction par défaut",
       "defaultTranslationDescription": "Afficher les traductions par défaut",
       "theme": "Thème",
-      "themeDescription": "Préférence de thème de l'application"
+      "themeDescription": "Préférence de thème de l'application",
+      "light": "Clair",
+      "dark": "Sombre",
+      "system": "Système"
     },
     "language": {
       "title": "Langue",
       "learning": "Langue d'apprentissage",
       "learningDescription": "Langue en cours d'apprentissage",
-      "interface": "Langue de l'interface",
-      "interfaceDescription": "Langue de l'interface utilisateur"
+      "interface": "Langue de l'App",
+      "interfaceDescription": "Langue de l'interface utilisateur",
+      "learningLanguage": "Langue d'apprentissage",
+      "interfaceLanguage": "Langue de l'App",
+      "names": {
+        "en": "Anglais",
+        "es": "Espagnol",
+        "zh": "Chinois (Mandarin)",
+        "fr": "Français",
+        "de": "Allemand"
+      }
     },
     "profile": {
       "title": "Profil utilisateur",
@@ -49,8 +89,115 @@
       "email": "E-mail",
       "changePassword": "Changer le mot de passe",
       "signIn": "Se connecter",
-      "signOut": "Se déconnecter"
+      "signOut": "Se déconnecter",
+      "notSignedIn": "Non connecté",
+      "account": "Compte",
+      "name": "Nom",
+      "signInToSync": "Connectez-vous pour synchroniser votre progression",
+      "signOutOfAccount": "Se déconnecter de votre compte"
+    },
+    "about": {
+      "title": "À propos",
+      "appVersion": "Version de l'App",
+      "helpSupport": "Aide et Support",
+      "termsOfService": "Conditions d'Utilisation",
+      "privacyPolicy": "Politique de Confidentialité"
     }
+  },
+  "profile": {
+    "editName": "Modifier le Nom",
+    "editEmail": "Modifier l'E-mail",
+    "enterName": "Entrez votre nom",
+    "enterEmail": "Entrez votre e-mail",
+    "nameCannotBeEmpty": "Le nom ne peut pas être vide",
+    "emailCannotBeEmpty": "L'e-mail ne peut pas être vide",
+    "invalidEmail": "Veuillez entrer une adresse e-mail valide",
+    "failedToUpdateName": "Échec de la mise à jour du nom",
+    "failedToUpdateEmail": "Échec de la mise à jour de l'e-mail",
+    "failedToSignOut": "Échec de la déconnexion",
+    "password": "Mot de passe",
+    "emailAndPasswordRequired": "L'e-mail et le mot de passe sont requis",
+    "failedToSignIn": "Échec de la connexion. Veuillez réessayer."
+  },
+  "history": {
+    "title": "Historique des Chansons",
+    "noHistory": "Aucun historique de chansons pour le moment",
+    "noHistoryDescription": "Commencez à lire des chansons pour voir votre historique ici",
+    "viewAll": "Voir Tout",
+    "previous": "Précédent",
+    "next": "Suivant",
+    "loadMore": "Charger Plus",
+    "page": "Page",
+    "of": "de",
+    "noHistoryShort": "Aucun historique",
+    "playMode": "Mode Lecture",
+    "studyMode": "Mode Étude"
+  },
+  "tabs": {
+    "play": "Lire",
+    "study": "Étudier",
+    "settings": "Paramètres"
+  },
+  "help": {
+    "title": "Aide et Support",
+    "gettingStarted": "Pour Commencer",
+    "howToUse": "Comment utiliser l'application",
+    "howToUseDescription": "Easy Song vous aide à apprendre les langues grâce à la musique. Parcourez les chansons, regardez des vidéos et étudiez les paroles avec des traductions et des explications.",
+    "playMode": "Mode Lecture",
+    "playModeDescription": "Regardez la vidéo et suivez les paroles surlignées. Appuyez sur n'importe quelle parole pour sauter à cette partie de la chanson. Activez ou désactivez les traductions selon vos besoins.",
+    "studyMode": "Mode Étude",
+    "studyModeDescription": "Plongez plus profondément dans chaque chanson avec des sections structurées. Chaque section comprend des explications, une lecture ligne par ligne et des traductions détaillées.",
+    "faq": "Questions Fréquemment Posées",
+    "changeLanguage": "Comment changer la langue ?",
+    "changeLanguageAnswer": "Allez dans Paramètres → Langue pour changer votre langue d'apprentissage ou la langue de l'interface.",
+    "downloadSongs": "Puis-je télécharger des chansons pour une utilisation hors ligne ?",
+    "downloadSongsAnswer": "Actuellement, les chansons nécessitent une connexion Internet pour être lues. La fonctionnalité hors ligne pourrait être disponible dans les futures mises à jour.",
+    "saveProgress": "Comment sauvegarder ma progression ?",
+    "saveProgressAnswer": "Connectez-vous à votre compte pour synchroniser votre progression sur tous les appareils. Votre historique d'apprentissage et vos préférences seront sauvegardés automatiquement.",
+    "videoNotPlaying": "La vidéo ne se lit pas",
+    "videoNotPlayingAnswer": "Assurez-vous d'avoir une connexion Internet stable. Si le problème persiste, essayez de fermer et de rouvrir l'application, ou de redémarrer votre appareil.",
+    "contactSupport": "Contacter le Support",
+    "contactSupportDescription": "Besoin de plus d'aide ? Notre équipe de support est là pour vous aider.",
+    "supportEmail": "hi@creativeendurancelab.com"
+  },
+  "about": {
+    "title": "À propos",
+    "appName": "Easy Song",
+    "version": "Version 1.0.0",
+    "description": "Apprenez les langues grâce à la musique. Regardez des vidéos, étudiez les paroles et améliorez vos compétences linguistiques avec des leçons structurées.",
+    "developmentStudio": "Creative Endurance Lab, LLC",
+    "studioName": "Your Studio Name",
+    "studioDescription": "Nous sommes passionnés par la création d'outils innovants d'apprentissage des langues qui rendent l'éducation engageante et accessible.",
+    "contactEmail": "hi@creativeendurancelab.com",
+    "website": "creativeendurancelab.com",
+    "versionHistory": "Historique des Versions",
+    "credits": "Crédits",
+    "creditsDescription": "Easy Song utilise des vidéos YouTube à des fins éducatives. Tout le contenu des chansons, y compris les paroles et les traductions, est fourni pour l'apprentissage des langues.",
+    "creditsDescription2": "Le contenu vidéo est fourni par YouTube et est la propriété de leurs propriétaires respectifs.",
+    "version1_0_0": "Version 1.0.0",
+    "version1_0_0Date": "Janvier 2025",
+    "version1_0_0Changes": [
+      "Sortie initiale d'Easy Song",
+      "Mode Lecture avec intégration de vidéos YouTube",
+      "Mode Étude avec sections structurées et explications",
+      "Mise en surbrillance des paroles et défilement automatique",
+      "Fonctionnalité de basculement des traductions",
+      "Paramètres et préférences utilisateur",
+      "Support multilingue"
+    ],
+    "version0_9_0": "Version 0.9.0",
+    "version0_9_0Date": "Décembre 2024",
+    "version0_9_0Changes": [
+      "Version de test bêta",
+      "Fonctionnalité de lecture principale",
+      "Fonctionnalités de base du mode étude"
+    ],
+    "version0_8_0": "Version 0.8.0",
+    "version0_8_0Date": "Novembre 2024",
+    "version0_8_0Changes": [
+      "Version de développement initiale",
+      "Liste des chansons et navigation",
+      "Intégration du lecteur vidéo"
+    ]
   }
 }
-

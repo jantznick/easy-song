@@ -9,6 +9,7 @@ import type { SongHistoryItem } from '../data/songHistory';
 import { useThemeClasses } from '../utils/themeClasses';
 import { useTheme } from '../contexts/ThemeContext';
 import { useUser } from '../hooks/useUser';
+import { useTranslation } from '../hooks/useTranslation';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'SongHistory'>;
 
@@ -19,6 +20,7 @@ export default function SongHistoryScreen({ route }: Props) {
   const theme = useThemeClasses();
   const { isDark } = useTheme();
   const { songHistory, totalHistoryCount, isLoadingMoreHistory, hasMoreHistory, fetchMoreHistory, isAuthenticated } = useUser();
+  const { t } = useTranslation();
   const [currentPage, setCurrentPage] = useState(1);
 
   // Calculate pagination for displayed items
@@ -60,7 +62,7 @@ export default function SongHistoryScreen({ route }: Props) {
         >
           <Text className={theme.text('text-text-primary', 'text-[#F1F5F9]') + ' text-2xl'}>←</Text>
         </TouchableOpacity>
-        <Text className={theme.text('text-text-primary', 'text-[#F1F5F9]') + ' text-lg font-semibold flex-1'}>Song History</Text>
+        <Text className={theme.text('text-text-primary', 'text-[#F1F5F9]') + ' text-lg font-semibold flex-1'}>{t('history.title')}</Text>
       </View>
 
       <ScrollView 
@@ -73,10 +75,10 @@ export default function SongHistoryScreen({ route }: Props) {
           {songHistory.length === 0 ? (
             <View className="py-12 px-5 items-center">
               <Text className={theme.text('text-text-muted', 'text-[#64748B]') + ' text-base'}>
-                No song history yet
+                {t('history.noHistory')}
               </Text>
               <Text className={theme.text('text-text-muted', 'text-[#64748B]') + ' text-sm mt-2 text-center'}>
-                Start playing songs to see your history here
+                {t('history.noHistoryDescription')}
               </Text>
             </View>
           ) : (
@@ -117,7 +119,7 @@ export default function SongHistoryScreen({ route }: Props) {
                   <View className="flex-row items-center">
                     <View className="bg-primary/10 px-2 py-0.5 rounded mr-2">
                       <Text className="text-xs font-medium text-primary">
-                        {item.mode}
+                        {item.mode === 'Play Mode' ? t('history.playMode') : t('history.studyMode')}
                       </Text>
                     </View>
                     <Text className={theme.text('text-text-muted', 'text-[#64748B]') + ' text-xs'}>
@@ -155,12 +157,12 @@ export default function SongHistoryScreen({ route }: Props) {
                 currentPage === 1 ? theme.text('text-text-muted', 'text-[#64748B]') : theme.text('text-text-primary', 'text-[#F1F5F9]')
               }`}
             >
-              Previous
+              {t('history.previous')}
             </Text>
           </TouchableOpacity>
 
           <Text className={theme.text('text-text-secondary', 'text-[#94A3B8]') + ' text-sm'}>
-            {songHistory.length > 0 ? `Page ${currentPage} of ${totalPages}` : 'No history'}
+            {songHistory.length > 0 ? `${t('history.page')} ${currentPage} ${t('history.of')} ${totalPages}` : t('history.noHistoryShort')}
           </Text>
 
           <TouchableOpacity
@@ -178,7 +180,7 @@ export default function SongHistoryScreen({ route }: Props) {
                 (currentPage === totalPages && !hasMoreHistory) ? theme.text('text-text-muted', 'text-[#64748B]') : theme.text('text-text-primary', 'text-[#F1F5F9]')
               }`}
             >
-              {hasMoreHistory && currentPage === totalPages ? 'Load More' : 'Next'}
+              {hasMoreHistory && currentPage === totalPages ? t('history.loadMore') : t('history.next')}
             </Text>
             {isLoadingMoreHistory ? (
               <ActivityIndicator size="small" color="#6366F1" />

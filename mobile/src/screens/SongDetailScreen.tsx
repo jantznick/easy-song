@@ -6,6 +6,7 @@ import type { RootStackParamList, SongDetailTabParamList } from '../types/naviga
 import PlayModeScreen from './PlayModeScreen';
 import StudyModeScreen from './StudyModeScreen';
 import SettingsScreen from './SettingsScreen';
+import { useTranslation } from '../hooks/useTranslation';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'SongDetail'>;
 
@@ -14,6 +15,7 @@ const Tab = createBottomTabNavigator<SongDetailTabParamList>();
 export default function SongDetailScreen({ route }: Props) {
   const { videoId, initialTab } = route.params;
   const insets = useSafeAreaInsets();
+  const { t } = useTranslation();
 
   return (
     <Tab.Navigator
@@ -44,7 +46,7 @@ export default function SongDetailScreen({ route }: Props) {
         component={PlayModeScreen}
         initialParams={{ videoId }}
         options={{
-          tabBarLabel: 'Play',
+          tabBarLabel: t('tabs.play'),
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="play-circle" size={size} color={color} />
           ),
@@ -55,7 +57,7 @@ export default function SongDetailScreen({ route }: Props) {
         component={StudyModeScreen}
         initialParams={{ videoId }}
         options={{
-          tabBarLabel: 'Study',
+          tabBarLabel: t('tabs.study'),
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="book" size={size} color={color} />
           ),
@@ -66,7 +68,7 @@ export default function SongDetailScreen({ route }: Props) {
         component={SettingsScreen}
         initialParams={{ videoId }}
         options={{
-          tabBarLabel: 'Settings',
+          tabBarLabel: t('tabs.settings'),
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="settings" size={size} color={color} />
           ),

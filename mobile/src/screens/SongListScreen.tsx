@@ -35,7 +35,7 @@ export default function SongListScreen({ navigation }: Props) {
         if (e instanceof Error) {
           setError(`Failed to fetch songs: ${e.message}. Is the backend server running?`);
         } else {
-          setError('An unknown error occurred.');
+          setError(t('songs.errorDescription'));
         }
         console.error('Failed to fetch songs:', e);
       } finally {
@@ -61,7 +61,7 @@ export default function SongListScreen({ navigation }: Props) {
     return (
       <SafeAreaView className={theme.bg('bg-background', 'bg-[#0F172A]')} style={{ flex: 1 }}>
         <View className="flex-1 items-center justify-center px-4">
-          <Text className="text-red-400 text-center mb-2 text-lg font-semibold">Error</Text>
+          <Text className="text-red-400 text-center mb-2 text-lg font-semibold">{t('common.error')}</Text>
           <Text className={theme.text('text-text-secondary', 'text-[#94A3B8]') + ' text-center text-base'}>{error}</Text>
         </View>
       </SafeAreaView>

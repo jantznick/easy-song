@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { View, Text, SafeAreaView, ScrollView, TouchableOpacity, Switch, Modal, Pressable } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp, NativeStackScreenProps } from '@react-navigation/native-stack';
@@ -9,6 +9,7 @@ import { useUser } from '../hooks/useUser';
 import { useTheme } from '../contexts/ThemeContext';
 import { useTranslation } from '../hooks/useTranslation';
 import { useThemeClasses } from '../utils/themeClasses';
+import { LANGUAGE_CODE_MAP } from '../i18n/config';
 
 // Support both tab navigator (from SongDetail) and stack navigator (from root)
 type SettingsScreenProps = 
@@ -89,7 +90,7 @@ export default function SettingsScreen({ route }: Props) {
   const videoId = route.params && 'videoId' in route.params ? route.params.videoId : undefined;
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const { colors, isDark } = useTheme();
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
   const {
     profile,
     isAuthenticated,
@@ -103,13 +104,23 @@ export default function SettingsScreen({ route }: Props) {
   const [showLearningLanguageModal, setShowLearningLanguageModal] = useState(false);
   const [showInterfaceLanguageModal, setShowInterfaceLanguageModal] = useState(false);
 
-  const languages = [
-    { code: 'en', name: 'English' },
-    { code: 'es', name: 'Spanish' },
-    { code: 'zh', name: 'Chinese (Mandarin)' },
-    { code: 'fr', name: 'French' },
-    { code: 'de', name: 'German' },
-  ];
+  // Memoize languages array so it updates when the language changes
+  const languages = useMemo(() => [
+    { code: 'en', name: t('settings.language.names.en') },
+    { code: 'es', name: t('settings.language.names.es') },
+    { code: 'zh', name: t('settings.language.names.zh') },
+    { code: 'fr', name: t('settings.language.names.fr') },
+    { code: 'de', name: t('settings.language.names.de') },
+  ], [t, language]);
+
+  // Helper function to translate stored language name to current interface language
+  const getTranslatedLanguageName = (storedName: string) => {
+    const code = LANGUAGE_CODE_MAP[storedName];
+    if (code) {
+      return t(`settings.language.names.${code}`);
+    }
+    return storedName; // Fallback to stored name if not found
+  };
 
   return (
     <SafeAreaView className={theme.bg('bg-background', 'bg-[#0F172A]')} style={{ flex: 1 }}>
@@ -150,7 +161,7 @@ export default function SettingsScreen({ route }: Props) {
                   {profile.name}
                 </Text>
                 <Text className={theme.text('text-text-secondary', 'text-[#94A3B8]') + ' text-sm'}>
-                  {isAuthenticated ? profile.email : 'Not signed in'}
+                  {isAuthenticated ? profile.email : t('settings.profile.notSignedIn')}
                 </Text>
               </View>
               <Ionicons name="chevron-forward" size={20} color={isDark ? '#94A3B8' : '#4B5563'} />
@@ -184,13 +195,13 @@ export default function SettingsScreen({ route }: Props) {
         </SettingsSection>
 
         {/* Display Settings */}
-        <SettingsSection title="Display">
+        <SettingsSection title={t('settings.display.title')}>
           <View className={theme.border('border-border', 'border-[#334155]') + ' flex-row items-center py-3 px-5 border-b'}>
             <View className="w-8 items-center mr-3">
               <Ionicons name="text" size={22} color="#6366F1" />
             </View>
             <View className="flex-1">
-              <Text className={theme.text('text-text-primary', 'text-[#F1F5F9]') + ' text-base font-medium mb-2'}>Font Size</Text>
+              <Text className={theme.text('text-text-primary', 'text-[#F1F5F9]') + ' text-base font-medium mb-2'}>{t('settings.display.fontSize')}</Text>
               <View className={theme.bg('bg-surface', 'bg-[#1E293B]') + ' ' + theme.border('border-border', 'border-[#334155]') + ' flex-row border rounded-full p-1'}>
                 <TouchableOpacity
                   onPress={() => updateDisplayPreference('fontSize', 'small')}
@@ -236,8 +247,8 @@ export default function SettingsScreen({ route }: Props) {
           </View>
           <SettingItem
             icon="language"
-            title="Default Translation"
-            subtitle="Show translations by default"
+            title={t('settings.display.defaultTranslation')}
+            subtitle={t('settings.display.defaultTranslationDescription')}
             value={preferences.display.defaultTranslation}
             onValueChange={(value) => updateDisplayPreference('defaultTranslation', value)}
           />
@@ -246,7 +257,7 @@ export default function SettingsScreen({ route }: Props) {
               <Ionicons name="color-palette" size={22} color="#6366F1" />
             </View>
             <View className="flex-1">
-              <Text className={theme.text('text-text-primary', 'text-[#F1F5F9]') + ' text-base font-medium mb-2'}>Theme</Text>
+              <Text className={theme.text('text-text-primary', 'text-[#F1F5F9]') + ' text-base font-medium mb-2'}>{t('settings.display.theme')}</Text>
               <View className={theme.bg('bg-surface', 'bg-[#1E293B]') + ' ' + theme.border('border-border', 'border-[#334155]') + ' flex-row border rounded-full p-1'}>
                 <TouchableOpacity
                   onPress={() => updateDisplayPreference('theme', 'light')}
@@ -258,7 +269,7 @@ export default function SettingsScreen({ route }: Props) {
                   <Text className={`text-sm font-medium text-center ${
                     preferences.display.theme === 'light' ? 'text-white' : theme.text('text-text-secondary', 'text-[#94A3B8]')
                   }`}>
-                    Light
+                    {t('settings.display.light')}
                   </Text>
                 </TouchableOpacity>
                 <TouchableOpacity
@@ -271,7 +282,7 @@ export default function SettingsScreen({ route }: Props) {
                   <Text className={`text-sm font-medium text-center ${
                     preferences.display.theme === 'dark' ? 'text-white' : theme.text('text-text-secondary', 'text-[#94A3B8]')
                   }`}>
-                    Dark
+                    {t('settings.display.dark')}
                   </Text>
                 </TouchableOpacity>
                 <TouchableOpacity
@@ -284,7 +295,7 @@ export default function SettingsScreen({ route }: Props) {
                   <Text className={`text-sm font-medium text-center ${
                     preferences.display.theme === 'system' ? 'text-white' : theme.text('text-text-secondary', 'text-[#94A3B8]')
                   }`}>
-                    System
+                    {t('settings.display.system')}
                   </Text>
                 </TouchableOpacity>
               </View>
@@ -293,47 +304,47 @@ export default function SettingsScreen({ route }: Props) {
         </SettingsSection>
 
         {/* Language Settings */}
-        <SettingsSection title="Language">
+        <SettingsSection title={t('settings.language.title')}>
           <SettingItem
             icon="globe"
-            title="Learning Language"
-            subtitle={preferences.language.learning}
+            title={t('settings.language.learning')}
+            subtitle={getTranslatedLanguageName(preferences.language.learning)}
             showArrow
             onPress={() => setShowLearningLanguageModal(true)}
           />
           <SettingItem
             icon="language"
             title={t('settings.language.interface')}
-            subtitle={preferences.language.interface}
+            subtitle={getTranslatedLanguageName(preferences.language.interface)}
             showArrow
             onPress={() => setShowInterfaceLanguageModal(true)}
           />
         </SettingsSection>
 
         {/* About */}
-        <SettingsSection title="About">
+        <SettingsSection title={t('settings.about.title')}>
           <SettingItem
             icon="information-circle"
-            title="App Version"
+            title={t('settings.about.appVersion')}
             subtitle="1.0.0"
             showArrow
             onPress={() => navigation.navigate('About')}
           />
           <SettingItem
             icon="help-circle"
-            title="Help & Support"
+            title={t('settings.about.helpSupport')}
             showArrow
             onPress={() => navigation.navigate('Help')}
           />
           <SettingItem
             icon="document-text"
-            title="Terms of Service"
+            title={t('settings.about.termsOfService')}
             showArrow
             onPress={() => navigation.navigate('TermsOfService')}
           />
           <SettingItem
             icon="shield-checkmark"
-            title="Privacy Policy"
+            title={t('settings.about.privacyPolicy')}
             showArrow
             onPress={() => navigation.navigate('PrivacyPolicy')}
           />
@@ -364,7 +375,7 @@ export default function SettingsScreen({ route }: Props) {
           >
             <View className={theme.border('border-border', 'border-[#334155]') + ' p-5 border-b'}>
               <View className="flex-row items-center justify-between mb-2">
-                <Text className={theme.text('text-text-primary', 'text-[#F1F5F9]') + ' text-lg font-semibold'}>Learning Language</Text>
+                <Text className={theme.text('text-text-primary', 'text-[#F1F5F9]') + ' text-lg font-semibold'}>{t('settings.language.learningLanguage')}</Text>
                 <TouchableOpacity onPress={() => setShowLearningLanguageModal(false)}>
                   <Ionicons name="close" size={24} color={isDark ? '#94A3B8' : '#4B5563'} />
                 </TouchableOpacity>
@@ -415,7 +426,7 @@ export default function SettingsScreen({ route }: Props) {
           >
             <View className={theme.border('border-border', 'border-[#334155]') + ' p-5 border-b'}>
               <View className="flex-row items-center justify-between mb-2">
-                <Text className={theme.text('text-text-primary', 'text-[#F1F5F9]') + ' text-lg font-semibold'}>Interface Language</Text>
+                <Text className={theme.text('text-text-primary', 'text-[#F1F5F9]') + ' text-lg font-semibold'}>{t('settings.language.interfaceLanguage')}</Text>
                 <TouchableOpacity onPress={() => setShowInterfaceLanguageModal(false)}>
                   <Ionicons name="close" size={24} color={isDark ? '#94A3B8' : '#4B5563'} />
                 </TouchableOpacity>

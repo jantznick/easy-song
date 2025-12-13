@@ -10,6 +10,7 @@ import { useUser } from '../hooks/useUser';
 import { getFontSizes } from '../utils/fontSizes';
 import { useTheme } from '../contexts/ThemeContext';
 import { useThemeClasses } from '../utils/themeClasses';
+import { useTranslation } from '../hooks/useTranslation';
 
 type Props = BottomTabScreenProps<SongDetailTabParamList, 'PlayMode'>;
 
@@ -19,6 +20,7 @@ export default function PlayModeScreen({ route }: Props) {
   const { preferences, addToHistory } = useUser();
   const { isDark } = useTheme();
   const theme = useThemeClasses();
+  const { t } = useTranslation();
   const [song, setSong] = useState<Song | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -51,7 +53,7 @@ export default function PlayModeScreen({ route }: Props) {
         if (e instanceof Error) {
           setError(`Failed to fetch song: ${e.message}`);
         } else {
-          setError('An unknown error occurred.');
+          setError(t('songs.errorDescription'));
         }
         console.error('Failed to fetch song:', e);
       } finally {
@@ -156,7 +158,7 @@ export default function PlayModeScreen({ route }: Props) {
       <SafeAreaView className={theme.bg('bg-background', 'bg-[#0F172A]')} style={{ flex: 1 }}>
         <View className="flex-1 items-center justify-center">
           <ActivityIndicator size="large" color="#6366F1" />
-          <Text className={theme.text('text-text-secondary', 'text-[#94A3B8]') + ' mt-4 text-base'}>Loading song...</Text>
+          <Text className={theme.text('text-text-secondary', 'text-[#94A3B8]') + ' mt-4 text-base'}>{t('songs.loadingSong')}</Text>
         </View>
       </SafeAreaView>
     );
@@ -166,8 +168,8 @@ export default function PlayModeScreen({ route }: Props) {
     return (
       <SafeAreaView className={theme.bg('bg-background', 'bg-[#0F172A]')} style={{ flex: 1 }}>
         <View className="flex-1 items-center justify-center px-4">
-          <Text className="text-center mb-2 text-lg font-semibold text-red-500">Error</Text>
-          <Text className={theme.text('text-text-secondary', 'text-[#94A3B8]') + ' text-center text-base'}>{error || 'Song not found'}</Text>
+          <Text className="text-center mb-2 text-lg font-semibold text-red-500">{t('common.error')}</Text>
+          <Text className={theme.text('text-text-secondary', 'text-[#94A3B8]') + ' text-center text-base'}>{error || t('songs.songNotFound')}</Text>
         </View>
       </SafeAreaView>
     );
@@ -231,9 +233,9 @@ export default function PlayModeScreen({ route }: Props) {
         <View className={theme.bg('bg-surface', 'bg-[#1E293B]') + ' ' + theme.border('border-border', 'border-[#334155]') + ' rounded-xl border flex-1'}>
           {/* Lyrics Header with Toggle */}
           <View className={theme.border('border-border', 'border-[#334155]') + ' flex-row items-center justify-between p-5 border-b'}>
-            <Text className={theme.text('text-text-primary', 'text-[#F1F5F9]') + ' text-lg font-semibold'}>Lyrics</Text>
+            <Text className={theme.text('text-text-primary', 'text-[#F1F5F9]') + ' text-lg font-semibold'}>{t('playMode.lyrics')}</Text>
             <View className="flex-row items-center">
-              <Text className={theme.text('text-text-secondary', 'text-[#94A3B8]') + ' text-sm mr-2'}>Show translations</Text>
+              <Text className={theme.text('text-text-secondary', 'text-[#94A3B8]') + ' text-sm mr-2'}>{t('playMode.showTranslations')}</Text>
               <Switch
                 value={showTranslations}
                 onValueChange={setShowTranslations}

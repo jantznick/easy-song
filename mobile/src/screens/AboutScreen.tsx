@@ -4,6 +4,7 @@ import { Ionicons } from '@expo/vector-icons';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '../types/navigation';
 import { useThemeClasses } from '../utils/themeClasses';
+import { useTranslation } from '../hooks/useTranslation';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'About'>;
 
@@ -19,7 +20,7 @@ function VersionItem({ version, date, changes }: VersionItemProps) {
   return (
     <View className="mb-6">
       <View className="flex-row items-center justify-between mb-3">
-        <Text className={theme.text('text-text-primary', 'text-[#F1F5F9]') + ' text-lg font-bold'}>Version {version}</Text>
+        <Text className={theme.text('text-text-primary', 'text-[#F1F5F9]') + ' text-lg font-bold'}>{t('common.version')} {version}</Text>
         <Text className={theme.text('text-text-muted', 'text-[#64748B]') + ' text-sm'}>{date}</Text>
       </View>
       <View className={theme.bg('bg-surface', 'bg-[#1E293B]') + ' ' + theme.border('border-border', 'border-[#334155]') + ' rounded-xl border p-4'}>
@@ -37,38 +38,23 @@ function VersionItem({ version, date, changes }: VersionItemProps) {
 export default function AboutScreen({ route }: Props) {
   const navigation = useNavigation();
   const theme = useThemeClasses();
+  const { t } = useTranslation();
 
   const versions = [
     {
-      version: '1.0.0',
-      date: 'January 2025',
-      changes: [
-        'Initial release of Easy Song',
-        'Play Mode with YouTube video integration',
-        'Study Mode with structured sections and explanations',
-        'Lyric highlighting and auto-scrolling',
-        'Translation toggle functionality',
-        'User settings and preferences',
-        'Multi-language support',
-      ],
+      version: t('about.version1_0_0'),
+      date: t('about.version1_0_0Date'),
+      changes: t('about.version1_0_0Changes', { returnObjects: true }) as string[],
     },
     {
-      version: '0.9.0',
-      date: 'December 2024',
-      changes: [
-        'Beta testing release',
-        'Core playback functionality',
-        'Basic study mode features',
-      ],
+      version: t('about.version0_9_0'),
+      date: t('about.version0_9_0Date'),
+      changes: t('about.version0_9_0Changes', { returnObjects: true }) as string[],
     },
     {
-      version: '0.8.0',
-      date: 'November 2024',
-      changes: [
-        'Initial development build',
-        'Song list and navigation',
-        'Video player integration',
-      ],
+      version: t('about.version0_8_0'),
+      date: t('about.version0_8_0Date'),
+      changes: t('about.version0_8_0Changes', { returnObjects: true }) as string[],
     },
   ];
 
@@ -83,7 +69,7 @@ export default function AboutScreen({ route }: Props) {
         >
           <Text className={theme.text('text-text-primary', 'text-[#F1F5F9]') + ' text-2xl'}>←</Text>
         </TouchableOpacity>
-        <Text className={theme.text('text-text-primary', 'text-[#F1F5F9]') + ' text-lg font-semibold flex-1'}>About</Text>
+        <Text className={theme.text('text-text-primary', 'text-[#F1F5F9]') + ' text-lg font-semibold flex-1'}>{t('about.title')}</Text>
       </View>
 
       <ScrollView 
@@ -98,34 +84,34 @@ export default function AboutScreen({ route }: Props) {
               <View className="w-20 h-20 rounded-full bg-primary/20 items-center justify-center mb-4">
                 <Ionicons name="musical-notes" size={40} color="#6366F1" />
               </View>
-              <Text className={theme.text('text-text-primary', 'text-[#F1F5F9]') + ' text-2xl font-bold mb-2'}>Easy Song</Text>
-              <Text className={theme.text('text-text-secondary', 'text-[#94A3B8]') + ' text-base mb-4'}>Version 1.0.0</Text>
+              <Text className={theme.text('text-text-primary', 'text-[#F1F5F9]') + ' text-2xl font-bold mb-2'}>{t('about.appName')}</Text>
+              <Text className={theme.text('text-text-secondary', 'text-[#94A3B8]') + ' text-base mb-4'}>{t('about.version')}</Text>
               <Text className={theme.text('text-text-secondary', 'text-[#94A3B8]') + ' text-sm text-center leading-6'}>
-                Learn Spanish through music. Watch videos, study lyrics, and improve your language skills with structured lessons.
+                {t('about.description')}
               </Text>
             </View>
           </View>
 
           {/* Developer Studio Info */}
           <View className="mb-6">
-            <Text className={theme.text('text-text-primary', 'text-[#F1F5F9]') + ' text-xl font-bold mb-4'}>Development Studio</Text>
+            <Text className={theme.text('text-text-primary', 'text-[#F1F5F9]') + ' text-xl font-bold mb-4'}>{t('about.developmentStudio')}</Text>
             <View className={theme.bg('bg-surface', 'bg-[#1E293B]') + ' ' + theme.border('border-border', 'border-[#334155]') + ' rounded-xl border p-5'}>
-              <Text className={theme.text('text-text-primary', 'text-[#F1F5F9]') + ' text-lg font-semibold mb-3'}>Your Studio Name</Text>
+              <Text className={theme.text('text-text-primary', 'text-[#F1F5F9]') + ' text-lg font-semibold mb-3'}>{t('about.studioName')}</Text>
               <Text className={theme.text('text-text-secondary', 'text-[#94A3B8]') + ' text-sm leading-6 mb-4'}>
-                We're passionate about creating innovative language learning tools that make education engaging and accessible.
+                {t('about.studioDescription')}
               </Text>
               <View>
                 <View className="flex-row items-center mb-3">
                   <Ionicons name="mail" size={20} color="#6366F1" />
-                  <Text className={theme.text('text-text-primary', 'text-[#F1F5F9]') + ' text-sm ml-3'}>contact@yourstudio.com</Text>
+                  <Text className={theme.text('text-text-primary', 'text-[#F1F5F9]') + ' text-sm ml-3'}>{t('about.contactEmail')}</Text>
                 </View>
                 <View className="flex-row items-center mb-3">
                   <Ionicons name="globe" size={20} color="#6366F1" />
-                  <Text className={theme.text('text-text-primary', 'text-[#F1F5F9]') + ' text-sm ml-3'}>www.yourstudio.com</Text>
+                  <Text className={theme.text('text-text-primary', 'text-[#F1F5F9]') + ' text-sm ml-3'}>{t('about.website')}</Text>
                 </View>
                 <View className="flex-row items-center">
                   <Ionicons name="logo-twitter" size={20} color="#6366F1" />
-                  <Text className={theme.text('text-text-primary', 'text-[#F1F5F9]') + ' text-sm ml-3'}>@yourstudio</Text>
+                  <Text className={theme.text('text-text-primary', 'text-[#F1F5F9]') + ' text-sm ml-3'}>{t('about.twitter')}</Text>
                 </View>
               </View>
             </View>
@@ -133,7 +119,7 @@ export default function AboutScreen({ route }: Props) {
 
           {/* Version History */}
           <View className="mb-6">
-            <Text className={theme.text('text-text-primary', 'text-[#F1F5F9]') + ' text-xl font-bold mb-4'}>Version History</Text>
+            <Text className={theme.text('text-text-primary', 'text-[#F1F5F9]') + ' text-xl font-bold mb-4'}>{t('about.versionHistory')}</Text>
             {versions.map((version, index) => (
               <VersionItem
                 key={index}
@@ -146,13 +132,13 @@ export default function AboutScreen({ route }: Props) {
 
           {/* Credits */}
           <View className="mb-6">
-            <Text className={theme.text('text-text-primary', 'text-[#F1F5F9]') + ' text-xl font-bold mb-4'}>Credits</Text>
+            <Text className={theme.text('text-text-primary', 'text-[#F1F5F9]') + ' text-xl font-bold mb-4'}>{t('about.credits')}</Text>
             <View className={theme.bg('bg-surface', 'bg-[#1E293B]') + ' ' + theme.border('border-border', 'border-[#334155]') + ' rounded-xl border p-5'}>
               <Text className={theme.text('text-text-secondary', 'text-[#94A3B8]') + ' text-sm leading-6 mb-3'}>
-                Easy Song uses YouTube videos for educational purposes. All song content, including lyrics and translations, is provided for language learning.
+                {t('about.creditsDescription')}
               </Text>
               <Text className={theme.text('text-text-secondary', 'text-[#94A3B8]') + ' text-sm leading-6'}>
-                Video content is provided by YouTube and is the property of their respective owners.
+                {t('about.creditsDescription2')}
               </Text>
             </View>
           </View>

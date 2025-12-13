@@ -6,7 +6,11 @@
     "back": "Zurück",
     "save": "Speichern",
     "cancel": "Abbrechen",
-    "done": "Fertig"
+    "done": "Fertig",
+    "next": "Weiter",
+    "previous": "Zurück",
+    "close": "Schließen",
+    "version": "Version"
   },
   "songs": {
     "title": "Lieder",
@@ -14,7 +18,31 @@
     "noSongs": "Keine Lieder verfügbar",
     "noSongsDescription": "Kommen Sie bald wieder, um neue Inhalte zu sehen!",
     "error": "Fehler beim Laden der Lieder",
-    "errorDescription": "Ein unbekannter Fehler ist aufgetreten."
+    "errorDescription": "Ein unbekannter Fehler ist aufgetreten.",
+    "loadingSong": "Lied wird geladen...",
+    "songNotFound": "Lied nicht gefunden",
+    "failedToFetchSong": "Fehler beim Laden des Liedes"
+  },
+  "playMode": {
+    "lyrics": "Texte",
+    "showTranslations": "Übersetzungen anzeigen"
+  },
+  "studyMode": {
+    "title": "Lernmodus",
+    "loadingData": "Lerndaten werden geladen...",
+    "songNotFound": "Lied nicht gefunden",
+    "failedToFetchData": "Fehler beim Laden der Daten",
+    "studyContent": "Lerninhalt",
+    "showTranslations": "Übersetzungen anzeigen",
+    "sectionExplanation": "Abschnittserklärung",
+    "playAll": "Alles Abspielen",
+    "pause": "Pause",
+    "nextSection": "Weiter",
+    "additional": "Zusätzlich",
+    "selectSection": "Wählen Sie oben einen Abschnitt aus, um dessen Inhalt anzuzeigen",
+    "studyDataNotAvailable": "Lerndaten sind nicht verfügbar",
+    "studyDataNotAvailableDescription": "Das strukturierte Lernformat wird verfügbar sein, sobald die Daten generiert wurden.",
+    "additionalContentNote": "Diese Zeilen wurden nicht in die strukturierten Abschnitte oben aufgenommen."
   },
   "settings": {
     "title": "Einstellungen",
@@ -34,14 +62,26 @@
       "defaultTranslation": "Standardübersetzung",
       "defaultTranslationDescription": "Übersetzungen standardmäßig anzeigen",
       "theme": "Design",
-      "themeDescription": "Design-Präferenz der App"
+      "themeDescription": "Design-Präferenz der App",
+      "light": "Hell",
+      "dark": "Dunkel",
+      "system": "System"
     },
     "language": {
       "title": "Sprache",
       "learning": "Lernsprache",
       "learningDescription": "Zu lernende Sprache",
-      "interface": "Oberflächensprache",
-      "interfaceDescription": "Sprache der Benutzeroberfläche"
+      "interface": "App-Sprache",
+      "interfaceDescription": "Sprache der Benutzeroberfläche",
+      "learningLanguage": "Lernsprache",
+      "interfaceLanguage": "App-Sprache",
+      "names": {
+        "en": "Englisch",
+        "es": "Spanisch",
+        "zh": "Chinesisch (Mandarin)",
+        "fr": "Französisch",
+        "de": "Deutsch"
+      }
     },
     "profile": {
       "title": "Benutzerprofil",
@@ -49,8 +89,115 @@
       "email": "E-Mail",
       "changePassword": "Passwort ändern",
       "signIn": "Anmelden",
-      "signOut": "Abmelden"
+      "signOut": "Abmelden",
+      "notSignedIn": "Nicht angemeldet",
+      "account": "Konto",
+      "name": "Name",
+      "signInToSync": "Melden Sie sich an, um Ihren Fortschritt zu synchronisieren",
+      "signOutOfAccount": "Von Ihrem Konto abmelden"
+    },
+    "about": {
+      "title": "Über",
+      "appVersion": "App-Version",
+      "helpSupport": "Hilfe & Support",
+      "termsOfService": "Nutzungsbedingungen",
+      "privacyPolicy": "Datenschutzrichtlinie"
     }
+  },
+  "profile": {
+    "editName": "Namen Bearbeiten",
+    "editEmail": "E-Mail Bearbeiten",
+    "enterName": "Geben Sie Ihren Namen ein",
+    "enterEmail": "Geben Sie Ihre E-Mail ein",
+    "nameCannotBeEmpty": "Der Name darf nicht leer sein",
+    "emailCannotBeEmpty": "Die E-Mail darf nicht leer sein",
+    "invalidEmail": "Bitte geben Sie eine gültige E-Mail-Adresse ein",
+    "failedToUpdateName": "Fehler beim Aktualisieren des Namens",
+    "failedToUpdateEmail": "Fehler beim Aktualisieren der E-Mail",
+    "failedToSignOut": "Fehler beim Abmelden",
+    "password": "Passwort",
+    "emailAndPasswordRequired": "E-Mail und Passwort sind erforderlich",
+    "failedToSignIn": "Anmeldung fehlgeschlagen. Bitte versuchen Sie es erneut."
+  },
+  "history": {
+    "title": "Liedverlauf",
+    "noHistory": "Noch kein Liedverlauf",
+    "noHistoryDescription": "Beginnen Sie mit dem Abspielen von Liedern, um Ihren Verlauf hier zu sehen",
+    "viewAll": "Alle Anzeigen",
+    "previous": "Zurück",
+    "next": "Weiter",
+    "loadMore": "Mehr Laden",
+    "page": "Seite",
+    "of": "von",
+    "noHistoryShort": "Kein Verlauf",
+    "playMode": "Wiedergabemodus",
+    "studyMode": "Lernmodus"
+  },
+  "tabs": {
+    "play": "Abspielen",
+    "study": "Lernen",
+    "settings": "Einstellungen"
+  },
+  "help": {
+    "title": "Hilfe & Support",
+    "gettingStarted": "Erste Schritte",
+    "howToUse": "Wie man die App verwendet",
+    "howToUseDescription": "Easy Song hilft Ihnen, Sprachen durch Musik zu lernen. Durchsuchen Sie Lieder, schauen Sie Videos und studieren Sie Texte mit Übersetzungen und Erklärungen.",
+    "playMode": "Wiedergabemodus",
+    "playModeDescription": "Schauen Sie das Video an und folgen Sie den hervorgehobenen Texten. Tippen Sie auf einen beliebigen Text, um zu diesem Teil des Liedes zu springen. Schalten Sie Übersetzungen nach Bedarf ein oder aus.",
+    "studyMode": "Lernmodus",
+    "studyModeDescription": "Tauchen Sie tiefer in jedes Lied mit strukturierten Abschnitten ein. Jeder Abschnitt enthält Erklärungen, zeilenweise Wiedergabe und detaillierte Übersetzungen.",
+    "faq": "Häufig Gestellte Fragen",
+    "changeLanguage": "Wie ändere ich die Sprache?",
+    "changeLanguageAnswer": "Gehen Sie zu Einstellungen → Sprache, um Ihre Lernsprache oder die Sprache der Benutzeroberfläche zu ändern.",
+    "downloadSongs": "Kann ich Lieder für die Offline-Nutzung herunterladen?",
+    "downloadSongsAnswer": "Derzeit benötigen Lieder eine Internetverbindung zum Abspielen. Offline-Funktionalität könnte in zukünftigen Updates verfügbar sein.",
+    "saveProgress": "Wie speichere ich meinen Fortschritt?",
+    "saveProgressAnswer": "Melden Sie sich in Ihrem Konto an, um Ihren Fortschritt auf allen Geräten zu synchronisieren. Ihr Lernverlauf und Ihre Einstellungen werden automatisch gespeichert.",
+    "videoNotPlaying": "Das Video wird nicht abgespielt",
+    "videoNotPlayingAnswer": "Stellen Sie sicher, dass Sie eine stabile Internetverbindung haben. Wenn das Problem weiterhin besteht, versuchen Sie, die App zu schließen und erneut zu öffnen oder Ihr Gerät neu zu starten.",
+    "contactSupport": "Support Kontaktieren",
+    "contactSupportDescription": "Benötigen Sie weitere Hilfe? Unser Support-Team ist hier, um Ihnen zu helfen.",
+    "supportEmail": "hi@creativeendurancelab.com"
+  },
+  "about": {
+    "title": "Über",
+    "appName": "Easy Song",
+    "version": "Version 1.0.0",
+    "description": "Lernen Sie Sprachen durch Musik. Schauen Sie Videos, studieren Sie Texte und verbessern Sie Ihre Sprachkenntnisse mit strukturierten Lektionen.",
+    "developmentStudio": "Creative Endurance Lab, LLC",
+    "studioName": "Your Studio Name",
+    "studioDescription": "Wir sind leidenschaftlich daran interessiert, innovative Sprachlern-Tools zu erstellen, die Bildung ansprechend und zugänglich machen.",
+    "contactEmail": "hi@creativeendurancelab.com",
+    "website": "creativeendurancelab.com",
+    "versionHistory": "Versionsverlauf",
+    "credits": "Danksagungen",
+    "creditsDescription": "Easy Song verwendet YouTube-Videos zu Bildungszwecken. Alle Liedinhalte, einschließlich Texte und Übersetzungen, werden zum Sprachenlernen bereitgestellt.",
+    "creditsDescription2": "Videoinhalte werden von YouTube bereitgestellt und sind Eigentum ihrer jeweiligen Besitzer.",
+    "version1_0_0": "Version 1.0.0",
+    "version1_0_0Date": "Januar 2025",
+    "version1_0_0Changes": [
+      "Erstveröffentlichung von Easy Song",
+      "Wiedergabemodus mit YouTube-Video-Integration",
+      "Lernmodus mit strukturierten Abschnitten und Erklärungen",
+      "Texthervorhebung und automatisches Scrollen",
+      "Übersetzungs-Umschaltfunktion",
+      "Benutzereinstellungen und Präferenzen",
+      "Mehrsprachige Unterstützung"
+    ],
+    "version0_9_0": "Version 0.9.0",
+    "version0_9_0Date": "Dezember 2024",
+    "version0_9_0Changes": [
+      "Beta-Test-Version",
+      "Kern-Wiedergabefunktionalität",
+      "Grundlegende Lernmodus-Funktionen"
+    ],
+    "version0_8_0": "Version 0.8.0",
+    "version0_8_0Date": "November 2024",
+    "version0_8_0Changes": [
+      "Erste Entwicklungsversion",
+      "Liedliste und Navigation",
+      "Video-Player-Integration"
+    ]
   }
 }
-

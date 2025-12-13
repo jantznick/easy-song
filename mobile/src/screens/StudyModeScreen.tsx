@@ -12,6 +12,7 @@ import { useUser } from '../hooks/useUser';
 import { getFontSizes } from '../utils/fontSizes';
 import { useTheme } from '../contexts/ThemeContext';
 import { useThemeClasses } from '../utils/themeClasses';
+import { useTranslation } from '../hooks/useTranslation';
 
 type Props = BottomTabScreenProps<SongDetailTabParamList, 'StudyMode'>;
 
@@ -48,6 +49,7 @@ export default function StudyModeScreen({ route }: Props) {
   const { preferences, addToHistory } = useUser();
   const { isDark } = useTheme();
   const theme = useThemeClasses();
+  const { t } = useTranslation();
   const [song, setSong] = useState<Song | null>(null);
   const [playing, setPlaying] = useState<boolean>(false);
   const [studyData, setStudyData] = useState<StudyData | null>(null);
@@ -90,7 +92,7 @@ export default function StudyModeScreen({ route }: Props) {
         if (e instanceof Error) {
           setError(`Failed to fetch data: ${e.message}`);
         } else {
-          setError('An unknown error occurred.');
+          setError(t('songs.errorDescription'));
         }
         console.error('Failed to fetch data:', e);
       } finally {
@@ -280,7 +282,7 @@ export default function StudyModeScreen({ route }: Props) {
   };
 
   if (isLoading || error || !song) {
-    return <StatusDisplay loading={isLoading} error={error || (!song ? 'Song not found' : null)} loadingText="Loading study data..." />;
+    return <StatusDisplay loading={isLoading} error={error || (!song ? t('studyMode.songNotFound') : null)} loadingText={t('studyMode.loadingData')} />;
   }
 
   const sections = studyData?.structuredSections || [];
@@ -304,7 +306,7 @@ export default function StudyModeScreen({ route }: Props) {
           <Text className={theme.text('text-text-primary', 'text-[#F1F5F9]') + ' text-lg font-semibold'} numberOfLines={1}>
             {song.title}
           </Text>
-          <Text className={theme.text('text-text-secondary', 'text-[#94A3B8]') + ' text-xs'}>Study Mode</Text>
+          <Text className={theme.text('text-text-secondary', 'text-[#94A3B8]') + ' text-xs'}>{t('studyMode.title')}</Text>
         </View>
       </View>
 
@@ -353,7 +355,7 @@ export default function StudyModeScreen({ route }: Props) {
                 <Text className="text-sm font-medium" style={{
                   color: expandedSectionIndex === sections.length ? '#FFFFFF' : (isDark ? '#94A3B8' : '#4B5563'),
                 }}>
-                  Additional
+                  {t('studyMode.additional')}
                 </Text>
               </TouchableOpacity>
             )}
@@ -379,7 +381,7 @@ export default function StudyModeScreen({ route }: Props) {
                 }}
                 className="flex-row items-center justify-between p-4 bg-primary/10"
               >
-                <Text className={theme.text('text-text-primary', 'text-[#F1F5F9]') + ' text-sm font-medium'}>Section Explanation</Text>
+                <Text className={theme.text('text-text-primary', 'text-[#F1F5F9]') + ' text-sm font-medium'}>{t('studyMode.sectionExplanation')}</Text>
                 <Ionicons
                   name={expandedExplanations.has(expandedSectionIndex!) ? 'chevron-up' : 'chevron-down'}
                   size={20}
@@ -408,7 +410,7 @@ export default function StudyModeScreen({ route }: Props) {
                 color="#ffffff"
               />
               <Text className="text-sm font-medium text-white">
-                {playing ? "Pause" : "Play All"}
+                {playing ? t('studyMode.pause') : t('studyMode.playAll')}
               </Text>
             </TouchableOpacity>
             {expandedSectionIndex !== null && completedSections.has(expandedSectionIndex) && (
@@ -417,7 +419,7 @@ export default function StudyModeScreen({ route }: Props) {
                 className="flex-row items-center gap-2 px-4 py-2 bg-secondary rounded-lg"
               >
                 <Text className="text-sm font-medium text-white">
-                  Next →
+                  {t('studyMode.nextSection')} →
                 </Text>
               </TouchableOpacity>
             )}
@@ -431,9 +433,9 @@ export default function StudyModeScreen({ route }: Props) {
           <View className={theme.bg('bg-surface', 'bg-[#1E293B]') + ' ' + theme.border('border-border', 'border-[#334155]') + ' rounded-xl border flex-1'}>
             {/* Content Header with Toggle */}
             <View className={theme.border('border-border', 'border-[#334155]') + ' flex-row items-center justify-between p-5 border-b'}>
-              <Text className={theme.text('text-text-primary', 'text-[#F1F5F9]') + ' text-lg font-semibold'}>Study Content</Text>
+              <Text className={theme.text('text-text-primary', 'text-[#F1F5F9]') + ' text-lg font-semibold'}>{t('studyMode.studyContent')}</Text>
               <View className="flex-row items-center">
-                <Text className={theme.text('text-text-secondary', 'text-[#94A3B8]') + ' text-sm mr-2'}>Show translations</Text>
+                <Text className={theme.text('text-text-secondary', 'text-[#94A3B8]') + ' text-sm mr-2'}>{t('studyMode.showTranslations')}</Text>
                 <Switch
                   value={showTranslations}
                   onValueChange={setShowTranslations}
@@ -522,7 +524,7 @@ export default function StudyModeScreen({ route }: Props) {
                   ) : expandedSectionIndex === sections.length && additionalContent.length > 0 ? (
                     <View>
                       <Text className={theme.text('text-text-muted', 'text-[#64748B]') + ' text-sm mb-4 italic'}>
-                        These lines weren't included in the structured sections above.
+                        {t('studyMode.additionalContentNote')}
                       </Text>
                       {additionalContent.map((line, lineIndex) => {
                         const lineKey = `${expandedSectionIndex}-${lineIndex}`;
@@ -594,7 +596,7 @@ export default function StudyModeScreen({ route }: Props) {
 
               {expandedSectionIndex === null && (
                 <View className={theme.bg('bg-surface', 'bg-[#1E293B]') + ' ' + theme.border('border-border', 'border-[#334155]') + ' rounded-xl border p-8 items-center'}>
-                  <Text className={theme.text('text-text-secondary', 'text-[#94A3B8]')}>Select a section above to view its content</Text>
+                  <Text className={theme.text('text-text-secondary', 'text-[#94A3B8]')}>{t('studyMode.selectSection')}</Text>
                 </View>
               )}
             </ScrollView>
@@ -603,9 +605,9 @@ export default function StudyModeScreen({ route }: Props) {
       ) : (
         <View className="flex-1 items-center justify-center px-4">
           <View className={theme.bg('bg-surface', 'bg-[#1E293B]') + ' ' + theme.border('border-border', 'border-[#334155]') + ' rounded-xl border p-8 items-center'}>
-            <Text className={theme.text('text-text-secondary', 'text-[#94A3B8]') + ' mb-2 text-center'}>Study data is not available</Text>
+            <Text className={theme.text('text-text-secondary', 'text-[#94A3B8]') + ' mb-2 text-center'}>{t('studyMode.studyDataNotAvailable')}</Text>
             <Text className={theme.text('text-text-muted', 'text-[#64748B]') + ' text-sm text-center'}>
-              The structured study format will be available once the data is generated.
+              {t('studyMode.studyDataNotAvailableDescription')}
             </Text>
           </View>
         </View>
