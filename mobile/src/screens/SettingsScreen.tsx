@@ -6,6 +6,8 @@ import { Ionicons } from '@expo/vector-icons';
 import type { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
 import type { SongDetailTabParamList, RootStackParamList } from '../types/navigation';
 import { useUser } from '../hooks/useUser';
+import { useTheme } from '../contexts/ThemeContext';
+import { useTranslation } from '../hooks/useTranslation';
 import { useThemeClasses } from '../utils/themeClasses';
 import { useTheme } from '../contexts/ThemeContext';
 
@@ -87,6 +89,8 @@ export default function SettingsScreen({ route }: Props) {
   // When accessed from stack navigator, route.params may be undefined or have optional videoId
   const videoId = route.params && 'videoId' in route.params ? route.params.videoId : undefined;
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+  const { colors, isDark } = useTheme();
+  const { t } = useTranslation();
   const {
     profile,
     isAuthenticated,
@@ -140,7 +144,7 @@ export default function SettingsScreen({ route }: Props) {
               className="flex-row items-center p-5"
               onPress={() => navigation.navigate('UserProfileSettings')}
             >
-              <View className="w-16 h-16 rounded-full bg-primary/20 items-center justify-center mr-4">
+              <View className="w-16 h-16 rounded-full items-center justify-center mr-4 bg-primary/20">
                 <Ionicons name="person" size={32} color="#6366F1" />
               </View>
               <View className="flex-1">
@@ -157,25 +161,25 @@ export default function SettingsScreen({ route }: Props) {
         </View>
 
         {/* Playback Settings */}
-        <SettingsSection title="Playback">
+        <SettingsSection title={t('settings.playback.title')}>
           <SettingItem
             icon="play-circle"
-            title="Autoplay"
-            subtitle="Automatically start playing when opening a song"
+            title={t('settings.playback.autoplay')}
+            subtitle={t('settings.playback.autoplayDescription')}
             value={preferences.playback.autoplay}
             onValueChange={(value) => updatePlaybackPreference('autoplay', value)}
           />
           <SettingItem
             icon="arrow-down-circle"
-            title="Auto-scroll Lyrics"
-            subtitle="Automatically scroll to active lyric line"
+            title={t('settings.playback.autoscroll')}
+            subtitle={t('settings.playback.autoscrollDescription')}
             value={preferences.playback.autoscroll}
             onValueChange={(value) => updatePlaybackPreference('autoscroll', value)}
           />
           <SettingItem
             icon="repeat"
-            title="Loop Song"
-            subtitle="Automatically replay when song ends"
+            title={t('settings.playback.loop')}
+            subtitle={t('settings.playback.loopDescription')}
             value={preferences.playback.loop}
             onValueChange={(value) => updatePlaybackPreference('loop', value)}
           />
@@ -192,9 +196,10 @@ export default function SettingsScreen({ route }: Props) {
               <View className={theme.bg('bg-surface', 'bg-[#1E293B]') + ' ' + theme.border('border-border', 'border-[#334155]') + ' flex-row border rounded-full p-1'}>
                 <TouchableOpacity
                   onPress={() => updateDisplayPreference('fontSize', 'small')}
-                  className={`flex-1 py-2 rounded-full ${
-                    preferences.display.fontSize === 'small' ? 'bg-primary' : ''
-                  }`}
+                  className="flex-1 py-2 rounded-full"
+                  style={{
+                    backgroundColor: preferences.display.fontSize === 'small' ? '#6366F1' : 'transparent',
+                  }}
                 >
                   <Text className={`text-sm font-medium text-center ${
                     preferences.display.fontSize === 'small' ? 'text-white' : theme.text('text-text-secondary', 'text-[#94A3B8]')
@@ -204,9 +209,10 @@ export default function SettingsScreen({ route }: Props) {
                 </TouchableOpacity>
                 <TouchableOpacity
                   onPress={() => updateDisplayPreference('fontSize', 'medium')}
-                  className={`flex-1 py-2 rounded-full ${
-                    preferences.display.fontSize === 'medium' ? 'bg-primary' : ''
-                  }`}
+                  className="flex-1 py-2 rounded-full"
+                  style={{
+                    backgroundColor: preferences.display.fontSize === 'medium' ? '#6366F1' : 'transparent',
+                  }}
                 >
                   <Text className={`text-sm font-medium text-center ${
                     preferences.display.fontSize === 'medium' ? 'text-white' : theme.text('text-text-secondary', 'text-[#94A3B8]')
@@ -216,9 +222,10 @@ export default function SettingsScreen({ route }: Props) {
                 </TouchableOpacity>
                 <TouchableOpacity
                   onPress={() => updateDisplayPreference('fontSize', 'large')}
-                  className={`flex-1 py-2 rounded-full ${
-                    preferences.display.fontSize === 'large' ? 'bg-primary' : ''
-                  }`}
+                  className="flex-1 py-2 rounded-full"
+                  style={{
+                    backgroundColor: preferences.display.fontSize === 'large' ? '#6366F1' : 'transparent',
+                  }}
                 >
                   <Text className={`text-sm font-medium text-center ${
                     preferences.display.fontSize === 'large' ? 'text-white' : theme.text('text-text-secondary', 'text-[#94A3B8]')
@@ -245,9 +252,10 @@ export default function SettingsScreen({ route }: Props) {
               <View className={theme.bg('bg-surface', 'bg-[#1E293B]') + ' ' + theme.border('border-border', 'border-[#334155]') + ' flex-row border rounded-full p-1'}>
                 <TouchableOpacity
                   onPress={() => updateDisplayPreference('theme', 'light')}
-                  className={`flex-1 py-2 rounded-full ${
-                    preferences.display.theme === 'light' ? 'bg-primary' : ''
-                  }`}
+                  className="flex-1 py-2 rounded-full"
+                  style={{
+                    backgroundColor: preferences.display.theme === 'light' ? '#6366F1' : 'transparent',
+                  }}
                 >
                   <Text className={`text-sm font-medium text-center ${
                     preferences.display.theme === 'light' ? 'text-white' : theme.text('text-text-secondary', 'text-[#94A3B8]')
@@ -257,9 +265,10 @@ export default function SettingsScreen({ route }: Props) {
                 </TouchableOpacity>
                 <TouchableOpacity
                   onPress={() => updateDisplayPreference('theme', 'dark')}
-                  className={`flex-1 py-2 rounded-full ${
-                    preferences.display.theme === 'dark' ? 'bg-primary' : ''
-                  }`}
+                  className="flex-1 py-2 rounded-full"
+                  style={{
+                    backgroundColor: preferences.display.theme === 'dark' ? '#6366F1' : 'transparent',
+                  }}
                 >
                   <Text className={`text-sm font-medium text-center ${
                     preferences.display.theme === 'dark' ? 'text-white' : theme.text('text-text-secondary', 'text-[#94A3B8]')
@@ -269,9 +278,10 @@ export default function SettingsScreen({ route }: Props) {
                 </TouchableOpacity>
                 <TouchableOpacity
                   onPress={() => updateDisplayPreference('theme', 'system')}
-                  className={`flex-1 py-2 rounded-full ${
-                    preferences.display.theme === 'system' ? 'bg-primary' : ''
-                  }`}
+                  className="flex-1 py-2 rounded-full"
+                  style={{
+                    backgroundColor: preferences.display.theme === 'system' ? '#6366F1' : 'transparent',
+                  }}
                 >
                   <Text className={`text-sm font-medium text-center ${
                     preferences.display.theme === 'system' ? 'text-white' : theme.text('text-text-secondary', 'text-[#94A3B8]')
@@ -375,7 +385,7 @@ export default function SettingsScreen({ route }: Props) {
                 >
                   <Text className={theme.text('text-text-primary', 'text-[#F1F5F9]') + ' text-base'}>{language.name}</Text>
                   {preferences.language.learning === language.name && (
-                    <Ionicons name="checkmark" size={24} color="#6366F1" />
+                    <Ionicons name="checkmark" size={24} color={colors.primary} />
                   )}
                 </TouchableOpacity>
               ))}
@@ -426,7 +436,7 @@ export default function SettingsScreen({ route }: Props) {
                 >
                   <Text className={theme.text('text-text-primary', 'text-[#F1F5F9]') + ' text-base'}>{language.name}</Text>
                   {preferences.language.interface === language.name && (
-                    <Ionicons name="checkmark" size={24} color="#6366F1" />
+                    <Ionicons name="checkmark" size={24} color={colors.primary} />
                   )}
                 </TouchableOpacity>
               ))}

@@ -15,6 +15,7 @@ import {
   DEFAULT_PREFERENCES,
   DEFAULT_USER_PROFILE,
 } from '../utils/storage';
+import { changeLanguage } from '../i18n/config';
 import { updateUserProfile as updateUserProfileAPI, signInUser as signInUserAPI, fetchSongHistory as fetchSongHistoryAPI } from '../utils/api';
 
 export interface User {
@@ -106,6 +107,11 @@ export function UserProvider({ children }: UserProviderProps) {
         setSongHistory(storedHistory);
         setProfile(storedProfile);
 
+        // Initialize i18n language based on stored preference
+        if (storedPreferences.language.interface) {
+          changeLanguage(storedPreferences.language.interface);
+        }
+
         if (authToken && storedProfile) {
           setUser(storedProfile);
           setIsAuthenticated(true);
@@ -173,6 +179,11 @@ export function UserProvider({ children }: UserProviderProps) {
     };
     setPreferences(newPreferences);
     await savePreferences(newPreferences);
+    
+    // If interface language changed, update i18n
+    if (key === 'interface') {
+      changeLanguage(value as string);
+    }
   }, [preferences]);
 
   // Add to song history
