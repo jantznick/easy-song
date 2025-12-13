@@ -20,10 +20,8 @@ const stopVideo = (player: any, endTime: number, setPlaying: (playing: boolean) 
     try {
       const currentTime = await player.current.getCurrentTime();
       const currentTimeMs = currentTime * 1000;
-      console.log('currentTimeMs', currentTimeMs);
       
       if (currentTimeMs >= endTime) {
-        console.log('currentTimeMs >= endTime', currentTimeMs, endTime);
         setPlaying(false);
         clearInterval(interval);
         if (onComplete) {
@@ -250,15 +248,6 @@ export default function StudyModeScreen({ route }: Props) {
   };
 
   const handleLinePlayClick = (line: StructuredLine | LyricLine, lineIndex: number) => {
-    console.log('Line play clicked:', {
-      sectionIndex: expandedSectionIndex,
-      lineIndex: lineIndex,
-      spanish: line.spanish,
-      english: line.english,
-      start_ms: line.start_ms,
-      end_ms: line.end_ms,
-      explanation: 'explanation' in line ? line.explanation : undefined,
-    });
     // Clear any existing interval
     if (stopVideoIntervalRef.current) {
       clearInterval(stopVideoIntervalRef.current);
