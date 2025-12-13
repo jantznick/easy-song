@@ -14,13 +14,13 @@ This document tracks the implementation status of each setting feature.
   - [x] Connect to PlayModeScreen
   - [x] Connect to StudyModeScreen
   - [x] Respect preference when highlighting active lines
-  - [ ] Test scrolling behavior
+  - [x] Test scrolling behavior
 
-- [ ] **Loop Song** - Auto-replay when song ends
-  - [ ] Connect to video player
-  - [ ] Detect when video ends
-  - [ ] Restart video if enabled
-  - [ ] Test looping behavior
+- [x] **Loop Song** - Auto-replay when song ends
+  - [x] Connect to video player
+  - [x] Detect when video ends
+  - [x] Restart video if enabled
+  - [x] Test looping behavior
 
 ---
 

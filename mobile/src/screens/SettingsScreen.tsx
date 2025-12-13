@@ -163,8 +163,8 @@ export default function SettingsScreen({ route }: Props) {
             icon="repeat"
             title="Loop Song"
             subtitle="Automatically replay when song ends"
-            value={false}
-            onValueChange={() => {}}
+            value={preferences.playback.loop}
+            onValueChange={(value) => updatePlaybackPreference('loop', value)}
           />
         </SettingsSection>
 
