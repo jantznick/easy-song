@@ -3,6 +3,8 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import './global.css';
+// Initialize i18n before other imports that might use it
+import './src/i18n/config';
 import { UserProvider } from './src/contexts/UserContext';
 import SongListScreen from './src/screens/SongListScreen';
 import SongDetailScreen from './src/screens/SongDetailScreen';
