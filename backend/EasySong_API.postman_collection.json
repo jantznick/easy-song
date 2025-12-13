@@ -1,0 +1,489 @@
+{
+	"info": {
+		"name": "Easy Song API",
+		"description": "API collection for Easy Song backend",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:3001",
+			"type": "string"
+		}
+	],
+	"item": [
+		{
+			"name": "Authentication",
+			"item": [
+				{
+					"name": "Register",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"user@example.com\",\n  \"password\": \"Password123!\",\n  \"name\": \"John Doe\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/auth/register",
+							"host": ["{{base_url}}"],
+							"path": ["api", "auth", "register"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"user@example.com\",\n  \"password\": \"Password123!\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/auth/login",
+							"host": ["{{base_url}}"],
+							"path": ["api", "auth", "login"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Request Login Code",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"user@example.com\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/auth/request-login-code",
+							"host": ["{{base_url}}"],
+							"path": ["api", "auth", "request-login-code"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Verify Login Code",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"user@example.com\",\n  \"code\": \"123456\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/auth/verify-login-code",
+							"host": ["{{base_url}}"],
+							"path": ["api", "auth", "verify-login-code"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Verify Email",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"code\": \"123456\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/auth/verify-email",
+							"host": ["{{base_url}}"],
+							"path": ["api", "auth", "verify-email"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Resend Verification",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/auth/resend-verification",
+							"host": ["{{base_url}}"],
+							"path": ["api", "auth", "resend-verification"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Current User",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{base_url}}/api/auth/me",
+							"host": ["{{base_url}}"],
+							"path": ["api", "auth", "me"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Logout",
+					"request": {
+						"method": "POST",
+						"url": {
+							"raw": "{{base_url}}/api/auth/logout",
+							"host": ["{{base_url}}"],
+							"path": ["api", "auth", "logout"]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "User Profile",
+			"item": [
+				{
+					"name": "Get Profile",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{base_url}}/api/user/profile",
+							"host": ["{{base_url}}"],
+							"path": ["api", "user", "profile"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Profile",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Updated Name\",\n  \"avatar\": \"https://example.com/avatar.jpg\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/user/profile",
+							"host": ["{{base_url}}"],
+							"path": ["api", "user", "profile"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Change Password",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"currentPassword\": \"OldPassword123!\",\n  \"newPassword\": \"NewPassword123!\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/user/change-password",
+							"host": ["{{base_url}}"],
+							"path": ["api", "user", "change-password"]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Preferences",
+			"item": [
+				{
+					"name": "Get Preferences",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{base_url}}/api/user/preferences",
+							"host": ["{{base_url}}"],
+							"path": ["api", "user", "preferences"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Preferences (Full)",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"playback\": {\n    \"autoplay\": true,\n    \"autoscroll\": true,\n    \"loop\": false\n  },\n  \"display\": {\n    \"fontSize\": \"large\",\n    \"defaultTranslation\": true,\n    \"theme\": \"dark\"\n  },\n  \"language\": {\n    \"learning\": \"Spanish\",\n    \"interface\": \"English\"\n  }\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/user/preferences",
+							"host": ["{{base_url}}"],
+							"path": ["api", "user", "preferences"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Preferences (Partial - Playback)",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"playback\": {\n    \"autoplay\": true\n  }\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/user/preferences",
+							"host": ["{{base_url}}"],
+							"path": ["api", "user", "preferences"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Preferences (Partial - Display)",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"display\": {\n    \"fontSize\": \"medium\",\n    \"theme\": \"light\"\n  }\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/user/preferences",
+							"host": ["{{base_url}}"],
+							"path": ["api", "user", "preferences"]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Song History",
+			"item": [
+				{
+					"name": "Add to History",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"song\": \"Despacito\",\n  \"artist\": \"Luis Fonsi\",\n  \"mode\": \"Play Mode\",\n  \"videoId\": \"KU5V5WZVcVE\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/history",
+							"host": ["{{base_url}}"],
+							"path": ["api", "history"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get History (Page 1)",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{base_url}}/api/history?page=1&pageSize=20",
+							"host": ["{{base_url}}"],
+							"path": ["api", "history"],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "pageSize",
+									"value": "20"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get History (Page 2)",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{base_url}}/api/history?page=2&pageSize=20",
+							"host": ["{{base_url}}"],
+							"path": ["api", "history"],
+							"query": [
+								{
+									"key": "page",
+									"value": "2"
+								},
+								{
+									"key": "pageSize",
+									"value": "20"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Clear All History",
+					"request": {
+						"method": "DELETE",
+						"url": {
+							"raw": "{{base_url}}/api/history",
+							"host": ["{{base_url}}"],
+							"path": ["api", "history"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete History Entry",
+					"request": {
+						"method": "DELETE",
+						"url": {
+							"raw": "{{base_url}}/api/history/:id",
+							"host": ["{{base_url}}"],
+							"path": ["api", "history", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "history-entry-id-here"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Song Data",
+			"item": [
+				{
+					"name": "Get All Songs",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{base_url}}/api/songs",
+							"host": ["{{base_url}}"],
+							"path": ["api", "songs"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Song by Video ID",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{base_url}}/api/songs/:videoId",
+							"host": ["{{base_url}}"],
+							"path": ["api", "songs", ":videoId"],
+							"variable": [
+								{
+									"key": "videoId",
+									"value": "KU5V5WZVcVE"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Study Data",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{base_url}}/api/songs/:videoId/study",
+							"host": ["{{base_url}}"],
+							"path": ["api", "songs", ":videoId", "study"],
+							"variable": [
+								{
+									"key": "videoId",
+									"value": "KU5V5WZVcVE"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Health",
+			"item": [
+				{
+					"name": "Health Check",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{base_url}}/api/health",
+							"host": ["{{base_url}}"],
+							"path": ["api", "health"]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
+

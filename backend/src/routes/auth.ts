@@ -1,11 +1,167 @@
 import { Router, Request, Response } from 'express';
 import { Session } from 'express-session';
-import { prisma } from '../lib/prisma';
+import bcrypt from 'bcrypt';
+import { prisma, Prisma } from '../lib/prisma';
 import { createAndSendMagicCode, verifyMagicCode } from '../utils/magicCode';
-import { MagicCodeType } from '@prisma/client';
 import { requireAuth } from '../middleware/auth';
+import { validatePassword } from '../config/password';
+
+const MagicCodeType = Prisma.MagicCodeType;
 
 const router = Router();
+
+/**
+ * POST /api/auth/register
+ * Register a new user with email and password
+ */
+router.post('/register', async (req: Request, res: Response) => {
+  try {
+    const { email, password, name } = req.body;
+
+    if (!email || typeof email !== 'string' || !email.includes('@')) {
+      return res.status(400).json({ error: 'Valid email is required' });
+    }
+
+    if (!password || typeof password !== 'string') {
+      return res.status(400).json({ error: 'Password is required' });
+    }
+
+    if (!name || typeof name !== 'string' || name.trim().length === 0) {
+      return res.status(400).json({ error: 'Name is required' });
+    }
+
+    // Validate password
+    const passwordValidation = validatePassword(password);
+    if (!passwordValidation.valid) {
+      return res.status(400).json({ 
+        error: 'Password does not meet requirements',
+        errors: passwordValidation.errors,
+      });
+    }
+
+    // Check if user already exists
+    const existingUser = await prisma.user.findUnique({
+      where: { email: email.toLowerCase() },
+    });
+
+    if (existingUser) {
+      return res.status(400).json({ error: 'User with this email already exists' });
+    }
+
+    // Hash password
+    const passwordHash = await bcrypt.hash(password, 10);
+
+    // Create user
+    const user = await prisma.user.create({
+      data: {
+        email: email.toLowerCase(),
+        name: name.trim(),
+        passwordHash,
+        emailVerified: false,
+        preferences: {
+          create: {},
+        },
+      },
+      include: { preferences: true },
+    });
+
+    // Send email verification code
+    await createAndSendMagicCode(
+      user.email,
+      MagicCodeType.EMAIL_VERIFICATION,
+      user.id
+    );
+
+    // Create session
+    const session = req.session as Session & { userId?: string };
+    session.userId = user.id;
+    await new Promise<void>((resolve, reject) => {
+      req.session.save((err) => {
+        if (err) reject(err);
+        else resolve();
+      });
+    });
+
+    res.status(201).json({
+      success: true,
+      user: {
+        id: user.id,
+        email: user.email,
+        name: user.name,
+        avatar: user.avatar,
+        emailVerified: user.emailVerified,
+      },
+    });
+  } catch (error) {
+    console.error('Error registering user:', error);
+    res.status(500).json({ error: 'Failed to register user' });
+  }
+});
+
+/**
+ * POST /api/auth/login
+ * Login with email and password
+ */
+router.post('/login', async (req: Request, res: Response) => {
+  try {
+    const { email, password } = req.body;
+
+    if (!email || typeof email !== 'string' || !email.includes('@')) {
+      return res.status(400).json({ error: 'Valid email is required' });
+    }
+
+    if (!password || typeof password !== 'string') {
+      return res.status(400).json({ error: 'Password is required' });
+    }
+
+    // Find user
+    const user = await prisma.user.findUnique({
+      where: { email: email.toLowerCase() },
+      include: { preferences: true },
+    });
+
+    if (!user) {
+      return res.status(401).json({ error: 'Invalid email or password' });
+    }
+
+    // Check if user has a password set
+    if (!user.passwordHash) {
+      return res.status(401).json({ 
+        error: 'This account does not have a password set. Please use magic code login.',
+      });
+    }
+
+    // Verify password
+    const passwordValid = await bcrypt.compare(password, user.passwordHash);
+    if (!passwordValid) {
+      return res.status(401).json({ error: 'Invalid email or password' });
+    }
+
+    // Create session (email verification not required for login)
+    const session = req.session as Session & { userId?: string };
+    session.userId = user.id;
+    await new Promise<void>((resolve, reject) => {
+      req.session.save((err) => {
+        if (err) reject(err);
+        else resolve();
+      });
+    });
+
+    res.json({
+      success: true,
+      user: {
+        id: user.id,
+        email: user.email,
+        name: user.name,
+        avatar: user.avatar,
+        emailVerified: user.emailVerified,
+      },
+    });
+  } catch (error) {
+    console.error('Error logging in:', error);
+    res.status(500).json({ error: 'Failed to login' });
+  }
+});
 
 /**
  * POST /api/auth/request-login-code

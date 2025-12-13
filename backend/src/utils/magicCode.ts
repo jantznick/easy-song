@@ -1,6 +1,7 @@
-import { prisma } from '../lib/prisma';
+import { prisma, Prisma } from '../lib/prisma';
 import { sendMagicCodeEmail } from '../lib/email';
-import { MagicCodeType } from '@prisma/client';
+
+type MagicCodeType = Prisma.MagicCodeType;
 
 /**
  * Generates a random 6-digit code

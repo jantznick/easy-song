@@ -1,6 +1,8 @@
 import { Router, Request, Response } from 'express';
+import bcrypt from 'bcrypt';
 import { prisma } from '../lib/prisma';
 import { requireAuth } from '../middleware/auth';
+import { validatePassword } from '../config/password';
 
 const router = Router();
 
@@ -42,7 +44,7 @@ router.put('/profile', requireAuth, async (req: Request, res: Response) => {
   try {
     const { name, email, avatar } = req.body;
 
-    const updateData: { name?: string; email?: string; avatar?: string } = {};
+    const updateData: { name?: string; email?: string; avatar?: string | null; emailVerified?: boolean } = {};
 
     if (name !== undefined) {
       if (typeof name !== 'string' || name.trim().length === 0) {
@@ -68,8 +70,8 @@ router.put('/profile', requireAuth, async (req: Request, res: Response) => {
     }
 
     if (avatar !== undefined) {
-      if (typeof avatar !== 'string') {
-        return res.status(400).json({ error: 'Avatar must be a string' });
+      if (avatar !== null && typeof avatar !== 'string') {
+        return res.status(400).json({ error: 'Avatar must be a string or null' });
       }
       updateData.avatar = avatar || null;
     }
@@ -91,6 +93,70 @@ router.put('/profile', requireAuth, async (req: Request, res: Response) => {
   } catch (error) {
     console.error('Error updating profile:', error);
     res.status(500).json({ error: 'Failed to update profile' });
+  }
+});
+
+/**
+ * POST /api/user/change-password
+ * Change user password
+ */
+router.post('/change-password', requireAuth, async (req: Request, res: Response) => {
+  try {
+    const { currentPassword, newPassword } = req.body;
+
+    if (!currentPassword || typeof currentPassword !== 'string') {
+      return res.status(400).json({ error: 'Current password is required' });
+    }
+
+    if (!newPassword || typeof newPassword !== 'string') {
+      return res.status(400).json({ error: 'New password is required' });
+    }
+
+    // Validate new password
+    const passwordValidation = validatePassword(newPassword);
+    if (!passwordValidation.valid) {
+      return res.status(400).json({ 
+        error: 'New password does not meet requirements',
+        errors: passwordValidation.errors,
+      });
+    }
+
+    // Get user with password hash
+    const user = await prisma.user.findUnique({
+      where: { id: req.userId! },
+      select: { passwordHash: true },
+    });
+
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    // Check if user has a password set
+    if (!user.passwordHash) {
+      return res.status(400).json({ 
+        error: 'Account does not have a password set. Please set a password first.',
+      });
+    }
+
+    // Verify current password
+    const passwordValid = await bcrypt.compare(currentPassword, user.passwordHash);
+    if (!passwordValid) {
+      return res.status(401).json({ error: 'Current password is incorrect' });
+    }
+
+    // Hash new password
+    const newPasswordHash = await bcrypt.hash(newPassword, 10);
+
+    // Update password
+    await prisma.user.update({
+      where: { id: req.userId! },
+      data: { passwordHash: newPasswordHash },
+    });
+
+    res.json({ success: true, message: 'Password changed successfully' });
+  } catch (error) {
+    console.error('Error changing password:', error);
+    res.status(500).json({ error: 'Failed to change password' });
   }
 });
 
