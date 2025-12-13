@@ -67,7 +67,7 @@ export default function SongListScreen({ navigation }: Props) {
         <View className="px-5 pt-4 pb-5 border-b border-border flex-row items-center justify-between">
           <Text className="text-3xl font-bold text-text-primary">Songs</Text>
           <TouchableOpacity
-            onPress={() => navigation.navigate('UserProfileSettings')}
+            onPress={() => navigation.navigate('Settings', {})}
             activeOpacity={0.7}
             hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
           >

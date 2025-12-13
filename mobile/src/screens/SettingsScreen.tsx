@@ -1,13 +1,18 @@
 import { useState } from 'react';
 import { View, Text, SafeAreaView, ScrollView, TouchableOpacity, Switch, Modal, Pressable } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import type { NativeStackNavigationProp, NativeStackScreenProps } from '@react-navigation/native-stack';
 import { Ionicons } from '@expo/vector-icons';
 import type { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
 import type { SongDetailTabParamList, RootStackParamList } from '../types/navigation';
 import { useUser } from '../hooks/useUser';
 
-type Props = BottomTabScreenProps<SongDetailTabParamList, 'Settings'>;
+// Support both tab navigator (from SongDetail) and stack navigator (from root)
+type SettingsScreenProps = 
+  | BottomTabScreenProps<SongDetailTabParamList, 'Settings'>
+  | NativeStackScreenProps<RootStackParamList, 'Settings'>;
+
+type Props = SettingsScreenProps;
 
 interface SettingItemProps {
   icon: keyof typeof Ionicons.glyphMap;
@@ -70,7 +75,10 @@ function SettingsSection({ title, children }: { title: string; children: React.R
 }
 
 export default function SettingsScreen({ route }: Props) {
-  const { videoId } = route.params;
+  // videoId is optional - only present when accessed from SongDetail tab
+  // When accessed from tab navigator, route.params has videoId
+  // When accessed from stack navigator, route.params may be undefined or have optional videoId
+  const videoId = route.params && 'videoId' in route.params ? route.params.videoId : undefined;
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const {
     preferences,
@@ -92,14 +100,24 @@ export default function SettingsScreen({ route }: Props) {
 
   return (
     <SafeAreaView className="flex-1 bg-background">
+      {/* Custom Header */}
+      <View className="bg-surface border-b border-border px-5 py-4 flex-row items-center">
+        <TouchableOpacity
+          onPress={() => navigation.goBack()}
+          className="mr-4"
+          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+        >
+          <Text className="text-2xl text-text-primary">←</Text>
+        </TouchableOpacity>
+        <Text className="text-lg font-semibold text-text-primary flex-1">Settings</Text>
+      </View>
+
       <ScrollView 
         className="flex-1"
         contentContainerStyle={{ paddingBottom: 32, paddingHorizontal: 32 }}
         showsVerticalScrollIndicator={false}
       >
         <View className="pt-6 pb-4">
-          <Text className="text-3xl font-bold text-text-primary">Settings</Text>
-        </View>
 
         {/* User Profile Section */}
         <View className="mb-6">
@@ -299,6 +317,7 @@ export default function SettingsScreen({ route }: Props) {
             onPress={() => navigation.navigate('PrivacyPolicy')}
           />
           </SettingsSection>
+        </View>
       </ScrollView>
 
       {/* Learning Language Modal */}

@@ -8,7 +8,7 @@ This document tracks the implementation status of each setting feature.
 - [x] **Autoplay** - Auto-start video when opening a song
   - [x] Connect to PlayModeScreen (StudyModeScreen intentionally excluded)
   - [x] Auto-play video when screen loads if enabled
-  - [ ] Test with different songs
+  - [x] Test with different songs
 
 - [ ] **Auto-scroll Lyrics** - Auto-scroll to active lyric line
   - [ ] Connect to PlayModeScreen

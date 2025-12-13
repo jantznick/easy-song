@@ -6,6 +6,7 @@ import './global.css';
 import { UserProvider } from './src/contexts/UserContext';
 import SongListScreen from './src/screens/SongListScreen';
 import SongDetailScreen from './src/screens/SongDetailScreen';
+import SettingsScreen from './src/screens/SettingsScreen';
 import UserProfileSettingsScreen from './src/screens/UserProfileSettingsScreen';
 import HelpScreen from './src/screens/HelpScreen';
 import TermsOfServiceScreen from './src/screens/TermsOfServiceScreen';
@@ -34,6 +35,10 @@ export default function App() {
                   <Stack.Screen
                     name="SongDetail"
                     component={SongDetailScreen}
+                  />
+                  <Stack.Screen
+                    name="Settings"
+                    component={SettingsScreen}
                   />
                   <Stack.Screen
                     name="UserProfileSettings"
