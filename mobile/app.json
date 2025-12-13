@@ -31,6 +31,11 @@
     "plugins": [
       "expo-asset",
       "react-native-localize"
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "83a2e914-9fd8-4a00-9e71-d5c5f66c4bec"
+      }
+    }
   }
 }
