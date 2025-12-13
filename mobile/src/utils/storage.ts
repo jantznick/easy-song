@@ -19,8 +19,10 @@ export interface StoredPreferences {
     theme: 'light' | 'dark' | 'system';
   };
   language: {
-    learning: string;
-    interface: string;
+    learning: string; // Language being learned (e.g., "Spanish")
+    // TODO: Future use - Filter songs by learning language in SongListScreen
+    // TODO: Future use - Filter song list API calls by learning language
+    interface: string; // App UI language (e.g., "English")
   };
 }
 

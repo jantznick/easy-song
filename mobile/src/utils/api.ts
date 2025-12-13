@@ -25,9 +25,11 @@ const BASE_URL = getApiUrl();
 
 /**
  * Fetches a list of all available songs.
+ * @param options Optional parameters for filtering songs
+ * @param options.language Optional language filter (e.g., "Spanish") - TODO: Implement when backend supports it
  * @returns A promise that resolves to an array of SongSummary objects.
  */
-export const fetchSongs = async (): Promise<SongSummary[]> => {
+export const fetchSongs = async (options?: { language?: string }): Promise<SongSummary[]> => {
     if (API_MODE === 'static') {
         const response = await fetch(`${BASE_URL}/songs-list.json`);
         if (!response.ok) {
@@ -36,6 +38,8 @@ export const fetchSongs = async (): Promise<SongSummary[]> => {
         return response.json();
     }
     
+    // TODO: When backend supports language filtering, add query parameter:
+    // const url = options?.language ? `${BASE_URL}/songs?language=${options.language}` : `${BASE_URL}/songs`;
     const response = await fetch(`${BASE_URL}/songs`);
     if (!response.ok) {
         throw new Error(`Network response was not ok (${response.status})`);

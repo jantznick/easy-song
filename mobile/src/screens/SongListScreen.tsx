@@ -6,10 +6,16 @@ import type { SongSummary } from '../types/song';
 import { fetchSongs } from '../utils/api';
 import SongListItem from '../components/SongListItem';
 import type { RootStackParamList } from '../types/navigation';
+import { useUser } from '../hooks/useUser';
+
+// TODO: Future implementation - Filter songs by learning language preference
+// When backend supports language filtering, use preferences.language.learning
+// Example: fetchSongs({ language: preferences.language.learning })
 
 type Props = NativeStackScreenProps<RootStackParamList, 'SongList'>;
 
 export default function SongListScreen({ navigation }: Props) {
+  const { preferences } = useUser();
   const [songs, setSongs] = useState<SongSummary[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
