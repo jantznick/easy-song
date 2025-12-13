@@ -33,11 +33,11 @@ This document tracks the implementation status of each setting feature.
   - [x] Define font size constants (small: 14, medium: 16, large: 18)
   - [x] Test all three sizes
 
-- [ ] **Default Translation** - Show translations by default
-  - [ ] Connect to PlayModeScreen
-  - [ ] Connect to StudyModeScreen
-  - [ ] Set initial translation visibility based on preference
-  - [ ] Test toggle behavior
+- [x] **Default Translation** - Show translations by default
+  - [x] Connect to PlayModeScreen
+  - [x] Connect to StudyModeScreen
+  - [x] Set initial translation visibility based on preference
+  - [x] Test toggle behavior
 
 - [ ] **Theme** - App theme preference ('light' | 'dark' | 'system')
   - [ ] Implement theme system (currently hardcoded to dark)
@@ -50,10 +50,12 @@ This document tracks the implementation status of each setting feature.
 ## Language Settings
 
 ### ✅ Storage Implemented
-- [ ] **Learning Language** - Language being learned
-  - [ ] Use preference to filter/display relevant content
-  - [ ] Connect to translation display logic
-  - [ ] Update when user changes language
+- [x] **Learning Language** - Language being learned
+  - [x] Storage implemented (saved to AsyncStorage via preferences)
+  - [x] UI connected in SettingsScreen
+  - [ ] TODO: Future - Use preference to filter songs in SongListScreen
+  - [ ] TODO: Future - Pass to API when backend supports language filtering
+  - [ ] TODO: Future - Connect to translation display logic if needed
 
 - [ ] **Interface Language** - App UI language
   - [ ] Implement i18n system
@@ -66,49 +68,39 @@ This document tracks the implementation status of each setting feature.
 ## User Profile
 
 ### ✅ Storage Implemented
-- [ ] **User Name** - Display name
-  - [ ] Show in UserProfileSettingsScreen
-  - [ ] Show in SettingsScreen profile card
-  - [ ] Allow editing (when Edit Profile is implemented)
+- [x] **User Name** - Display name
+  - [x] Show in UserProfileSettingsScreen
+  - [x] Show in SettingsScreen profile card
+  - [x] Allow editing (with modal, saves locally and calls dummy API)
 
-- [ ] **Email** - User email
-  - [ ] Show in UserProfileSettingsScreen
-  - [ ] Allow editing (when Edit Profile is implemented)
+- [x] **Email** - User email
+  - [x] Show in UserProfileSettingsScreen
+  - [x] Show in SettingsScreen profile card
+  - [x] Allow editing (with modal, saves locally and calls dummy API)
 
 - [ ] **Sign In Status** - Authentication state
-  - [ ] Show "Guest User" when not signed in
-  - [ ] Show user name when signed in
+  - [x] Show "Guest User" when not signed in
+  - [x] Show user name when signed in
   - [ ] Update UI based on auth status
-
-- [ ] **Profile Picture** - User avatar (future)
-  - [ ] Add avatar upload functionality
-  - [ ] Display avatar in profile sections
-  - [ ] Store avatar URL/path
 
 ---
 
 ## Account Actions
 
 ### ✅ Storage Implemented
-- [ ] **Sign In** - Authenticate user
-  - [ ] Create sign in screen/modal
-  - [ ] Implement API call to backend
-  - [ ] Store auth token
-  - [ ] Update user state on success
-  - [ ] Handle errors
+- [x] **Sign In** - Authenticate user
+  - [x] Create sign in screen/modal
+  - [x] Implement API call to backend (dummy API for now)
+  - [x] Store auth token
+  - [x] Update user state on success
+  - [x] Handle errors
 
-- [ ] **Sign Out** - Log out user
-  - [ ] Clear auth token
-  - [ ] Clear user data (or keep local preferences?)
-  - [ ] Reset to guest state
-  - [ ] Navigate to appropriate screen
+- [x] **Sign Out** - Log out user
+  - [x] Clear auth token
+  - [x] Reset to default preferences
+  - [x] Reset to guest state
+  - [x] Clear user profile and song history
 
-- [ ] **Edit Profile** - Update user information
-  - [ ] Create edit profile screen
-  - [ ] Allow editing name, email
-  - [ ] Implement API call to update profile
-  - [ ] Update local storage
-  - [ ] Handle errors
 
 - [ ] **Change Password** - Update password
   - [ ] Create change password screen
@@ -121,26 +113,24 @@ This document tracks the implementation status of each setting feature.
 ## Song History
 
 ### ✅ Storage Implemented
-- [ ] **Track Song Plays** - Add entries to history
-  - [ ] Call `addToHistory` when song starts playing in PlayMode
-  - [ ] Call `addToHistory` when song starts playing in StudyMode
-  - [ ] Include correct mode, song info, videoId
-  - [ ] Test history creation
+- [x] **Track Song Plays** - Add entries to history
+  - [x] Call `addToHistory` when song starts playing in PlayMode
+  - [x] Call `addToHistory` when song starts playing in StudyMode
+  - [x] Include correct mode, song info, videoId
+  - [x] Test history creation
 
-- [ ] **Display History** - Show in UserProfileSettingsScreen
-  - [ ] Replace dummy data with real history from context
-  - [ ] Show most recent entries
-  - [ ] Update when new entries added
+- [x] **Display History** - Show in UserProfileSettingsScreen
+  - [x] Replace dummy data with real history from context
+  - [x] Show most recent 5 entries
+  - [x] Update when new entries added
 
-- [ ] **Display Full History** - Show in SongHistoryScreen
-  - [ ] Replace dummy data with real history from context
-  - [ ] Implement pagination with real data
-  - [ ] Update when new entries added
+- [x] **Display Full History** - Show in SongHistoryScreen
+  - [x] Replace dummy data with real history from context
+  - [x] Implement pagination with real data
+  - [x] Auto-fetch more history when reaching last page
+  - [x] Load most recent 20 songs on login
+  - [x] Update when new entries added
 
-- [ ] **Clear History** - Remove all history entries
-  - [ ] Add clear button (optional)
-  - [ ] Implement clear functionality
-  - [ ] Confirm before clearing
 
 ---
 

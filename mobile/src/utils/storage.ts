@@ -32,6 +32,11 @@ export interface StoredUserProfile {
   avatar?: string;
 }
 
+export const DEFAULT_USER_PROFILE: StoredUserProfile = {
+  name: 'Guest User',
+  email: 'guest@easysong.com',
+};
+
 export const DEFAULT_PREFERENCES: StoredPreferences = {
   playback: {
     autoplay: false,
@@ -72,26 +77,24 @@ export async function savePreferences(preferences: StoredPreferences): Promise<v
 }
 
 // User Profile Storage
-export async function loadUserProfile(): Promise<StoredUserProfile | null> {
+export async function loadUserProfile(): Promise<StoredUserProfile> {
   try {
     const data = await AsyncStorage.getItem(STORAGE_KEYS.USER_PROFILE);
     if (data) {
-      return JSON.parse(data);
+      const parsed = JSON.parse(data);
+      // Merge with defaults to ensure all fields exist
+      return { ...DEFAULT_USER_PROFILE, ...parsed };
     }
-    return null;
+    return DEFAULT_USER_PROFILE;
   } catch (error) {
     console.error('Error loading user profile:', error);
-    return null;
+    return DEFAULT_USER_PROFILE;
   }
 }
 
-export async function saveUserProfile(profile: StoredUserProfile | null): Promise<void> {
+export async function saveUserProfile(profile: StoredUserProfile): Promise<void> {
   try {
-    if (profile) {
-      await AsyncStorage.setItem(STORAGE_KEYS.USER_PROFILE, JSON.stringify(profile));
-    } else {
-      await AsyncStorage.removeItem(STORAGE_KEYS.USER_PROFILE);
-    }
+    await AsyncStorage.setItem(STORAGE_KEYS.USER_PROFILE, JSON.stringify(profile));
   } catch (error) {
     console.error('Error saving user profile:', error);
   }

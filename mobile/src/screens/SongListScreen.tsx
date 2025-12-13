@@ -8,6 +8,7 @@ import SongListItem from '../components/SongListItem';
 import type { RootStackParamList } from '../types/navigation';
 import { useUser } from '../hooks/useUser';
 import { useTranslation } from '../hooks/useTranslation';
+import { useThemeClasses } from '../utils/themeClasses';
 
 // TODO: Future implementation - Filter songs by learning language preference
 // When backend supports language filtering, use preferences.language.learning
@@ -18,6 +19,7 @@ type Props = NativeStackScreenProps<RootStackParamList, 'SongList'>;
 export default function SongListScreen({ navigation }: Props) {
   const { preferences } = useUser();
   const { t } = useTranslation();
+  const theme = useThemeClasses();
   const [songs, setSongs] = useState<SongSummary[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -46,10 +48,10 @@ export default function SongListScreen({ navigation }: Props) {
 
   if (isLoading) {
     return (
-      <SafeAreaView className="flex-1 bg-background dark:bg-[#0F172A]">
+      <SafeAreaView className={theme.bg('bg-background', 'bg-[#0F172A]')} style={{ flex: 1 }}>
         <View className="flex-1 items-center justify-center">
           <ActivityIndicator size="large" color="#6366F1" />
-          <Text className="mt-4 text-base text-text-secondary dark:text-[#94A3B8]">{t('songs.loading')}</Text>
+          <Text className={theme.text('text-text-secondary', 'text-[#94A3B8]') + ' mt-4 text-base'}>Loading songs...</Text>
         </View>
       </SafeAreaView>
     );
@@ -57,25 +59,25 @@ export default function SongListScreen({ navigation }: Props) {
 
   if (error) {
     return (
-      <SafeAreaView className="flex-1 bg-background dark:bg-[#0F172A]">
+      <SafeAreaView className={theme.bg('bg-background', 'bg-[#0F172A]')} style={{ flex: 1 }}>
         <View className="flex-1 items-center justify-center px-4">
-          <Text className="text-center mb-2 text-lg font-semibold text-red-500">Error</Text>
-          <Text className="text-center text-base text-text-secondary dark:text-[#94A3B8]">{error}</Text>
+          <Text className="text-red-400 text-center mb-2 text-lg font-semibold">Error</Text>
+          <Text className={theme.text('text-text-secondary', 'text-[#94A3B8]') + ' text-center text-base'}>{error}</Text>
         </View>
       </SafeAreaView>
     );
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-background dark:bg-[#0F172A]">
+    <SafeAreaView className={theme.bg('bg-background', 'bg-[#0F172A]')} style={{ flex: 1 }}>
       <ScrollView 
         className="flex-1"
         contentContainerStyle={{ paddingBottom: 32 }}
         showsVerticalScrollIndicator={false}
       >
         {/* Header */}
-        <View className="px-5 pt-4 pb-5 border-b border-border dark:border-[#334155] flex-row items-center justify-between">
-          <Text className="text-3xl font-bold text-text-primary dark:text-[#F1F5F9]">{t('songs.title')}</Text>
+        <View className={theme.border('border-border', 'border-[#334155]') + ' px-5 pt-4 pb-5 border-b flex-row items-center justify-between'}>
+          <Text className={theme.text('text-text-primary', 'text-[#F1F5F9]') + ' text-3xl font-bold'}>Songs</Text>
           <TouchableOpacity
             onPress={() => navigation.navigate('Settings', {})}
             activeOpacity={0.7}
@@ -88,11 +90,11 @@ export default function SongListScreen({ navigation }: Props) {
         {/* Songs Grid */}
         {songs.length === 0 ? (
           <View className="items-center py-20 px-4">
-            <View className="p-5 rounded-full bg-surface dark:bg-[#1E293B] mb-5">
+            <View className={theme.bg('bg-surface', 'bg-[#1E293B]') + ' p-5 rounded-full mb-5'}>
               <Text className="text-5xl">🎵</Text>
             </View>
-            <Text className="text-lg font-semibold mb-1 text-text-primary dark:text-[#F1F5F9]">{t('songs.noSongs')}</Text>
-            <Text className="text-sm text-text-muted dark:text-[#64748B]">{t('songs.noSongsDescription')}</Text>
+            <Text className={theme.text('text-text-primary', 'text-[#F1F5F9]') + ' text-lg font-semibold mb-1'}>No songs available</Text>
+            <Text className={theme.text('text-text-muted', 'text-[#64748B]') + ' text-sm'}>Check back soon for new content!</Text>
           </View>
         ) : (
           <View className="px-4 pt-5">
