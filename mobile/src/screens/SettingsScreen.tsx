@@ -6,6 +6,8 @@ import { Ionicons } from '@expo/vector-icons';
 import type { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
 import type { SongDetailTabParamList, RootStackParamList } from '../types/navigation';
 import { useUser } from '../hooks/useUser';
+import { useThemeClasses } from '../utils/themeClasses';
+import { useTheme } from '../contexts/ThemeContext';
 
 // Support both tab navigator (from SongDetail) and stack navigator (from root)
 type SettingsScreenProps = 
@@ -25,27 +27,30 @@ interface SettingItemProps {
 }
 
 function SettingItem({ icon, title, subtitle, value, onPress, onValueChange, showArrow = false }: SettingItemProps) {
+  const theme = useThemeClasses();
+  const { isDark } = useTheme();
+  
   const content = (
-    <View className="flex-row items-center py-3 px-5 border-b border-border">
+    <View className={theme.border('border-border', 'border-[#334155]') + ' flex-row items-center py-3 px-5 border-b'}>
       <View className="w-8 items-center mr-3">
         <Ionicons name={icon} size={22} color="#6366F1" />
       </View>
       <View className="flex-1">
-        <Text className="text-base text-text-primary font-medium">{title}</Text>
+        <Text className={theme.text('text-text-primary', 'text-[#F1F5F9]') + ' text-base font-medium'}>{title}</Text>
         {subtitle && (
-          <Text className="text-sm text-text-secondary mt-0.5">{subtitle}</Text>
+          <Text className={theme.text('text-text-secondary', 'text-[#94A3B8]') + ' text-sm mt-0.5'}>{subtitle}</Text>
         )}
       </View>
       {onValueChange !== undefined && value !== undefined ? (
         <Switch
           value={value}
           onValueChange={onValueChange}
-          trackColor={{ false: '#334155', true: '#6366F1' }}
-          thumbColor={value ? '#ffffff' : '#94A3B8'}
-          ios_backgroundColor="#334155"
+          trackColor={{ false: isDark ? '#334155' : '#E4E7EB', true: '#6366F1' }}
+          thumbColor={value ? '#ffffff' : (isDark ? '#94A3B8' : '#9CA3AF')}
+          ios_backgroundColor={isDark ? '#334155' : '#E4E7EB'}
         />
       ) : showArrow ? (
-        <Ionicons name="chevron-forward" size={20} color="#94A3B8" />
+        <Ionicons name="chevron-forward" size={20} color={isDark ? '#94A3B8' : '#4B5563'} />
       ) : null}
     </View>
   );
@@ -62,12 +67,14 @@ function SettingItem({ icon, title, subtitle, value, onPress, onValueChange, sho
 }
 
 function SettingsSection({ title, children }: { title: string; children: React.ReactNode }) {
+  const theme = useThemeClasses();
+  
   return (
     <View className="mb-6">
-      <Text className="text-xs font-semibold text-text-muted uppercase tracking-wide px-5 py-2">
+      <Text className={theme.text('text-text-muted', 'text-[#64748B]') + ' text-xs font-semibold uppercase tracking-wide px-5 py-2'}>
         {title}
       </Text>
-      <View className="bg-surface rounded-xl border border-border overflow-hidden">
+      <View className={theme.bg('bg-surface', 'bg-[#1E293B]') + ' ' + theme.border('border-border', 'border-[#334155]') + ' rounded-xl border overflow-hidden'}>
         {children}
       </View>
     </View>
@@ -81,11 +88,15 @@ export default function SettingsScreen({ route }: Props) {
   const videoId = route.params && 'videoId' in route.params ? route.params.videoId : undefined;
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const {
+    profile,
+    isAuthenticated,
     preferences,
     updatePlaybackPreference,
     updateDisplayPreference,
     updateLanguagePreference,
   } = useUser();
+  const theme = useThemeClasses();
+  const { isDark } = useTheme();
 
   const [showLearningLanguageModal, setShowLearningLanguageModal] = useState(false);
   const [showInterfaceLanguageModal, setShowInterfaceLanguageModal] = useState(false);
@@ -99,17 +110,19 @@ export default function SettingsScreen({ route }: Props) {
   ];
 
   return (
-    <SafeAreaView className="flex-1 bg-background">
+    <SafeAreaView className={theme.bg('bg-background', 'bg-[#0F172A]')} style={{ flex: 1 }}>
       {/* Custom Header */}
-      <View className="bg-surface border-b border-border px-5 py-4 flex-row items-center">
-        <TouchableOpacity
-          onPress={() => navigation.goBack()}
-          className="mr-4"
-          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-        >
-          <Text className="text-2xl text-text-primary">←</Text>
-        </TouchableOpacity>
-        <Text className="text-lg font-semibold text-text-primary flex-1">Settings</Text>
+      <View className={theme.bg('bg-surface', 'bg-[#1E293B]') + ' ' + theme.border('border-border', 'border-[#334155]') + ' border-b px-5 py-4 flex-row items-center'}>
+        {!videoId && (
+          <TouchableOpacity
+            onPress={() => navigation.goBack()}
+            className="mr-4"
+            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+          >
+            <Text className={theme.text('text-text-primary', 'text-[#F1F5F9]') + ' text-2xl'}>←</Text>
+          </TouchableOpacity>
+        )}
+        <Text className={theme.text('text-text-primary', 'text-[#F1F5F9]') + ' text-lg font-semibold flex-1'}>Settings</Text>
       </View>
 
       <ScrollView 
@@ -121,7 +134,7 @@ export default function SettingsScreen({ route }: Props) {
 
         {/* User Profile Section */}
         <View className="mb-6">
-          <View className="bg-surface rounded-xl border border-border overflow-hidden">
+          <View className={theme.bg('bg-surface', 'bg-[#1E293B]') + ' ' + theme.border('border-border', 'border-[#334155]') + ' rounded-xl border overflow-hidden'}>
             <TouchableOpacity 
               activeOpacity={0.7}
               className="flex-row items-center p-5"
@@ -131,14 +144,14 @@ export default function SettingsScreen({ route }: Props) {
                 <Ionicons name="person" size={32} color="#6366F1" />
               </View>
               <View className="flex-1">
-                <Text className="text-lg font-semibold text-text-primary mb-1">
-                  Guest User
+                <Text className={theme.text('text-text-primary', 'text-[#F1F5F9]') + ' text-lg font-semibold mb-1'}>
+                  {profile.name}
                 </Text>
-                <Text className="text-sm text-text-secondary">
-                  Not signed in
+                <Text className={theme.text('text-text-secondary', 'text-[#94A3B8]') + ' text-sm'}>
+                  {isAuthenticated ? profile.email : 'Not signed in'}
                 </Text>
               </View>
-              <Ionicons name="chevron-forward" size={20} color="#94A3B8" />
+              <Ionicons name="chevron-forward" size={20} color={isDark ? '#94A3B8' : '#4B5563'} />
             </TouchableOpacity>
           </View>
         </View>
@@ -170,13 +183,13 @@ export default function SettingsScreen({ route }: Props) {
 
         {/* Display Settings */}
         <SettingsSection title="Display">
-          <View className="flex-row items-center py-3 px-5 border-b border-border">
+          <View className={theme.border('border-border', 'border-[#334155]') + ' flex-row items-center py-3 px-5 border-b'}>
             <View className="w-8 items-center mr-3">
               <Ionicons name="text" size={22} color="#6366F1" />
             </View>
             <View className="flex-1">
-              <Text className="text-base text-text-primary font-medium mb-2">Font Size</Text>
-              <View className="flex-row bg-surface border border-border rounded-full p-1">
+              <Text className={theme.text('text-text-primary', 'text-[#F1F5F9]') + ' text-base font-medium mb-2'}>Font Size</Text>
+              <View className={theme.bg('bg-surface', 'bg-[#1E293B]') + ' ' + theme.border('border-border', 'border-[#334155]') + ' flex-row border rounded-full p-1'}>
                 <TouchableOpacity
                   onPress={() => updateDisplayPreference('fontSize', 'small')}
                   className={`flex-1 py-2 rounded-full ${
@@ -184,7 +197,7 @@ export default function SettingsScreen({ route }: Props) {
                   }`}
                 >
                   <Text className={`text-sm font-medium text-center ${
-                    preferences.display.fontSize === 'small' ? 'text-white' : 'text-text-secondary'
+                    preferences.display.fontSize === 'small' ? 'text-white' : theme.text('text-text-secondary', 'text-[#94A3B8]')
                   }`}>
                     S
                   </Text>
@@ -196,7 +209,7 @@ export default function SettingsScreen({ route }: Props) {
                   }`}
                 >
                   <Text className={`text-sm font-medium text-center ${
-                    preferences.display.fontSize === 'medium' ? 'text-white' : 'text-text-secondary'
+                    preferences.display.fontSize === 'medium' ? 'text-white' : theme.text('text-text-secondary', 'text-[#94A3B8]')
                   }`}>
                     M
                   </Text>
@@ -208,7 +221,7 @@ export default function SettingsScreen({ route }: Props) {
                   }`}
                 >
                   <Text className={`text-sm font-medium text-center ${
-                    preferences.display.fontSize === 'large' ? 'text-white' : 'text-text-secondary'
+                    preferences.display.fontSize === 'large' ? 'text-white' : theme.text('text-text-secondary', 'text-[#94A3B8]')
                   }`}>
                     L
                   </Text>
@@ -223,13 +236,13 @@ export default function SettingsScreen({ route }: Props) {
             value={preferences.display.defaultTranslation}
             onValueChange={(value) => updateDisplayPreference('defaultTranslation', value)}
           />
-          <View className="flex-row items-center py-3 px-5 border-b border-border">
+          <View className={theme.border('border-border', 'border-[#334155]') + ' flex-row items-center py-3 px-5 border-b'}>
             <View className="w-8 items-center mr-3">
               <Ionicons name="color-palette" size={22} color="#6366F1" />
             </View>
             <View className="flex-1">
-              <Text className="text-base text-text-primary font-medium mb-2">Theme</Text>
-              <View className="flex-row bg-surface border border-border rounded-full p-1">
+              <Text className={theme.text('text-text-primary', 'text-[#F1F5F9]') + ' text-base font-medium mb-2'}>Theme</Text>
+              <View className={theme.bg('bg-surface', 'bg-[#1E293B]') + ' ' + theme.border('border-border', 'border-[#334155]') + ' flex-row border rounded-full p-1'}>
                 <TouchableOpacity
                   onPress={() => updateDisplayPreference('theme', 'light')}
                   className={`flex-1 py-2 rounded-full ${
@@ -237,7 +250,7 @@ export default function SettingsScreen({ route }: Props) {
                   }`}
                 >
                   <Text className={`text-sm font-medium text-center ${
-                    preferences.display.theme === 'light' ? 'text-white' : 'text-text-secondary'
+                    preferences.display.theme === 'light' ? 'text-white' : theme.text('text-text-secondary', 'text-[#94A3B8]')
                   }`}>
                     Light
                   </Text>
@@ -249,7 +262,7 @@ export default function SettingsScreen({ route }: Props) {
                   }`}
                 >
                   <Text className={`text-sm font-medium text-center ${
-                    preferences.display.theme === 'dark' ? 'text-white' : 'text-text-secondary'
+                    preferences.display.theme === 'dark' ? 'text-white' : theme.text('text-text-secondary', 'text-[#94A3B8]')
                   }`}>
                     Dark
                   </Text>
@@ -261,7 +274,7 @@ export default function SettingsScreen({ route }: Props) {
                   }`}
                 >
                   <Text className={`text-sm font-medium text-center ${
-                    preferences.display.theme === 'system' ? 'text-white' : 'text-text-secondary'
+                    preferences.display.theme === 'system' ? 'text-white' : theme.text('text-text-secondary', 'text-[#94A3B8]')
                   }`}>
                     System
                   </Text>
@@ -334,18 +347,18 @@ export default function SettingsScreen({ route }: Props) {
           />
           <View 
             style={{ 
-              backgroundColor: '#1E293B',
+              backgroundColor: isDark ? '#1E293B' : '#FFFFFF',
               borderTopLeftRadius: 20,
               borderTopRightRadius: 20,
               paddingBottom: 32,
               maxHeight: '70%',
             }}
           >
-            <View className="p-5 border-b border-border">
+            <View className={theme.border('border-border', 'border-[#334155]') + ' p-5 border-b'}>
               <View className="flex-row items-center justify-between mb-2">
-                <Text className="text-lg font-semibold text-text-primary">Learning Language</Text>
+                <Text className={theme.text('text-text-primary', 'text-[#F1F5F9]') + ' text-lg font-semibold'}>Learning Language</Text>
                 <TouchableOpacity onPress={() => setShowLearningLanguageModal(false)}>
-                  <Ionicons name="close" size={24} color="#94A3B8" />
+                  <Ionicons name="close" size={24} color={isDark ? '#94A3B8' : '#4B5563'} />
                 </TouchableOpacity>
               </View>
             </View>
@@ -357,10 +370,10 @@ export default function SettingsScreen({ route }: Props) {
                     updateLanguagePreference('learning', language.name);
                     setShowLearningLanguageModal(false);
                   }}
-                  className="flex-row items-center justify-between px-5 py-4 border-b border-border"
+                  className={theme.border('border-border', 'border-[#334155]') + ' flex-row items-center justify-between px-5 py-4 border-b'}
                   activeOpacity={0.7}
                 >
-                  <Text className="text-base text-text-primary">{language.name}</Text>
+                  <Text className={theme.text('text-text-primary', 'text-[#F1F5F9]') + ' text-base'}>{language.name}</Text>
                   {preferences.language.learning === language.name && (
                     <Ionicons name="checkmark" size={24} color="#6366F1" />
                   )}
@@ -385,18 +398,18 @@ export default function SettingsScreen({ route }: Props) {
           />
           <View 
             style={{ 
-              backgroundColor: '#1E293B',
+              backgroundColor: isDark ? '#1E293B' : '#FFFFFF',
               borderTopLeftRadius: 20,
               borderTopRightRadius: 20,
               paddingBottom: 32,
               maxHeight: '70%',
             }}
           >
-            <View className="p-5 border-b border-border">
+            <View className={theme.border('border-border', 'border-[#334155]') + ' p-5 border-b'}>
               <View className="flex-row items-center justify-between mb-2">
-                <Text className="text-lg font-semibold text-text-primary">Interface Language</Text>
+                <Text className={theme.text('text-text-primary', 'text-[#F1F5F9]') + ' text-lg font-semibold'}>Interface Language</Text>
                 <TouchableOpacity onPress={() => setShowInterfaceLanguageModal(false)}>
-                  <Ionicons name="close" size={24} color="#94A3B8" />
+                  <Ionicons name="close" size={24} color={isDark ? '#94A3B8' : '#4B5563'} />
                 </TouchableOpacity>
               </View>
             </View>
@@ -408,10 +421,10 @@ export default function SettingsScreen({ route }: Props) {
                     updateLanguagePreference('interface', language.name);
                     setShowInterfaceLanguageModal(false);
                   }}
-                  className="flex-row items-center justify-between px-5 py-4 border-b border-border"
+                  className={theme.border('border-border', 'border-[#334155]') + ' flex-row items-center justify-between px-5 py-4 border-b'}
                   activeOpacity={0.7}
                 >
-                  <Text className="text-base text-text-primary">{language.name}</Text>
+                  <Text className={theme.text('text-text-primary', 'text-[#F1F5F9]') + ' text-base'}>{language.name}</Text>
                   {preferences.language.interface === language.name && (
                     <Ionicons name="checkmark" size={24} color="#6366F1" />
                   )}

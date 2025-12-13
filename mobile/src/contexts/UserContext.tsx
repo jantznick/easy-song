@@ -13,7 +13,9 @@ import {
   type StoredPreferences,
   type StoredUserProfile,
   DEFAULT_PREFERENCES,
+  DEFAULT_USER_PROFILE,
 } from '../utils/storage';
+import { updateUserProfile as updateUserProfileAPI } from '../utils/api';
 
 export interface User {
   name: string;
@@ -29,12 +31,8 @@ export interface UserContextType {
   isAuthenticated: boolean;
   isLoading: boolean;
 
-  // User Profile
-  profile: {
-    name: string;
-    email: string;
-    avatar?: string;
-  };
+  // User Profile (always available, even for guests)
+  profile: StoredUserProfile;
 
   // Preferences
   preferences: UserPreferences;
@@ -60,7 +58,7 @@ export interface UserContextType {
   // Auth methods (placeholders for now)
   signIn: (email: string, password: string) => Promise<void>;
   signOut: () => Promise<void>;
-  updateProfile: (updates: Partial<User>) => Promise<void>;
+  updateProfile: (updates: Partial<StoredUserProfile>) => Promise<void>;
 }
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
@@ -83,6 +81,7 @@ export function UserProvider({ children }: UserProviderProps) {
   const [isLoading, setIsLoading] = useState(true);
   const [preferences, setPreferences] = useState<UserPreferences>(DEFAULT_PREFERENCES);
   const [songHistory, setSongHistory] = useState<SongHistoryItem[]>([]);
+  const [profile, setProfile] = useState<StoredUserProfile>(DEFAULT_USER_PROFILE);
 
   // Load initial data from storage
   useEffect(() => {
@@ -97,6 +96,7 @@ export function UserProvider({ children }: UserProviderProps) {
 
         setPreferences(storedPreferences);
         setSongHistory(storedHistory);
+        setProfile(storedProfile);
 
         if (authToken && storedProfile) {
           setUser(storedProfile);
@@ -210,22 +210,25 @@ export function UserProvider({ children }: UserProviderProps) {
     // Reset to defaults
     setPreferences(DEFAULT_PREFERENCES);
     setSongHistory([]);
+    setProfile(DEFAULT_USER_PROFILE);
   }, []);
 
   // Update profile
-  const updateProfile = useCallback(async (updates: Partial<User>) => {
-    if (!user) return;
-    const updatedUser = { ...user, ...updates };
-    setUser(updatedUser);
-    setIsAuthenticated(true);
-    await saveUserProfile(updatedUser);
-  }, [user]);
-
-  const profile = user || {
-    name: 'Guest User',
-    email: '',
-    avatar: undefined,
-  };
+  const updateProfile = useCallback(async (updates: Partial<StoredUserProfile>) => {
+    // Call dummy API (always succeeds for now)
+    await updateUserProfileAPI(updates);
+    
+    // Update local state
+    const updatedProfile = { ...profile, ...updates };
+    setProfile(updatedProfile);
+    await saveUserProfile(updatedProfile);
+    
+    // If user is authenticated, also update user object
+    if (user) {
+      const updatedUser = { ...user, ...updates };
+      setUser(updatedUser);
+    }
+  }, [profile, user]);
 
   const value: UserContextType = {
     user,

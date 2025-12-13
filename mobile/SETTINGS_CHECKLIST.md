@@ -33,11 +33,11 @@ This document tracks the implementation status of each setting feature.
   - [x] Define font size constants (small: 14, medium: 16, large: 18)
   - [x] Test all three sizes
 
-- [ ] **Default Translation** - Show translations by default
-  - [ ] Connect to PlayModeScreen
-  - [ ] Connect to StudyModeScreen
-  - [ ] Set initial translation visibility based on preference
-  - [ ] Test toggle behavior
+- [x] **Default Translation** - Show translations by default
+  - [x] Connect to PlayModeScreen
+  - [x] Connect to StudyModeScreen
+  - [x] Set initial translation visibility based on preference
+  - [x] Test toggle behavior
 
 - [ ] **Theme** - App theme preference ('light' | 'dark' | 'system')
   - [ ] Implement theme system (currently hardcoded to dark)
@@ -50,10 +50,12 @@ This document tracks the implementation status of each setting feature.
 ## Language Settings
 
 ### ✅ Storage Implemented
-- [ ] **Learning Language** - Language being learned
-  - [ ] Use preference to filter/display relevant content
-  - [ ] Connect to translation display logic
-  - [ ] Update when user changes language
+- [x] **Learning Language** - Language being learned
+  - [x] Storage implemented (saved to AsyncStorage via preferences)
+  - [x] UI connected in SettingsScreen
+  - [ ] TODO: Future - Use preference to filter songs in SongListScreen
+  - [ ] TODO: Future - Pass to API when backend supports language filtering
+  - [ ] TODO: Future - Connect to translation display logic if needed
 
 - [ ] **Interface Language** - App UI language
   - [ ] Implement i18n system
@@ -66,14 +68,15 @@ This document tracks the implementation status of each setting feature.
 ## User Profile
 
 ### ✅ Storage Implemented
-- [ ] **User Name** - Display name
-  - [ ] Show in UserProfileSettingsScreen
-  - [ ] Show in SettingsScreen profile card
-  - [ ] Allow editing (when Edit Profile is implemented)
+- [x] **User Name** - Display name
+  - [x] Show in UserProfileSettingsScreen
+  - [x] Show in SettingsScreen profile card
+  - [x] Allow editing (with modal, saves locally and calls dummy API)
 
-- [ ] **Email** - User email
-  - [ ] Show in UserProfileSettingsScreen
-  - [ ] Allow editing (when Edit Profile is implemented)
+- [x] **Email** - User email
+  - [x] Show in UserProfileSettingsScreen
+  - [x] Show in SettingsScreen profile card
+  - [x] Allow editing (with modal, saves locally and calls dummy API)
 
 - [ ] **Sign In Status** - Authentication state
   - [ ] Show "Guest User" when not signed in
@@ -103,12 +106,6 @@ This document tracks the implementation status of each setting feature.
   - [ ] Reset to guest state
   - [ ] Navigate to appropriate screen
 
-- [ ] **Edit Profile** - Update user information
-  - [ ] Create edit profile screen
-  - [ ] Allow editing name, email
-  - [ ] Implement API call to update profile
-  - [ ] Update local storage
-  - [ ] Handle errors
 
 - [ ] **Change Password** - Update password
   - [ ] Create change password screen

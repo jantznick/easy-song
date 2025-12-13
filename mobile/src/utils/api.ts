@@ -111,3 +111,17 @@ export function computeAdditionalContent(song: Song | null, studyData: StudyData
   });
 }
 
+/**
+ * Updates user profile (dummy API call - always returns success for now)
+ * @param updates Partial profile updates (name, email, etc.)
+ * @returns Promise that resolves to success response
+ */
+export async function updateUserProfile(updates: { name?: string; email?: string }): Promise<{ success: boolean }> {
+  // TODO: Replace with actual API call when backend is ready
+  // Simulate API delay
+  await new Promise(resolve => setTimeout(resolve, 300));
+  
+  // Always return success for now
+  return { success: true };
+}
+

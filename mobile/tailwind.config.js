@@ -5,21 +5,24 @@ module.exports = {
     "./src/**/*.{js,jsx,ts,tsx}",
   ],
   presets: [require("nativewind/preset")],
+  darkMode: 'class',
   theme: {
     extend: {
       colors: {
+        // Light theme (default) - use with dark: variants for dark mode
         primary: '#6366F1',
         'primary-hover': '#818CF8',
         secondary: '#10B981',
         accent: '#F59E0B',
-        background: '#0F172A',
-        'background-secondary': '#1E293B',
-        surface: '#1E293B',
-        'surface-hover': '#334155',
-        border: '#334155',
-        'text-primary': '#F1F5F9',
-        'text-secondary': '#94A3B8',
-        'text-muted': '#64748B',
+        // These will be overridden with dark: classes
+        background: '#FAFBFC', // Soft off-white
+        'background-secondary': '#F4F6F8',
+        surface: '#FFFFFF', // Pure white for cards
+        'surface-hover': '#F8FAFC',
+        border: '#E4E7EB', // Softer, warmer border
+        'text-primary': '#1A1F2E', // Darker, richer black
+        'text-secondary': '#4B5563', // Medium gray
+        'text-muted': '#9CA3AF', // Lighter gray
       },
     },
   },

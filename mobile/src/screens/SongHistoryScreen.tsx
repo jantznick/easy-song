@@ -6,6 +6,8 @@ import { Ionicons } from '@expo/vector-icons';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '../types/navigation';
 import { ALL_SONG_HISTORY, type SongHistoryItem } from '../data/songHistory';
+import { useThemeClasses } from '../utils/themeClasses';
+import { useTheme } from '../contexts/ThemeContext';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'SongHistory'>;
 
@@ -13,6 +15,8 @@ const ITEMS_PER_PAGE = 20;
 
 export default function SongHistoryScreen({ route }: Props) {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+  const theme = useThemeClasses();
+  const { isDark } = useTheme();
   const [currentPage, setCurrentPage] = useState(1);
 
   const totalPages = Math.ceil(ALL_SONG_HISTORY.length / ITEMS_PER_PAGE);
@@ -36,17 +40,17 @@ export default function SongHistoryScreen({ route }: Props) {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-background">
+    <SafeAreaView className={theme.bg('bg-background', 'bg-[#0F172A]')} style={{ flex: 1 }}>
       {/* Custom Header */}
-      <View className="bg-surface border-b border-border px-5 py-4 flex-row items-center">
+      <View className={theme.bg('bg-surface', 'bg-[#1E293B]') + ' ' + theme.border('border-border', 'border-[#334155]') + ' border-b px-5 py-4 flex-row items-center'}>
         <TouchableOpacity
           onPress={() => navigation.goBack()}
           className="mr-4"
           hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
         >
-          <Text className="text-2xl text-text-primary">←</Text>
+          <Text className={theme.text('text-text-primary', 'text-[#F1F5F9]') + ' text-2xl'}>←</Text>
         </TouchableOpacity>
-        <Text className="text-lg font-semibold text-text-primary flex-1">Song History</Text>
+        <Text className={theme.text('text-text-primary', 'text-[#F1F5F9]') + ' text-lg font-semibold flex-1'}>Song History</Text>
       </View>
 
       <ScrollView 
@@ -55,13 +59,13 @@ export default function SongHistoryScreen({ route }: Props) {
         showsVerticalScrollIndicator={false}
       >
         {/* Song History List */}
-        <View className="bg-surface rounded-xl border border-border overflow-hidden">
+        <View className={theme.bg('bg-surface', 'bg-[#1E293B]') + ' ' + theme.border('border-border', 'border-[#334155]') + ' rounded-xl border overflow-hidden'}>
           {currentItems.map((item, index, array) => (
             <TouchableOpacity
               key={index}
               activeOpacity={0.7}
               className={`flex-row items-center py-4 px-5 ${
-                index < array.length - 1 ? 'border-b border-border' : ''
+                index < array.length - 1 ? theme.border('border-border', 'border-[#334155]') + ' border-b' : ''
               }`}
                 onPress={() => {
                   const initialTab = item.mode === 'Play Mode' ? 'PlayMode' : 'StudyMode';
@@ -84,73 +88,73 @@ export default function SongHistoryScreen({ route }: Props) {
                 />
               </View>
               <View className="flex-1">
-                <Text className="text-base text-text-primary font-medium mb-1">
+                <Text className={theme.text('text-text-primary', 'text-[#F1F5F9]') + ' text-base font-medium mb-1'}>
                   {item.song}
                 </Text>
-                <Text className="text-sm text-text-secondary mb-1">
+                <Text className={theme.text('text-text-secondary', 'text-[#94A3B8]') + ' text-sm mb-1'}>
                   {item.artist}
                 </Text>
                 <View className="flex-row items-center">
                   <View className="bg-primary/10 px-2 py-0.5 rounded mr-2">
-                    <Text className="text-xs text-primary font-medium">
+                    <Text className="text-xs font-medium text-primary">
                       {item.mode}
                     </Text>
                   </View>
-                  <Text className="text-xs text-text-muted">
+                  <Text className={theme.text('text-text-muted', 'text-[#64748B]') + ' text-xs'}>
                     {item.date} • {item.time}
                   </Text>
                 </View>
               </View>
-              <Ionicons name="chevron-forward" size={20} color="#94A3B8" />
+              <Ionicons name="chevron-forward" size={20} color={isDark ? '#94A3B8' : '#4B5563'} />
             </TouchableOpacity>
           ))}
         </View>
       </ScrollView>
 
       {/* Pagination Controls - Fixed at Bottom */}
-      <View className="bg-surface border-t border-border px-5 py-4">
+      <View className={theme.bg('bg-surface', 'bg-[#1E293B]') + ' ' + theme.border('border-border', 'border-[#334155]') + ' border-t px-5 py-4'}>
         <View className="flex-row items-center justify-between">
           <TouchableOpacity
             onPress={handlePrevious}
             disabled={currentPage === 1}
-            className={`flex-row items-center px-4 py-2 rounded-lg ${
+            className={`flex-row items-center px-4 py-2 rounded-lg border ${
               currentPage === 1
-                ? 'bg-surface/50 border border-border'
-                : 'bg-surface border border-border'
+                ? (isDark ? 'bg-[#1E293B]/50 border-[#334155]' : 'bg-surface/50 border-border')
+                : theme.bg('bg-surface', 'bg-[#1E293B]') + ' ' + theme.border('border-border', 'border-[#334155]')
             }`}
             activeOpacity={0.7}
           >
             <Ionicons
               name="chevron-back"
               size={20}
-              color={currentPage === 1 ? '#64748B' : '#94A3B8'}
+              color={currentPage === 1 ? '#64748B' : (isDark ? '#94A3B8' : '#4B5563')}
             />
             <Text
               className={`ml-2 text-sm font-medium ${
-                currentPage === 1 ? 'text-text-muted' : 'text-text-primary'
+                currentPage === 1 ? theme.text('text-text-muted', 'text-[#64748B]') : theme.text('text-text-primary', 'text-[#F1F5F9]')
               }`}
             >
               Previous
             </Text>
           </TouchableOpacity>
 
-          <Text className="text-sm text-text-secondary">
+          <Text className={theme.text('text-text-secondary', 'text-[#94A3B8]') + ' text-sm'}>
             Page {currentPage} of {totalPages}
           </Text>
 
           <TouchableOpacity
             onPress={handleNext}
             disabled={currentPage === totalPages}
-            className={`flex-row items-center px-4 py-2 rounded-lg ${
+            className={`flex-row items-center px-4 py-2 rounded-lg border ${
               currentPage === totalPages
-                ? 'bg-surface/50 border border-border'
-                : 'bg-surface border border-border'
+                ? (isDark ? 'bg-[#1E293B]/50 border-[#334155]' : 'bg-surface/50 border-border')
+                : theme.bg('bg-surface', 'bg-[#1E293B]') + ' ' + theme.border('border-border', 'border-[#334155]')
             }`}
             activeOpacity={0.7}
           >
             <Text
               className={`mr-2 text-sm font-medium ${
-                currentPage === totalPages ? 'text-text-muted' : 'text-text-primary'
+                currentPage === totalPages ? theme.text('text-text-muted', 'text-[#64748B]') : theme.text('text-text-primary', 'text-[#F1F5F9]')
               }`}
             >
               Next
@@ -158,7 +162,7 @@ export default function SongHistoryScreen({ route }: Props) {
             <Ionicons
               name="chevron-forward"
               size={20}
-              color={currentPage === totalPages ? '#64748B' : '#94A3B8'}
+              color={currentPage === totalPages ? '#64748B' : (isDark ? '#94A3B8' : '#4B5563')}
             />
           </TouchableOpacity>
         </View>

@@ -8,6 +8,8 @@ import type { Song, SongSection, LyricLine } from '../types/song';
 import type { SongDetailTabParamList } from '../types/navigation';
 import { useUser } from '../hooks/useUser';
 import { getFontSizes } from '../utils/fontSizes';
+import { useTheme } from '../contexts/ThemeContext';
+import { useThemeClasses } from '../utils/themeClasses';
 
 type Props = BottomTabScreenProps<SongDetailTabParamList, 'PlayMode'>;
 
@@ -15,6 +17,8 @@ export default function PlayModeScreen({ route }: Props) {
   const { videoId } = route.params;
   const navigation = useNavigation();
   const { preferences } = useUser();
+  const { isDark } = useTheme();
+  const theme = useThemeClasses();
   const [song, setSong] = useState<Song | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -147,10 +151,10 @@ export default function PlayModeScreen({ route }: Props) {
 
   if (isLoading) {
     return (
-      <SafeAreaView className="flex-1 bg-background">
+      <SafeAreaView className={theme.bg('bg-background', 'bg-[#0F172A]')} style={{ flex: 1 }}>
         <View className="flex-1 items-center justify-center">
           <ActivityIndicator size="large" color="#6366F1" />
-          <Text className="mt-4 text-text-secondary text-base">Loading song...</Text>
+          <Text className={theme.text('text-text-secondary', 'text-[#94A3B8]') + ' mt-4 text-base'}>Loading song...</Text>
         </View>
       </SafeAreaView>
     );
@@ -158,27 +162,27 @@ export default function PlayModeScreen({ route }: Props) {
 
   if (error || !song) {
     return (
-      <SafeAreaView className="flex-1 bg-background">
+      <SafeAreaView className={theme.bg('bg-background', 'bg-[#0F172A]')} style={{ flex: 1 }}>
         <View className="flex-1 items-center justify-center px-4">
-          <Text className="text-red-400 text-center mb-2 text-lg font-semibold">Error</Text>
-          <Text className="text-text-secondary text-center text-base">{error || 'Song not found'}</Text>
+          <Text className="text-center mb-2 text-lg font-semibold text-red-500">Error</Text>
+          <Text className={theme.text('text-text-secondary', 'text-[#94A3B8]') + ' text-center text-base'}>{error || 'Song not found'}</Text>
         </View>
       </SafeAreaView>
     );
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-background">
+    <SafeAreaView className={theme.bg('bg-background', 'bg-[#0F172A]')} style={{ flex: 1 }}>
       {/* Custom Header */}
-      <View className="bg-surface border-b border-border px-5 py-4 flex-row items-center">
+      <View className={theme.bg('bg-surface', 'bg-[#1E293B]') + ' ' + theme.border('border-border', 'border-[#334155]') + ' border-b px-5 py-4 flex-row items-center'}>
         <TouchableOpacity
           onPress={() => navigation.goBack()}
           className="mr-4"
           hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
         >
-          <Text className="text-2xl text-text-primary">←</Text>
+          <Text className={theme.text('text-text-primary', 'text-[#F1F5F9]') + ' text-2xl'}>←</Text>
         </TouchableOpacity>
-        <Text className="text-lg font-semibold text-text-primary flex-1" numberOfLines={1}>
+        <Text className={theme.text('text-text-primary', 'text-[#F1F5F9]') + ' text-lg font-semibold flex-1'} numberOfLines={1}>
           {song.title}
         </Text>
       </View>
@@ -209,10 +213,10 @@ export default function PlayModeScreen({ route }: Props) {
             contentContainerStyle={{ paddingRight: 20 }}
           >
             <View className="flex-row items-center">
-              <Text className="text-base font-semibold text-text-primary mr-2">
+              <Text className={theme.text('text-text-primary', 'text-[#F1F5F9]') + ' text-base font-semibold mr-2'}>
                 {song.title}
               </Text>
-              <Text className="text-sm text-text-secondary">
+              <Text className={theme.text('text-text-secondary', 'text-[#94A3B8]') + ' text-sm'}>
                 • {song.artist}
               </Text>
             </View>
@@ -222,18 +226,18 @@ export default function PlayModeScreen({ route }: Props) {
 
       {/* Scrollable Lyrics Container */}
       <View className="flex-1 px-5">
-        <View className="bg-surface rounded-xl border border-border flex-1">
+        <View className={theme.bg('bg-surface', 'bg-[#1E293B]') + ' ' + theme.border('border-border', 'border-[#334155]') + ' rounded-xl border flex-1'}>
           {/* Lyrics Header with Toggle */}
-          <View className="flex-row items-center justify-between p-5 border-b border-border">
-            <Text className="text-lg font-semibold text-text-primary">Lyrics</Text>
+          <View className={theme.border('border-border', 'border-[#334155]') + ' flex-row items-center justify-between p-5 border-b'}>
+            <Text className={theme.text('text-text-primary', 'text-[#F1F5F9]') + ' text-lg font-semibold'}>Lyrics</Text>
             <View className="flex-row items-center">
-              <Text className="text-sm text-text-secondary mr-2">Show translations</Text>
+              <Text className={theme.text('text-text-secondary', 'text-[#94A3B8]') + ' text-sm mr-2'}>Show translations</Text>
               <Switch
                 value={showTranslations}
                 onValueChange={setShowTranslations}
-                trackColor={{ false: '#334155', true: '#6366F1' }}
-                thumbColor={showTranslations ? '#ffffff' : '#94A3B8'}
-                ios_backgroundColor="#334155"
+                trackColor={{ false: isDark ? '#334155' : '#E4E7EB', true: '#6366F1' }}
+                thumbColor={showTranslations ? '#ffffff' : (isDark ? '#94A3B8' : '#9CA3AF')}
+                ios_backgroundColor={isDark ? '#334155' : '#E4E7EB'}
               />
             </View>
           </View>
@@ -255,28 +259,24 @@ export default function PlayModeScreen({ route }: Props) {
                   }}
                   onPress={() => handleLinePress(line)}
                   activeOpacity={0.7}
-                  style={[
-                    {
-                      marginBottom: 12,
-                      padding: 16,
-                      borderRadius: 8,
-                      borderLeftWidth: 4,
-                      borderLeftColor: isActive ? '#6366F1' : 'transparent',
-                      backgroundColor: isActive ? 'rgba(99, 102, 241, 0.2)' : 'transparent',
-                      shadowColor: isActive ? '#6366F1' : 'transparent',
-                      shadowOffset: isActive ? { width: 0, height: 2 } : { width: 0, height: 0 },
-                      shadowOpacity: isActive ? 0.1 : 0,
-                      shadowRadius: isActive ? 8 : 0,
-                      elevation: isActive ? 4 : 0,
-                    }
-                  ]}
+                  className="mb-3 p-4 rounded-lg"
+                  style={{
+                    borderLeftWidth: 4,
+                    borderLeftColor: isActive ? '#6366F1' : 'transparent',
+                    backgroundColor: isActive ? '#6366F133' : 'transparent',
+                    shadowColor: isActive ? '#6366F1' : 'transparent',
+                    shadowOffset: isActive ? { width: 0, height: 2 } : { width: 0, height: 0 },
+                    shadowOpacity: isActive ? 0.1 : 0,
+                    shadowRadius: isActive ? 8 : 0,
+                    elevation: isActive ? 4 : 0,
+                  }}
                 >
                   <Text
                     style={{
                       fontSize: fontSizes.main,
                       lineHeight: fontSizes.lineHeight.main,
                       marginBottom: showTranslations && line.english ? 4 : 0,
-                      color: isActive ? '#6366F1' : '#94A3B8',
+                      color: isActive ? '#6366F1' : (isDark ? '#94A3B8' : '#4B5563'),
                       fontWeight: isActive ? '600' : '400',
                     }}
                   >
@@ -287,7 +287,7 @@ export default function PlayModeScreen({ route }: Props) {
                       style={{
                         fontSize: fontSizes.translation,
                         lineHeight: fontSizes.lineHeight.translation,
-                        color: '#64748B',
+                        color: isDark ? '#64748B' : '#9CA3AF',
                         fontStyle: 'italic',
                       }}
                     >
