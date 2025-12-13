@@ -27,11 +27,11 @@ This document tracks the implementation status of each setting feature.
 ## Display Settings
 
 ### ✅ Storage Implemented
-- [ ] **Font Size** - Text size for lyrics ('small' | 'medium' | 'large')
-  - [ ] Apply font size to PlayModeScreen lyrics
-  - [ ] Apply font size to StudyModeScreen lyrics
-  - [ ] Define font size constants (small: 14, medium: 16, large: 18)
-  - [ ] Test all three sizes
+- [x] **Font Size** - Text size for lyrics ('small' | 'medium' | 'large')
+  - [x] Apply font size to PlayModeScreen lyrics
+  - [x] Apply font size to StudyModeScreen lyrics
+  - [x] Define font size constants (small: 14, medium: 16, large: 18)
+  - [x] Test all three sizes
 
 - [ ] **Default Translation** - Show translations by default
   - [ ] Connect to PlayModeScreen

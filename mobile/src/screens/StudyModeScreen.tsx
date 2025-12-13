@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useMemo } from 'react';
-import { View, Text, SafeAreaView, ScrollView, TouchableOpacity } from 'react-native';
+import { View, Text, SafeAreaView, ScrollView, TouchableOpacity, Switch } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import type { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
@@ -50,6 +50,7 @@ export default function StudyModeScreen({ route }: Props) {
   const [additionalContent, setAdditionalContent] = useState<LyricLine[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [showTranslations, setShowTranslations] = useState<boolean>(preferences.display.defaultTranslation);
   const [expandedSectionIndex, setExpandedSectionIndex] = useState<number | null>(null);
   const [expandedExplanations, setExpandedExplanations] = useState<Set<number>>(new Set());
   const [activeLineIndex, setActiveLineIndex] = useState<number | null>(null);
@@ -191,6 +192,11 @@ export default function StudyModeScreen({ route }: Props) {
     setActiveLineIndex(null);
     setPlaying(false);
   }, [expandedSectionIndex]);
+
+  // Sync showTranslations with preference when preferences load from storage
+  useEffect(() => {
+    setShowTranslations(preferences.display.defaultTranslation);
+  }, [preferences.display.defaultTranslation]);
 
   // Get font sizes based on preference (must be before any early returns)
   const fontSizes = useMemo(() => getFontSizes(preferences.display.fontSize), [preferences.display.fontSize]);
@@ -422,13 +428,29 @@ export default function StudyModeScreen({ route }: Props) {
 
       {/* Scrollable Lyrics Content - Completely Separate Container */}
       {hasStudyData ? (
-        <ScrollView
-          ref={contentScrollRef}
-          className="flex-1"
-          contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 32 }}
-          showsVerticalScrollIndicator={true}
-        >
+        <View className="flex-1 px-5">
+          <View className="bg-surface rounded-xl border border-border flex-1">
+            {/* Content Header with Toggle */}
+            <View className="flex-row items-center justify-between p-5 border-b border-border">
+              <Text className="text-lg font-semibold text-text-primary">Study Content</Text>
+              <View className="flex-row items-center">
+                <Text className="text-sm text-text-secondary mr-2">Show translations</Text>
+                <Switch
+                  value={showTranslations}
+                  onValueChange={setShowTranslations}
+                  trackColor={{ false: '#334155', true: '#6366F1' }}
+                  thumbColor={showTranslations ? '#ffffff' : '#94A3B8'}
+                  ios_backgroundColor="#334155"
+                />
+              </View>
+            </View>
 
+            <ScrollView
+              ref={contentScrollRef}
+              className="flex-1"
+              contentContainerStyle={{ padding: 20, paddingBottom: 40 }}
+              showsVerticalScrollIndicator={true}
+            >
               {/* Lines Content */}
               {expandedSectionIndex !== null && (
                 <View className="bg-surface rounded-xl border border-border p-4">
@@ -472,15 +494,17 @@ export default function StudyModeScreen({ route }: Props) {
                                 }}>
                                   {line.spanish}
                                 </Text>
-                                <Text style={{
-                                  fontSize: fontSizes.translation,
-                                  lineHeight: fontSizes.lineHeight.translation,
-                                  color: '#94A3B8',
-                                  fontStyle: 'italic',
-                                  marginBottom: line.explanation ? 8 : 0,
-                                }}>
-                                  {line.english}
-                                </Text>
+                                {showTranslations && line.english && (
+                                  <Text style={{
+                                    fontSize: fontSizes.translation,
+                                    lineHeight: fontSizes.lineHeight.translation,
+                                    color: '#94A3B8',
+                                    fontStyle: 'italic',
+                                    marginBottom: line.explanation ? 8 : 0,
+                                  }}>
+                                    {line.english}
+                                  </Text>
+                                )}
                                 {line.explanation && (
                                   <Text style={{
                                     fontSize: fontSizes.explanation,
@@ -539,7 +563,7 @@ export default function StudyModeScreen({ route }: Props) {
                                 }}>
                                   {line.spanish}
                                 </Text>
-                                {line.english && (
+                                {showTranslations && line.english && (
                                   <Text style={{
                                     fontSize: fontSizes.translation,
                                     lineHeight: fontSizes.lineHeight.translation,
@@ -574,7 +598,9 @@ export default function StudyModeScreen({ route }: Props) {
                   <Text className="text-text-secondary">Select a section above to view its content</Text>
                 </View>
               )}
-        </ScrollView>
+            </ScrollView>
+          </View>
+        </View>
       ) : (
         <View className="flex-1 items-center justify-center px-4">
           <View className="bg-surface rounded-xl border border-border p-8 items-center">
