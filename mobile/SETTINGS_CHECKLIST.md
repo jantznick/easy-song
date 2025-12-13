@@ -79,14 +79,9 @@ This document tracks the implementation status of each setting feature.
   - [x] Allow editing (with modal, saves locally and calls dummy API)
 
 - [ ] **Sign In Status** - Authentication state
-  - [ ] Show "Guest User" when not signed in
-  - [ ] Show user name when signed in
+  - [x] Show "Guest User" when not signed in
+  - [x] Show user name when signed in
   - [ ] Update UI based on auth status
-
-- [ ] **Profile Picture** - User avatar (future)
-  - [ ] Add avatar upload functionality
-  - [ ] Display avatar in profile sections
-  - [ ] Store avatar URL/path
 
 ---
 
