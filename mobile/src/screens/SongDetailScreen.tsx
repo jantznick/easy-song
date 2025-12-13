@@ -12,11 +12,12 @@ type Props = NativeStackScreenProps<RootStackParamList, 'SongDetail'>;
 const Tab = createBottomTabNavigator<SongDetailTabParamList>();
 
 export default function SongDetailScreen({ route }: Props) {
-  const { videoId } = route.params;
+  const { videoId, initialTab } = route.params;
   const insets = useSafeAreaInsets();
 
   return (
     <Tab.Navigator
+      initialRouteName={initialTab || 'PlayMode'}
       screenOptions={{
         headerShown: false,
         tabBarStyle: {

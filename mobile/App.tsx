@@ -3,6 +3,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import './global.css';
+import { UserProvider } from './src/contexts/UserContext';
 import SongListScreen from './src/screens/SongListScreen';
 import SongDetailScreen from './src/screens/SongDetailScreen';
 import UserProfileSettingsScreen from './src/screens/UserProfileSettingsScreen';
@@ -10,6 +11,7 @@ import HelpScreen from './src/screens/HelpScreen';
 import TermsOfServiceScreen from './src/screens/TermsOfServiceScreen';
 import PrivacyPolicyScreen from './src/screens/PrivacyPolicyScreen';
 import AboutScreen from './src/screens/AboutScreen';
+import SongHistoryScreen from './src/screens/SongHistoryScreen';
 import type { RootStackParamList } from './src/types/navigation';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -17,13 +19,14 @@ const Stack = createNativeStackNavigator<RootStackParamList>();
 export default function App() {
   return (
     <SafeAreaProvider>
-      <NavigationContainer>
-        <Stack.Navigator
-          initialRouteName="SongList"
-          screenOptions={{
-            headerShown: false,
-          }}
-        >
+      <UserProvider>
+        <NavigationContainer>
+          <Stack.Navigator
+            initialRouteName="SongList"
+            screenOptions={{
+              headerShown: false,
+            }}
+          >
           <Stack.Screen
             name="SongList"
             component={SongListScreen}
@@ -52,9 +55,14 @@ export default function App() {
                     name="About"
                     component={AboutScreen}
                   />
+                  <Stack.Screen
+                    name="SongHistory"
+                    component={SongHistoryScreen}
+                  />
                 </Stack.Navigator>
-        <StatusBar style="light" />
-      </NavigationContainer>
+          <StatusBar style="light" />
+        </NavigationContainer>
+      </UserProvider>
     </SafeAreaProvider>
   );
 }

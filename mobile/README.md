@@ -45,3 +45,4 @@ mobile/
 - **NativeWind** - Tailwind CSS for React Native
 - **TypeScript** - Type safety
 
+

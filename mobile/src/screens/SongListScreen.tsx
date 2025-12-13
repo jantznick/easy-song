@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
-import { View, Text, ScrollView, ActivityIndicator, SafeAreaView } from 'react-native';
+import { View, Text, ScrollView, ActivityIndicator, SafeAreaView, TouchableOpacity } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { SongSummary } from '../types/song';
 import { fetchSongs } from '../utils/api';
@@ -63,8 +64,15 @@ export default function SongListScreen({ navigation }: Props) {
         showsVerticalScrollIndicator={false}
       >
         {/* Header */}
-        <View className="px-5 pt-4 pb-5 border-b border-border">
+        <View className="px-5 pt-4 pb-5 border-b border-border flex-row items-center justify-between">
           <Text className="text-3xl font-bold text-text-primary">Songs</Text>
+          <TouchableOpacity
+            onPress={() => navigation.navigate('UserProfileSettings')}
+            activeOpacity={0.7}
+            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+          >
+            <Ionicons name="settings-outline" size={24} color="#94A3B8" />
+          </TouchableOpacity>
         </View>
 
         {/* Songs Grid */}
