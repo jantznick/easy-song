@@ -2,18 +2,48 @@ import express from 'express';
 import cors from 'cors';
 import fs from 'fs/promises';
 import path from 'path';
+import { config } from './config';
+import { sessionMiddleware } from './lib/session';
+import authRoutes from './routes/auth';
+import userRoutes from './routes/user';
+import preferencesRoutes from './routes/preferences';
+import historyRoutes from './routes/history';
 
 const app = express();
-const PORT = process.env.PORT || 3001; // Use port 3001 for the backend
+const PORT = config.port;
 
 const SONGS_DIR = path.resolve(__dirname, '../data/songs');
 const STUDY_DIR = path.resolve(__dirname, '../data/study');
 
-// Middleware
-app.use(cors()); // Allow requests from our frontend
-app.use(express.json());
+// CORS configuration - allow credentials for session cookies
+app.use(cors({
+  origin: [
+    config.frontendUrl,
+    config.mobileUrl,
+    'http://localhost:5173',
+    'http://localhost:8081',
+    'exp://localhost:8081',
+  ],
+  credentials: true,
+}));
 
-// --- API Endpoints ---
+// Middleware
+app.use(express.json());
+app.use(sessionMiddleware);
+
+// --- API Routes ---
+
+// Authentication routes
+app.use('/api/auth', authRoutes);
+
+// User routes
+app.use('/api/user', userRoutes);
+app.use('/api/user', preferencesRoutes);
+
+// History routes
+app.use('/api/history', historyRoutes);
+
+// --- Song Data Endpoints (existing) ---
 
 /**
  * Endpoint to get a list of all available songs.
@@ -82,8 +112,14 @@ app.get('/api/songs/:videoId/study', async (req, res) => {
   }
 });
 
+// Health check endpoint
+app.get('/api/health', (req, res) => {
+  res.json({ status: 'ok', timestamp: new Date().toISOString() });
+});
+
 // Start the server
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`✅ Backend server is running at http://localhost:${PORT}`);
   console.log(`   Also accessible on your local network at http://<your-ip>:${PORT}`);
+  console.log(`   Environment: ${config.nodeEnv}`);
 });

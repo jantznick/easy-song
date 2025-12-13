@@ -1,0 +1,87 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String    @id @default(uuid())
+  email         String    @unique
+  name          String
+  avatar        String?
+  emailVerified Boolean   @default(false)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  preferences   UserPreferences?
+  magicCodes    MagicCode[]
+  songHistory   SongHistory[]
+
+  @@index([email])
+}
+
+model UserPreferences {
+  id        String   @id @default(uuid())
+  userId    String   @unique
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // Playback preferences
+  playback  Json     @default("{\"autoplay\":false,\"autoscroll\":true,\"loop\":false}")
+  
+  // Display preferences
+  display   Json     @default("{\"fontSize\":\"medium\",\"defaultTranslation\":false,\"theme\":\"dark\"}")
+  
+  // Language preferences
+  language  Json     @default("{\"learning\":\"Spanish\",\"interface\":\"English\"}")
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model MagicCode {
+  id        String   @id @default(uuid())
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  email     String
+  code      String   @db.VarChar(6)
+  type      MagicCodeType
+  expiresAt DateTime
+  used      Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([email, code, type])
+  @@index([expiresAt])
+}
+
+enum MagicCodeType {
+  LOGIN
+  EMAIL_VERIFICATION
+}
+
+model SongHistory {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  song      String
+  artist    String
+  mode      SongMode
+  videoId   String
+  playedAt  DateTime @default(now())
+  createdAt DateTime @default(now())
+
+  @@index([userId, playedAt])
+  @@index([videoId])
+  @@index([playedAt])
+}
+
+enum SongMode {
+  PLAY_MODE
+  STUDY_MODE
+}
+

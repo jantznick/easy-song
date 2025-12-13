@@ -9,7 +9,7 @@
     "resolveJsonModule": true,
     "outDir": "./dist"
   },
-  "include": ["scripts/**/*.ts"],
+  "include": ["src/**/*.ts", "scripts/**/*.ts"],
   "exclude": ["node_modules"]
 }
 
