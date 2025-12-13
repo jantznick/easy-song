@@ -5,6 +5,7 @@ import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { Ionicons } from '@expo/vector-icons';
 import type { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
 import type { SongDetailTabParamList, RootStackParamList } from '../types/navigation';
+import { useUser } from '../hooks/useUser';
 
 type Props = BottomTabScreenProps<SongDetailTabParamList, 'Settings'>;
 
@@ -71,15 +72,13 @@ function SettingsSection({ title, children }: { title: string; children: React.R
 export default function SettingsScreen({ route }: Props) {
   const { videoId } = route.params;
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+  const {
+    preferences,
+    updatePlaybackPreference,
+    updateDisplayPreference,
+    updateLanguagePreference,
+  } = useUser();
 
-  // Placeholder state - will be functional later
-  const [autoplay, setAutoplay] = useState(false);
-  const [autoscroll, setAutoscroll] = useState(true);
-  const [showTranslations, setShowTranslations] = useState(false);
-  const [fontSize, setFontSize] = useState('medium');
-  const [theme, setTheme] = useState<'light' | 'dark' | 'system'>('dark');
-  const [learningLanguage, setLearningLanguage] = useState('Spanish');
-  const [interfaceLanguage, setInterfaceLanguage] = useState('English');
   const [showLearningLanguageModal, setShowLearningLanguageModal] = useState(false);
   const [showInterfaceLanguageModal, setShowInterfaceLanguageModal] = useState(false);
 
@@ -132,15 +131,15 @@ export default function SettingsScreen({ route }: Props) {
             icon="play-circle"
             title="Autoplay"
             subtitle="Automatically start playing when opening a song"
-            value={autoplay}
-            onValueChange={setAutoplay}
+            value={preferences.playback.autoplay}
+            onValueChange={(value) => updatePlaybackPreference('autoplay', value)}
           />
           <SettingItem
             icon="arrow-down-circle"
             title="Auto-scroll Lyrics"
             subtitle="Automatically scroll to active lyric line"
-            value={autoscroll}
-            onValueChange={setAutoscroll}
+            value={preferences.playback.autoscroll}
+            onValueChange={(value) => updatePlaybackPreference('autoscroll', value)}
           />
           <SettingItem
             icon="repeat"
@@ -161,37 +160,37 @@ export default function SettingsScreen({ route }: Props) {
               <Text className="text-base text-text-primary font-medium mb-2">Font Size</Text>
               <View className="flex-row bg-surface border border-border rounded-full p-1">
                 <TouchableOpacity
-                  onPress={() => setFontSize('small')}
+                  onPress={() => updateDisplayPreference('fontSize', 'small')}
                   className={`flex-1 py-2 rounded-full ${
-                    fontSize === 'small' ? 'bg-primary' : ''
+                    preferences.display.fontSize === 'small' ? 'bg-primary' : ''
                   }`}
                 >
                   <Text className={`text-sm font-medium text-center ${
-                    fontSize === 'small' ? 'text-white' : 'text-text-secondary'
+                    preferences.display.fontSize === 'small' ? 'text-white' : 'text-text-secondary'
                   }`}>
                     S
                   </Text>
                 </TouchableOpacity>
                 <TouchableOpacity
-                  onPress={() => setFontSize('medium')}
+                  onPress={() => updateDisplayPreference('fontSize', 'medium')}
                   className={`flex-1 py-2 rounded-full ${
-                    fontSize === 'medium' ? 'bg-primary' : ''
+                    preferences.display.fontSize === 'medium' ? 'bg-primary' : ''
                   }`}
                 >
                   <Text className={`text-sm font-medium text-center ${
-                    fontSize === 'medium' ? 'text-white' : 'text-text-secondary'
+                    preferences.display.fontSize === 'medium' ? 'text-white' : 'text-text-secondary'
                   }`}>
                     M
                   </Text>
                 </TouchableOpacity>
                 <TouchableOpacity
-                  onPress={() => setFontSize('large')}
+                  onPress={() => updateDisplayPreference('fontSize', 'large')}
                   className={`flex-1 py-2 rounded-full ${
-                    fontSize === 'large' ? 'bg-primary' : ''
+                    preferences.display.fontSize === 'large' ? 'bg-primary' : ''
                   }`}
                 >
                   <Text className={`text-sm font-medium text-center ${
-                    fontSize === 'large' ? 'text-white' : 'text-text-secondary'
+                    preferences.display.fontSize === 'large' ? 'text-white' : 'text-text-secondary'
                   }`}>
                     L
                   </Text>
@@ -203,8 +202,8 @@ export default function SettingsScreen({ route }: Props) {
             icon="language"
             title="Default Translation"
             subtitle="Show translations by default"
-            value={showTranslations}
-            onValueChange={setShowTranslations}
+            value={preferences.display.defaultTranslation}
+            onValueChange={(value) => updateDisplayPreference('defaultTranslation', value)}
           />
           <View className="flex-row items-center py-3 px-5 border-b border-border">
             <View className="w-8 items-center mr-3">
@@ -214,37 +213,37 @@ export default function SettingsScreen({ route }: Props) {
               <Text className="text-base text-text-primary font-medium mb-2">Theme</Text>
               <View className="flex-row bg-surface border border-border rounded-full p-1">
                 <TouchableOpacity
-                  onPress={() => setTheme('light')}
+                  onPress={() => updateDisplayPreference('theme', 'light')}
                   className={`flex-1 py-2 rounded-full ${
-                    theme === 'light' ? 'bg-primary' : ''
+                    preferences.display.theme === 'light' ? 'bg-primary' : ''
                   }`}
                 >
                   <Text className={`text-sm font-medium text-center ${
-                    theme === 'light' ? 'text-white' : 'text-text-secondary'
+                    preferences.display.theme === 'light' ? 'text-white' : 'text-text-secondary'
                   }`}>
                     Light
                   </Text>
                 </TouchableOpacity>
                 <TouchableOpacity
-                  onPress={() => setTheme('dark')}
+                  onPress={() => updateDisplayPreference('theme', 'dark')}
                   className={`flex-1 py-2 rounded-full ${
-                    theme === 'dark' ? 'bg-primary' : ''
+                    preferences.display.theme === 'dark' ? 'bg-primary' : ''
                   }`}
                 >
                   <Text className={`text-sm font-medium text-center ${
-                    theme === 'dark' ? 'text-white' : 'text-text-secondary'
+                    preferences.display.theme === 'dark' ? 'text-white' : 'text-text-secondary'
                   }`}>
                     Dark
                   </Text>
                 </TouchableOpacity>
                 <TouchableOpacity
-                  onPress={() => setTheme('system')}
+                  onPress={() => updateDisplayPreference('theme', 'system')}
                   className={`flex-1 py-2 rounded-full ${
-                    theme === 'system' ? 'bg-primary' : ''
+                    preferences.display.theme === 'system' ? 'bg-primary' : ''
                   }`}
                 >
                   <Text className={`text-sm font-medium text-center ${
-                    theme === 'system' ? 'text-white' : 'text-text-secondary'
+                    preferences.display.theme === 'system' ? 'text-white' : 'text-text-secondary'
                   }`}>
                     System
                   </Text>
@@ -259,14 +258,14 @@ export default function SettingsScreen({ route }: Props) {
           <SettingItem
             icon="globe"
             title="Learning Language"
-            subtitle={learningLanguage}
+            subtitle={preferences.language.learning}
             showArrow
             onPress={() => setShowLearningLanguageModal(true)}
           />
           <SettingItem
             icon="language"
             title="Interface Language"
-            subtitle={interfaceLanguage}
+            subtitle={preferences.language.interface}
             showArrow
             onPress={() => setShowInterfaceLanguageModal(true)}
           />
@@ -336,14 +335,14 @@ export default function SettingsScreen({ route }: Props) {
                 <TouchableOpacity
                   key={language.code}
                   onPress={() => {
-                    setLearningLanguage(language.name);
+                    updateLanguagePreference('learning', language.name);
                     setShowLearningLanguageModal(false);
                   }}
                   className="flex-row items-center justify-between px-5 py-4 border-b border-border"
                   activeOpacity={0.7}
                 >
                   <Text className="text-base text-text-primary">{language.name}</Text>
-                  {learningLanguage === language.name && (
+                  {preferences.language.learning === language.name && (
                     <Ionicons name="checkmark" size={24} color="#6366F1" />
                   )}
                 </TouchableOpacity>
@@ -387,14 +386,14 @@ export default function SettingsScreen({ route }: Props) {
                 <TouchableOpacity
                   key={language.code}
                   onPress={() => {
-                    setInterfaceLanguage(language.name);
+                    updateLanguagePreference('interface', language.name);
                     setShowInterfaceLanguageModal(false);
                   }}
                   className="flex-row items-center justify-between px-5 py-4 border-b border-border"
                   activeOpacity={0.7}
                 >
                   <Text className="text-base text-text-primary">{language.name}</Text>
-                  {interfaceLanguage === language.name && (
+                  {preferences.language.interface === language.name && (
                     <Ionicons name="checkmark" size={24} color="#6366F1" />
                   )}
                 </TouchableOpacity>

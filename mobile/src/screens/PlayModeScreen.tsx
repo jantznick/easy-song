@@ -6,17 +6,19 @@ import { fetchSongById } from '../utils/api';
 import VideoPlayer from '../components/VideoPlayer';
 import type { Song, SongSection, LyricLine } from '../types/song';
 import type { SongDetailTabParamList } from '../types/navigation';
+import { useUser } from '../hooks/useUser';
 
 type Props = BottomTabScreenProps<SongDetailTabParamList, 'PlayMode'>;
 
 export default function PlayModeScreen({ route }: Props) {
   const { videoId } = route.params;
   const navigation = useNavigation();
+  const { preferences } = useUser();
   const [song, setSong] = useState<Song | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [playing, setPlaying] = useState(false);
-  const [showTranslations, setShowTranslations] = useState<boolean>(false);
+  const [showTranslations, setShowTranslations] = useState<boolean>(preferences.display.defaultTranslation);
   const [activeLineIndex, setActiveLineIndex] = useState<number | null>(null);
 
   const playerRef = useRef<any>(null);
@@ -55,6 +57,17 @@ export default function PlayModeScreen({ route }: Props) {
       }
     };
   }, [videoId]);
+
+  // Autoplay: Start playing when song loads if autoplay is enabled
+  useEffect(() => {
+    if (!isLoading && song && preferences.playback.autoplay) {
+      // Small delay to ensure video player is ready
+      const timer = setTimeout(() => {
+        setPlaying(true);
+      }, 500);
+      return () => clearTimeout(timer);
+    }
+  }, [isLoading, song, preferences.playback.autoplay]);
 
   // Auto-scroll to active line (matches frontend implementation)
   useEffect(() => {

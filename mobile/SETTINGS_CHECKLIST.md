@@ -5,9 +5,9 @@ This document tracks the implementation status of each setting feature.
 ## Playback Settings
 
 ### ✅ Storage Implemented
-- [ ] **Autoplay** - Auto-start video when opening a song
-  - [ ] Connect to PlayModeScreen/StudyModeScreen
-  - [ ] Auto-play video when screen loads if enabled
+- [x] **Autoplay** - Auto-start video when opening a song
+  - [x] Connect to PlayModeScreen (StudyModeScreen intentionally excluded)
+  - [x] Auto-play video when screen loads if enabled
   - [ ] Test with different songs
 
 - [ ] **Auto-scroll Lyrics** - Auto-scroll to active lyric line
