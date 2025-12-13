@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { View, Text, SafeAreaView, ScrollView, TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
@@ -9,6 +9,7 @@ import VideoPlayer from '../components/VideoPlayer';
 import type { Song, StudyData, StructuredSection, StructuredLine, LyricLine } from '../types/song';
 import type { SongDetailTabParamList } from '../types/navigation';
 import { useUser } from '../hooks/useUser';
+import { getFontSizes } from '../utils/fontSizes';
 
 type Props = BottomTabScreenProps<SongDetailTabParamList, 'StudyMode'>;
 
@@ -191,6 +192,9 @@ export default function StudyModeScreen({ route }: Props) {
     setPlaying(false);
   }, [expandedSectionIndex]);
 
+  // Get font sizes based on preference (must be before any early returns)
+  const fontSizes = useMemo(() => getFontSizes(preferences.display.fontSize), [preferences.display.fontSize]);
+
   const handlePlayAllClick = () => {
     if (expandedSectionIndex === null) return;
     
@@ -204,6 +208,7 @@ export default function StudyModeScreen({ route }: Props) {
       return;
     }
     
+    const sections = studyData?.structuredSections || [];
     let firstLine: StructuredLine | LyricLine | null = null;
     let lastLine: StructuredLine | LyricLine | null = null;
     
@@ -460,7 +465,7 @@ export default function StudyModeScreen({ route }: Props) {
                               </TouchableOpacity>
                               <View className="flex-1">
                                 <Text style={{
-                                  fontSize: 16,
+                                  fontSize: fontSizes.main,
                                   fontWeight: isActive ? '600' : '500',
                                   color: isActive ? '#6366F1' : '#F1F5F9',
                                   marginBottom: 4,
@@ -468,7 +473,8 @@ export default function StudyModeScreen({ route }: Props) {
                                   {line.spanish}
                                 </Text>
                                 <Text style={{
-                                  fontSize: 14,
+                                  fontSize: fontSizes.translation,
+                                  lineHeight: fontSizes.lineHeight.translation,
                                   color: '#94A3B8',
                                   fontStyle: 'italic',
                                   marginBottom: line.explanation ? 8 : 0,
@@ -477,9 +483,9 @@ export default function StudyModeScreen({ route }: Props) {
                                 </Text>
                                 {line.explanation && (
                                   <Text style={{
-                                    fontSize: 13,
+                                    fontSize: fontSizes.explanation,
                                     color: '#64748B',
-                                    lineHeight: 20,
+                                    lineHeight: fontSizes.lineHeight.explanation,
                                   }}>
                                     {line.explanation}
                                   </Text>
@@ -526,7 +532,7 @@ export default function StudyModeScreen({ route }: Props) {
                               </TouchableOpacity>
                               <View className="flex-1">
                                 <Text style={{
-                                  fontSize: 16,
+                                  fontSize: fontSizes.main,
                                   fontWeight: isActive ? '600' : '500',
                                   color: isActive ? '#6366F1' : '#F1F5F9',
                                   marginBottom: 4,
@@ -535,7 +541,8 @@ export default function StudyModeScreen({ route }: Props) {
                                 </Text>
                                 {line.english && (
                                   <Text style={{
-                                    fontSize: 14,
+                                    fontSize: fontSizes.translation,
+                                    lineHeight: fontSizes.lineHeight.translation,
                                     color: '#94A3B8',
                                     fontStyle: 'italic',
                                   }}>
@@ -544,9 +551,9 @@ export default function StudyModeScreen({ route }: Props) {
                                 )}
                                 {line.explanation && (
                                   <Text style={{
-                                    fontSize: 13,
+                                    fontSize: fontSizes.explanation,
                                     color: '#64748B',
-                                    lineHeight: 20,
+                                    lineHeight: fontSizes.lineHeight.explanation,
                                     marginTop: 8,
                                   }}>
                                     {line.explanation}

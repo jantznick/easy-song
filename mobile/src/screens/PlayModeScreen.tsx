@@ -7,6 +7,7 @@ import VideoPlayer from '../components/VideoPlayer';
 import type { Song, SongSection, LyricLine } from '../types/song';
 import type { SongDetailTabParamList } from '../types/navigation';
 import { useUser } from '../hooks/useUser';
+import { getFontSizes } from '../utils/fontSizes';
 
 type Props = BottomTabScreenProps<SongDetailTabParamList, 'PlayMode'>;
 
@@ -31,6 +32,9 @@ export default function PlayModeScreen({ route }: Props) {
     if (!song) return [];
     return song.sections.flatMap(section => section.lines);
   }, [song]);
+
+  // Get font sizes based on preference
+  const fontSizes = useMemo(() => getFontSizes(preferences.display.fontSize), [preferences.display.fontSize]);
 
   useEffect(() => {
     const getSong = async () => {
@@ -269,8 +273,8 @@ export default function PlayModeScreen({ route }: Props) {
                 >
                   <Text
                     style={{
-                      fontSize: 16,
-                      lineHeight: 24,
+                      fontSize: fontSizes.main,
+                      lineHeight: fontSizes.lineHeight.main,
                       marginBottom: showTranslations && line.english ? 4 : 0,
                       color: isActive ? '#6366F1' : '#94A3B8',
                       fontWeight: isActive ? '600' : '400',
@@ -281,8 +285,8 @@ export default function PlayModeScreen({ route }: Props) {
                   {showTranslations && line.english && (
                     <Text
                       style={{
-                        fontSize: 14,
-                        lineHeight: 20,
+                        fontSize: fontSizes.translation,
+                        lineHeight: fontSizes.lineHeight.translation,
                         color: '#64748B',
                         fontStyle: 'italic',
                       }}
