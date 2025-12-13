@@ -118,26 +118,24 @@ This document tracks the implementation status of each setting feature.
 ## Song History
 
 ### ✅ Storage Implemented
-- [ ] **Track Song Plays** - Add entries to history
-  - [ ] Call `addToHistory` when song starts playing in PlayMode
-  - [ ] Call `addToHistory` when song starts playing in StudyMode
-  - [ ] Include correct mode, song info, videoId
-  - [ ] Test history creation
+- [x] **Track Song Plays** - Add entries to history
+  - [x] Call `addToHistory` when song starts playing in PlayMode
+  - [x] Call `addToHistory` when song starts playing in StudyMode
+  - [x] Include correct mode, song info, videoId
+  - [x] Test history creation
 
-- [ ] **Display History** - Show in UserProfileSettingsScreen
-  - [ ] Replace dummy data with real history from context
-  - [ ] Show most recent entries
-  - [ ] Update when new entries added
+- [x] **Display History** - Show in UserProfileSettingsScreen
+  - [x] Replace dummy data with real history from context
+  - [x] Show most recent 5 entries
+  - [x] Update when new entries added
 
-- [ ] **Display Full History** - Show in SongHistoryScreen
-  - [ ] Replace dummy data with real history from context
-  - [ ] Implement pagination with real data
-  - [ ] Update when new entries added
+- [x] **Display Full History** - Show in SongHistoryScreen
+  - [x] Replace dummy data with real history from context
+  - [x] Implement pagination with real data
+  - [x] Auto-fetch more history when reaching last page
+  - [x] Load most recent 20 songs on login
+  - [x] Update when new entries added
 
-- [ ] **Clear History** - Remove all history entries
-  - [ ] Add clear button (optional)
-  - [ ] Implement clear functionality
-  - [ ] Confirm before clearing
 
 ---
 

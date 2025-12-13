@@ -15,7 +15,7 @@ import {
   DEFAULT_PREFERENCES,
   DEFAULT_USER_PROFILE,
 } from '../utils/storage';
-import { updateUserProfile as updateUserProfileAPI, signInUser as signInUserAPI } from '../utils/api';
+import { updateUserProfile as updateUserProfileAPI, signInUser as signInUserAPI, fetchSongHistory as fetchSongHistoryAPI } from '../utils/api';
 
 export interface User {
   name: string;
@@ -52,8 +52,12 @@ export interface UserContextType {
 
   // Song History
   songHistory: SongHistoryItem[];
+  totalHistoryCount: number | null; // null means we don't know the total yet (for guest users)
+  isLoadingMoreHistory: boolean;
+  hasMoreHistory: boolean;
   addToHistory: (song: string, artist: string, mode: 'Play Mode' | 'Study Mode', videoId: string) => Promise<void>;
   clearHistory: () => Promise<void>;
+  fetchMoreHistory: () => Promise<void>;
 
   // Auth methods (placeholders for now)
   signIn: (email: string, password: string) => Promise<void>;
@@ -81,7 +85,11 @@ export function UserProvider({ children }: UserProviderProps) {
   const [isLoading, setIsLoading] = useState(true);
   const [preferences, setPreferences] = useState<UserPreferences>(DEFAULT_PREFERENCES);
   const [songHistory, setSongHistory] = useState<SongHistoryItem[]>([]);
+  const [totalHistoryCount, setTotalHistoryCount] = useState<number | null>(null);
   const [profile, setProfile] = useState<StoredUserProfile>(DEFAULT_USER_PROFILE);
+  const [isLoadingMoreHistory, setIsLoadingMoreHistory] = useState(false);
+  const [hasMoreHistory, setHasMoreHistory] = useState(true);
+  const [historyPage, setHistoryPage] = useState(1);
 
   // Load initial data from storage
   useEffect(() => {
@@ -193,12 +201,55 @@ export function UserProvider({ children }: UserProviderProps) {
   const clearHistory = useCallback(async () => {
     setSongHistory([]);
     await saveSongHistory([]);
+    setTotalHistoryCount(null);
+    setHistoryPage(1);
+    setHasMoreHistory(false);
   }, []);
+
+  // Fetch more history (for pagination)
+  const fetchMoreHistory = useCallback(async () => {
+    if (isLoadingMoreHistory || !hasMoreHistory || !isAuthenticated) return;
+    
+    setIsLoadingMoreHistory(true);
+    try {
+      const nextPage = historyPage + 1;
+      const { items, totalCount } = await fetchSongHistoryAPI(nextPage, 20);
+      
+      // Update total count if we got it from the API
+      if (totalCount !== null && totalCount !== undefined) {
+        setTotalHistoryCount(totalCount);
+      }
+      
+      if (items.length > 0) {
+        setSongHistory(prev => {
+          const updated = [...prev, ...items];
+          saveSongHistory(updated); // Save async, don't await
+          
+          // Check if we have more history based on total count
+          if (totalCount !== null && totalCount !== undefined) {
+            setHasMoreHistory(updated.length < totalCount);
+          } else {
+            // Fallback: assume more if we got a full page
+            setHasMoreHistory(items.length >= 20);
+          }
+          
+          return updated;
+        });
+        setHistoryPage(nextPage);
+      } else {
+        setHasMoreHistory(false);
+      }
+    } catch (error) {
+      console.error('Failed to fetch more history:', error);
+    } finally {
+      setIsLoadingMoreHistory(false);
+    }
+  }, [isLoadingMoreHistory, hasMoreHistory, isAuthenticated, historyPage]);
 
   // Sign in
   const signIn = useCallback(async (email: string, password: string) => {
     // Call dummy API
-    const { token, user } = await signInUserAPI(email, password);
+    const { token, user, songHistory: history, totalHistoryCount } = await signInUserAPI(email, password);
     
     // Store auth token
     await saveAuthToken(token);
@@ -215,6 +266,13 @@ export function UserProvider({ children }: UserProviderProps) {
     };
     setProfile(userProfile);
     await saveUserProfile(userProfile);
+    
+    // Load song history from API (most recent 20)
+    setSongHistory(history);
+    await saveSongHistory(history);
+    setTotalHistoryCount(totalHistoryCount);
+    setHistoryPage(1);
+    setHasMoreHistory(history.length < totalHistoryCount); // Check if we have more based on total count
   }, []);
 
   // Sign out
@@ -237,6 +295,9 @@ export function UserProvider({ children }: UserProviderProps) {
     // Clear song history
     setSongHistory([]);
     await saveSongHistory([]);
+    setTotalHistoryCount(null);
+    setHistoryPage(1);
+    setHasMoreHistory(false);
   }, []);
 
   // Update profile
@@ -267,8 +328,12 @@ export function UserProvider({ children }: UserProviderProps) {
     updateDisplayPreference,
     updateLanguagePreference,
     songHistory,
+    totalHistoryCount,
+    isLoadingMoreHistory,
+    hasMoreHistory,
     addToHistory,
     clearHistory,
+    fetchMoreHistory,
     signIn,
     signOut,
     updateProfile,

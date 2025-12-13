@@ -45,7 +45,7 @@ const stopVideo = (player: any, endTime: number, setPlaying: (playing: boolean) 
 export default function StudyModeScreen({ route }: Props) {
   const { videoId } = route.params;
   const navigation = useNavigation();
-  const { preferences } = useUser();
+  const { preferences, addToHistory } = useUser();
   const { isDark } = useTheme();
   const theme = useThemeClasses();
   const [song, setSong] = useState<Song | null>(null);
@@ -78,6 +78,9 @@ export default function StudyModeScreen({ route }: Props) {
         setStudyData(studyDataResult);
         setAdditionalContent(computeAdditionalContent(songData, studyDataResult));
         
+        // Track history when page loads
+        addToHistory(songData.title, songData.artist, 'Study Mode', videoId);
+        
         // Auto-expand first section if study data exists
         if (studyDataResult && studyDataResult.structuredSections.length > 0) {
           setExpandedSectionIndex(0);
@@ -105,7 +108,7 @@ export default function StudyModeScreen({ route }: Props) {
         clearInterval(progressIntervalRef.current);
       }
     };
-  }, [videoId]);
+  }, [videoId, addToHistory]);
 
   // Get all lines from current section for active line tracking
   const getCurrentSectionLines = (): (StructuredLine | LyricLine)[] => {

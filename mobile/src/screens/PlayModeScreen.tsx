@@ -16,7 +16,7 @@ type Props = BottomTabScreenProps<SongDetailTabParamList, 'PlayMode'>;
 export default function PlayModeScreen({ route }: Props) {
   const { videoId } = route.params;
   const navigation = useNavigation();
-  const { preferences } = useUser();
+  const { preferences, addToHistory } = useUser();
   const { isDark } = useTheme();
   const theme = useThemeClasses();
   const [song, setSong] = useState<Song | null>(null);
@@ -45,6 +45,8 @@ export default function PlayModeScreen({ route }: Props) {
       try {
         const data = await fetchSongById(videoId);
         setSong(data);
+        // Track history when page loads
+        addToHistory(data.title, data.artist, 'Play Mode', videoId);
       } catch (e) {
         if (e instanceof Error) {
           setError(`Failed to fetch song: ${e.message}`);
@@ -64,7 +66,7 @@ export default function PlayModeScreen({ route }: Props) {
         clearInterval(intervalRef.current);
       }
     };
-  }, [videoId]);
+  }, [videoId, addToHistory]);
 
   // Sync showTranslations with preference when preferences load from storage
   useEffect(() => {

@@ -129,9 +129,14 @@ export async function updateUserProfile(updates: { name?: string; email?: string
  * Signs in a user (dummy API call - always returns success for now)
  * @param email User email
  * @param password User password
- * @returns Promise that resolves to auth token and user profile
+ * @returns Promise that resolves to auth token, user profile, song history, and total count
  */
-export async function signInUser(email: string, password: string): Promise<{ token: string; user: { name: string; email: string; avatar?: string } }> {
+export async function signInUser(email: string, password: string): Promise<{ 
+  token: string; 
+  user: { name: string; email: string; avatar?: string };
+  songHistory: Array<{ song: string; artist: string; mode: 'Play Mode' | 'Study Mode'; date: string; time: string; videoId: string }>;
+  totalHistoryCount: number;
+}> {
   // TODO: Replace with actual API call when backend is ready
   // Simulate API delay
   await new Promise(resolve => setTimeout(resolve, 500));
@@ -149,9 +154,14 @@ export async function signInUser(email: string, password: string): Promise<{ tok
   //   body: JSON.stringify({ email, password }),
   // });
   // if (!response.ok) throw new Error('Invalid credentials');
-  // return response.json();
+  // const data = await response.json();
+  // return { token: data.token, user: data.user, songHistory: data.songHistory, totalHistoryCount: data.totalHistoryCount };
   
-  // Return dummy data
+  // Return dummy data with most recent 20 songs
+  // In real implementation, this would come from the backend
+  const TOTAL_HISTORY_COUNT = 103; // Total songs in user's history
+  const dummyHistory = generateDummyHistory(20);
+  
   return {
     token: `dummy_token_${Date.now()}`,
     user: {
@@ -159,6 +169,94 @@ export async function signInUser(email: string, password: string): Promise<{ tok
       email: email,
       avatar: undefined,
     },
+    songHistory: dummyHistory,
+    totalHistoryCount: TOTAL_HISTORY_COUNT,
   };
+}
+
+/**
+ * Fetches more song history (for pagination)
+ * @param page Page number (1-indexed)
+ * @param pageSize Number of items per page
+ * @returns Promise that resolves to object with items and total count
+ */
+export async function fetchSongHistory(page: number = 1, pageSize: number = 20): Promise<{
+  items: Array<{ 
+    song: string; 
+    artist: string; 
+    mode: 'Play Mode' | 'Study Mode'; 
+    date: string; 
+    time: string; 
+    videoId: string;
+  }>;
+  totalCount: number;
+}> {
+  // TODO: Replace with actual API call when backend is ready
+  // Simulate API delay
+  await new Promise(resolve => setTimeout(resolve, 300));
+  
+  // In real implementation, this would call: GET /api/user/history?page=${page}&pageSize=${pageSize}
+  // const response = await fetch(`${BASE_URL}/user/history?page=${page}&pageSize=${pageSize}`, {
+  //   headers: { 'Authorization': `Bearer ${token}` },
+  // });
+  // if (!response.ok) throw new Error('Failed to fetch history');
+  // const data = await response.json();
+  // return { items: data.items, totalCount: data.totalCount };
+  
+  // Return dummy data for the requested page
+  const TOTAL_HISTORY_COUNT = 103; // Total songs in user's history
+  const startIndex = (page - 1) * pageSize;
+  const endIndex = Math.min(startIndex + pageSize, TOTAL_HISTORY_COUNT);
+  const allHistory = generateDummyHistory(TOTAL_HISTORY_COUNT);
+  const items = allHistory.slice(startIndex, endIndex);
+  
+  return {
+    items,
+    totalCount: TOTAL_HISTORY_COUNT,
+  };
+}
+
+/**
+ * Helper function to generate dummy song history
+ */
+function generateDummyHistory(count: number): Array<{ 
+  song: string; 
+  artist: string; 
+  mode: 'Play Mode' | 'Study Mode'; 
+  date: string; 
+  time: string; 
+  videoId: string;
+}> {
+  const songs = [
+    { song: 'Despacito', artist: 'Luis Fonsi' },
+    { song: 'Bailando', artist: 'Enrique Iglesias' },
+    { song: 'La Bicicleta', artist: 'Carlos Vives & Shakira' },
+    { song: 'Mi Gente', artist: 'J Balvin' },
+    { song: 'Sofia', artist: 'Alvaro Soler' },
+  ];
+  const modes: ('Play Mode' | 'Study Mode')[] = ['Play Mode', 'Study Mode'];
+  const videoId = 'KU5V5WZVcVE';
+  
+  const history = [];
+  const now = new Date();
+  
+  for (let i = 0; i < count; i++) {
+    const date = new Date(now);
+    date.setDate(date.getDate() - i);
+    
+    const songData = songs[i % songs.length];
+    const mode = modes[i % modes.length];
+    
+    history.push({
+      song: songData.song,
+      artist: songData.artist,
+      mode,
+      date: date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+      time: date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true }),
+      videoId,
+    });
+  }
+  
+  return history;
 }
 

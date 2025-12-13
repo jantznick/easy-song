@@ -5,7 +5,6 @@ import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { Ionicons } from '@expo/vector-icons';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '../types/navigation';
-import { ALL_SONG_HISTORY } from '../data/songHistory';
 import { useUser } from '../hooks/useUser';
 import { useTheme } from '../contexts/ThemeContext';
 import { useThemeClasses } from '../utils/themeClasses';
@@ -69,7 +68,7 @@ function SettingsSection({ title, children }: { title: string; children: React.R
 
 export default function UserProfileSettingsScreen({ route }: Props) {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
-  const { profile, updateProfile, isAuthenticated, signIn, signOut } = useUser();
+  const { profile, updateProfile, isAuthenticated, signIn, signOut, songHistory } = useUser();
   const { colors, isDark } = useTheme();
   const theme = useThemeClasses();
   const [showNameModal, setShowNameModal] = useState(false);
@@ -190,9 +189,16 @@ export default function UserProfileSettingsScreen({ route }: Props) {
               </Text>
             </View>
             <View className={theme.bg('bg-surface', 'bg-[#1E293B]') + ' ' + theme.border('border-border', 'border-[#334155]') + ' rounded-xl border overflow-hidden'}>
-              {ALL_SONG_HISTORY.slice(0, 3).map((item, index, array) => (
+              {songHistory.length === 0 ? (
+                <View className="py-8 px-5 items-center">
+                  <Text className={theme.text('text-text-muted', 'text-[#64748B]') + ' text-sm'}>
+                    No song history yet
+                  </Text>
+                </View>
+              ) : (
+                songHistory.slice(0, 3).map((item, index, array) => (
                 <TouchableOpacity
-                  key={index}
+                  key={`${item.videoId}-${item.date}-${item.time}-${index}`}
                   activeOpacity={0.7}
                   onPress={() => {
                     const initialTab = item.mode === 'Play Mode' ? 'PlayMode' : 'StudyMode';
@@ -237,15 +243,18 @@ export default function UserProfileSettingsScreen({ route }: Props) {
                   </View>
                   <Ionicons name="chevron-forward" size={20} color={isDark ? '#94A3B8' : '#4B5563'} />
                 </TouchableOpacity>
-              ))}
-              <TouchableOpacity
-                onPress={() => navigation.navigate('SongHistory')}
-                activeOpacity={0.7}
-                className={theme.border('border-border', 'border-[#334155]') + ' flex-row items-center justify-center py-4 px-5 border-t'}
-              >
-                <Text className="text-base font-medium mr-2 text-primary">View All</Text>
-                <Ionicons name="chevron-forward" size={20} color="#6366F1" />
-              </TouchableOpacity>
+                ))
+              )}
+              {songHistory.length > 0 && (
+                <TouchableOpacity
+                  onPress={() => navigation.navigate('SongHistory')}
+                  activeOpacity={0.7}
+                  className={theme.border('border-border', 'border-[#334155]') + ' flex-row items-center justify-center py-4 px-5 border-t'}
+                >
+                  <Text className="text-base font-medium mr-2 text-primary">View All</Text>
+                  <Ionicons name="chevron-forward" size={20} color="#6366F1" />
+                </TouchableOpacity>
+              )}
             </View>
           </View>
         </View>
