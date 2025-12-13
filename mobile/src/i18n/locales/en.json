@@ -1,0 +1,56 @@
+{
+  "common": {
+    "loading": "Loading...",
+    "error": "Error",
+    "settings": "Settings",
+    "back": "Back",
+    "save": "Save",
+    "cancel": "Cancel",
+    "done": "Done"
+  },
+  "songs": {
+    "title": "Songs",
+    "loading": "Loading songs...",
+    "noSongs": "No songs available",
+    "noSongsDescription": "Check back soon for new content!",
+    "error": "Failed to fetch songs",
+    "errorDescription": "An unknown error occurred."
+  },
+  "settings": {
+    "title": "Settings",
+    "playback": {
+      "title": "Playback",
+      "autoplay": "Autoplay",
+      "autoplayDescription": "Automatically start playing videos",
+      "autoscroll": "Auto-scroll Lyrics",
+      "autoscrollDescription": "Automatically scroll to active lyric line",
+      "loop": "Loop Song",
+      "loopDescription": "Automatically replay when song ends"
+    },
+    "display": {
+      "title": "Display",
+      "fontSize": "Font Size",
+      "fontSizeDescription": "Text size for lyrics",
+      "defaultTranslation": "Default Translation",
+      "defaultTranslationDescription": "Show translations by default",
+      "theme": "Theme",
+      "themeDescription": "App theme preference"
+    },
+    "language": {
+      "title": "Language",
+      "learning": "Learning Language",
+      "learningDescription": "Language being learned",
+      "interface": "Interface Language",
+      "interfaceDescription": "App UI language"
+    },
+    "profile": {
+      "title": "User Profile",
+      "editProfile": "Edit Profile",
+      "email": "Email",
+      "changePassword": "Change Password",
+      "signIn": "Sign In",
+      "signOut": "Sign Out"
+    }
+  }
+}
+

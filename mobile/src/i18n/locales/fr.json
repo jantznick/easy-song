@@ -1,0 +1,56 @@
+{
+  "common": {
+    "loading": "Chargement...",
+    "error": "Erreur",
+    "settings": "Paramètres",
+    "back": "Retour",
+    "save": "Enregistrer",
+    "cancel": "Annuler",
+    "done": "Terminé"
+  },
+  "songs": {
+    "title": "Chansons",
+    "loading": "Chargement des chansons...",
+    "noSongs": "Aucune chanson disponible",
+    "noSongsDescription": "Revenez bientôt pour voir du nouveau contenu !",
+    "error": "Échec du chargement des chansons",
+    "errorDescription": "Une erreur inconnue s'est produite."
+  },
+  "settings": {
+    "title": "Paramètres",
+    "playback": {
+      "title": "Lecture",
+      "autoplay": "Lecture automatique",
+      "autoplayDescription": "Démarrer automatiquement la lecture des vidéos",
+      "autoscroll": "Défilement automatique des paroles",
+      "autoscrollDescription": "Défiler automatiquement vers la ligne de paroles active",
+      "loop": "Répéter la chanson",
+      "loopDescription": "Rejouer automatiquement lorsque la chanson se termine"
+    },
+    "display": {
+      "title": "Affichage",
+      "fontSize": "Taille de police",
+      "fontSizeDescription": "Taille du texte pour les paroles",
+      "defaultTranslation": "Traduction par défaut",
+      "defaultTranslationDescription": "Afficher les traductions par défaut",
+      "theme": "Thème",
+      "themeDescription": "Préférence de thème de l'application"
+    },
+    "language": {
+      "title": "Langue",
+      "learning": "Langue d'apprentissage",
+      "learningDescription": "Langue en cours d'apprentissage",
+      "interface": "Langue de l'interface",
+      "interfaceDescription": "Langue de l'interface utilisateur"
+    },
+    "profile": {
+      "title": "Profil utilisateur",
+      "editProfile": "Modifier le profil",
+      "email": "E-mail",
+      "changePassword": "Changer le mot de passe",
+      "signIn": "Se connecter",
+      "signOut": "Se déconnecter"
+    }
+  }
+}
+

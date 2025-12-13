@@ -1,0 +1,56 @@
+{
+  "common": {
+    "loading": "Lädt...",
+    "error": "Fehler",
+    "settings": "Einstellungen",
+    "back": "Zurück",
+    "save": "Speichern",
+    "cancel": "Abbrechen",
+    "done": "Fertig"
+  },
+  "songs": {
+    "title": "Lieder",
+    "loading": "Lieder werden geladen...",
+    "noSongs": "Keine Lieder verfügbar",
+    "noSongsDescription": "Kommen Sie bald wieder, um neue Inhalte zu sehen!",
+    "error": "Fehler beim Laden der Lieder",
+    "errorDescription": "Ein unbekannter Fehler ist aufgetreten."
+  },
+  "settings": {
+    "title": "Einstellungen",
+    "playback": {
+      "title": "Wiedergabe",
+      "autoplay": "Automatische Wiedergabe",
+      "autoplayDescription": "Videos automatisch abspielen",
+      "autoscroll": "Automatisches Scrollen der Texte",
+      "autoscrollDescription": "Automatisch zur aktiven Textzeile scrollen",
+      "loop": "Lied wiederholen",
+      "loopDescription": "Automatisch wiederholen, wenn das Lied endet"
+    },
+    "display": {
+      "title": "Anzeige",
+      "fontSize": "Schriftgröße",
+      "fontSizeDescription": "Textgröße für die Texte",
+      "defaultTranslation": "Standardübersetzung",
+      "defaultTranslationDescription": "Übersetzungen standardmäßig anzeigen",
+      "theme": "Design",
+      "themeDescription": "Design-Präferenz der App"
+    },
+    "language": {
+      "title": "Sprache",
+      "learning": "Lernsprache",
+      "learningDescription": "Zu lernende Sprache",
+      "interface": "Oberflächensprache",
+      "interfaceDescription": "Sprache der Benutzeroberfläche"
+    },
+    "profile": {
+      "title": "Benutzerprofil",
+      "editProfile": "Profil bearbeiten",
+      "email": "E-Mail",
+      "changePassword": "Passwort ändern",
+      "signIn": "Anmelden",
+      "signOut": "Abmelden"
+    }
+  }
+}
+

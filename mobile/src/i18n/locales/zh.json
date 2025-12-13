@@ -1,0 +1,56 @@
+{
+  "common": {
+    "loading": "加载中...",
+    "error": "错误",
+    "settings": "设置",
+    "back": "返回",
+    "save": "保存",
+    "cancel": "取消",
+    "done": "完成"
+  },
+  "songs": {
+    "title": "歌曲",
+    "loading": "正在加载歌曲...",
+    "noSongs": "暂无歌曲",
+    "noSongsDescription": "请稍后再来查看新内容！",
+    "error": "加载歌曲失败",
+    "errorDescription": "发生未知错误。"
+  },
+  "settings": {
+    "title": "设置",
+    "playback": {
+      "title": "播放",
+      "autoplay": "自动播放",
+      "autoplayDescription": "自动开始播放视频",
+      "autoscroll": "自动滚动歌词",
+      "autoscrollDescription": "自动滚动到当前歌词行",
+      "loop": "循环播放",
+      "loopDescription": "歌曲结束时自动重播"
+    },
+    "display": {
+      "title": "显示",
+      "fontSize": "字体大小",
+      "fontSizeDescription": "歌词文本大小",
+      "defaultTranslation": "默认翻译",
+      "defaultTranslationDescription": "默认显示翻译",
+      "theme": "主题",
+      "themeDescription": "应用主题偏好"
+    },
+    "language": {
+      "title": "语言",
+      "learning": "学习语言",
+      "learningDescription": "正在学习的语言",
+      "interface": "界面语言",
+      "interfaceDescription": "应用界面语言"
+    },
+    "profile": {
+      "title": "用户资料",
+      "editProfile": "编辑资料",
+      "email": "电子邮件",
+      "changePassword": "更改密码",
+      "signIn": "登录",
+      "signOut": "退出登录"
+    }
+  }
+}
+
