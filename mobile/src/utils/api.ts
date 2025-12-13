@@ -125,3 +125,40 @@ export async function updateUserProfile(updates: { name?: string; email?: string
   return { success: true };
 }
 
+/**
+ * Signs in a user (dummy API call - always returns success for now)
+ * @param email User email
+ * @param password User password
+ * @returns Promise that resolves to auth token and user profile
+ */
+export async function signInUser(email: string, password: string): Promise<{ token: string; user: { name: string; email: string; avatar?: string } }> {
+  // TODO: Replace with actual API call when backend is ready
+  // Simulate API delay
+  await new Promise(resolve => setTimeout(resolve, 500));
+  
+  // Basic validation
+  if (!email || !password) {
+    throw new Error('Email and password are required');
+  }
+  
+  // Simulate validation - accept any email/password for now
+  // In real implementation, this would call: POST /api/auth/login
+  // const response = await fetch(`${BASE_URL}/auth/login`, {
+  //   method: 'POST',
+  //   headers: { 'Content-Type': 'application/json' },
+  //   body: JSON.stringify({ email, password }),
+  // });
+  // if (!response.ok) throw new Error('Invalid credentials');
+  // return response.json();
+  
+  // Return dummy data
+  return {
+    token: `dummy_token_${Date.now()}`,
+    user: {
+      name: email.split('@')[0] || 'User', // Use email prefix as name
+      email: email,
+      avatar: undefined,
+    },
+  };
+}
+

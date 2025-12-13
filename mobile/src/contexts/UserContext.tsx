@@ -15,7 +15,7 @@ import {
   DEFAULT_PREFERENCES,
   DEFAULT_USER_PROFILE,
 } from '../utils/storage';
-import { updateUserProfile as updateUserProfileAPI } from '../utils/api';
+import { updateUserProfile as updateUserProfileAPI, signInUser as signInUserAPI } from '../utils/api';
 
 export interface User {
   name: string;
@@ -195,22 +195,48 @@ export function UserProvider({ children }: UserProviderProps) {
     await saveSongHistory([]);
   }, []);
 
-  // Sign in (placeholder - will implement with API later)
+  // Sign in
   const signIn = useCallback(async (email: string, password: string) => {
-    // TODO: Implement API call
-    console.log('Sign in:', email, password);
-    throw new Error('Sign in not yet implemented');
+    // Call dummy API
+    const { token, user } = await signInUserAPI(email, password);
+    
+    // Store auth token
+    await saveAuthToken(token);
+    
+    // Update user state
+    setUser(user);
+    setIsAuthenticated(true);
+    
+    // Update profile with user data
+    const userProfile: StoredUserProfile = {
+      name: user.name,
+      email: user.email,
+      avatar: user.avatar,
+    };
+    setProfile(userProfile);
+    await saveUserProfile(userProfile);
   }, []);
 
   // Sign out
   const signOut = useCallback(async () => {
+    // Clear auth token
+    await saveAuthToken(null);
+    
+    // Clear user state
     setUser(null);
     setIsAuthenticated(false);
-    await clearAllStorage();
-    // Reset to defaults
+    
+    // Reset to default preferences
     setPreferences(DEFAULT_PREFERENCES);
-    setSongHistory([]);
+    await savePreferences(DEFAULT_PREFERENCES);
+    
+    // Reset profile to default
     setProfile(DEFAULT_USER_PROFILE);
+    await saveUserProfile(DEFAULT_USER_PROFILE);
+    
+    // Clear song history
+    setSongHistory([]);
+    await saveSongHistory([]);
   }, []);
 
   // Update profile

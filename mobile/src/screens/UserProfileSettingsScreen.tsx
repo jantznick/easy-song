@@ -69,14 +69,19 @@ function SettingsSection({ title, children }: { title: string; children: React.R
 
 export default function UserProfileSettingsScreen({ route }: Props) {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
-  const { profile, updateProfile, isAuthenticated } = useUser();
+  const { profile, updateProfile, isAuthenticated, signIn, signOut } = useUser();
   const { colors, isDark } = useTheme();
   const theme = useThemeClasses();
   const [showNameModal, setShowNameModal] = useState(false);
   const [showEmailModal, setShowEmailModal] = useState(false);
+  const [showSignInModal, setShowSignInModal] = useState(false);
   const [nameValue, setNameValue] = useState(profile.name);
   const [emailValue, setEmailValue] = useState(profile.email);
+  const [signInEmail, setSignInEmail] = useState('');
+  const [signInPassword, setSignInPassword] = useState('');
   const [isSaving, setIsSaving] = useState(false);
+  const [isSigningIn, setIsSigningIn] = useState(false);
+  const [signInError, setSignInError] = useState<string | null>(null);
 
   return (
     <SafeAreaView className={theme.bg('bg-background', 'bg-[#0F172A]')} style={{ flex: 1 }}>
@@ -139,19 +144,42 @@ export default function UserProfileSettingsScreen({ route }: Props) {
                 setShowEmailModal(true);
               }}
             />
-            <SettingItem
-              icon="lock-closed"
-              title="Change Password"
-              showArrow
-              onPress={() => {}}
-            />
-            <SettingItem
-              icon="log-in"
-              title="Sign In"
-              subtitle="Sign in to sync your progress"
-              showArrow
-              onPress={() => {}}
-            />
+            {isAuthenticated && (
+              <SettingItem
+                icon="lock-closed"
+                title="Change Password"
+                showArrow
+                onPress={() => {}}
+              />
+            )}
+            {!isAuthenticated ? (
+              <SettingItem
+                icon="log-in"
+                title="Sign In"
+                subtitle="Sign in to sync your progress"
+                showArrow
+                onPress={() => {
+                  setSignInEmail('');
+                  setSignInPassword('');
+                  setSignInError(null);
+                  setShowSignInModal(true);
+                }}
+              />
+            ) : (
+              <SettingItem
+                icon="log-out"
+                title="Sign Out"
+                subtitle="Sign out of your account"
+                showArrow
+                onPress={async () => {
+                  try {
+                    await signOut();
+                  } catch (error) {
+                    Alert.alert('Error', 'Failed to sign out');
+                  }
+                }}
+              />
+            )}
           </SettingsSection>
 
           {/* Song History */}
@@ -377,6 +405,130 @@ export default function UserProfileSettingsScreen({ route }: Props) {
                 <ActivityIndicator color="#fff" />
               ) : (
                 <Text style={{ color: '#fff', fontSize: 16, fontWeight: '600' }}>Save</Text>
+              )}
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+
+      {/* Sign In Modal */}
+      <Modal
+        visible={showSignInModal}
+        transparent={true}
+        animationType="fade"
+        onRequestClose={() => setShowSignInModal(false)}
+      >
+        <View style={{ flex: 1, backgroundColor: 'rgba(0, 0, 0, 0.5)' }}>
+          <Pressable 
+            style={{ flex: 1 }}
+            onPress={() => setShowSignInModal(false)}
+          />
+          <View style={{ 
+            backgroundColor: colors.surface, 
+            borderTopLeftRadius: 20,
+            borderTopRightRadius: 20,
+            padding: 20,
+            paddingBottom: 40,
+          }}>
+            <View className="flex-row items-center justify-between mb-4">
+              <Text style={{ fontSize: 20, fontWeight: 'bold', color: colors['text-primary'] }}>Sign In</Text>
+              <TouchableOpacity onPress={() => setShowSignInModal(false)}>
+                <Ionicons name="close" size={24} color={colors['text-primary']} />
+              </TouchableOpacity>
+            </View>
+            
+            {signInError && (
+              <View style={{ 
+                backgroundColor: '#FEE2E2', 
+                padding: 12, 
+                borderRadius: 8, 
+                marginBottom: 16,
+                borderWidth: 1,
+                borderColor: '#FCA5A5',
+              }}>
+                <Text style={{ color: '#DC2626', fontSize: 14 }}>{signInError}</Text>
+              </View>
+            )}
+
+            <TextInput
+              value={signInEmail}
+              onChangeText={(text) => {
+                setSignInEmail(text);
+                setSignInError(null);
+              }}
+              placeholder="Email"
+              placeholderTextColor={colors['text-muted']}
+              keyboardType="email-address"
+              autoCapitalize="none"
+              autoCorrect={false}
+              style={{
+                borderWidth: 1,
+                borderColor: colors.border,
+                borderRadius: 8,
+                padding: 12,
+                fontSize: 16,
+                color: colors['text-primary'],
+                backgroundColor: colors.background,
+                marginBottom: 16,
+              }}
+              autoFocus
+            />
+            
+            <TextInput
+              value={signInPassword}
+              onChangeText={(text) => {
+                setSignInPassword(text);
+                setSignInError(null);
+              }}
+              placeholder="Password"
+              placeholderTextColor={colors['text-muted']}
+              secureTextEntry
+              style={{
+                borderWidth: 1,
+                borderColor: colors.border,
+                borderRadius: 8,
+                padding: 12,
+                fontSize: 16,
+                color: colors['text-primary'],
+                backgroundColor: colors.background,
+                marginBottom: 20,
+              }}
+            />
+            
+            <TouchableOpacity
+              onPress={async () => {
+                if (!signInEmail.trim() || !signInPassword.trim()) {
+                  setSignInError('Email and password are required');
+                  return;
+                }
+                
+                setIsSigningIn(true);
+                setSignInError(null);
+                
+                try {
+                  await signIn(signInEmail.trim(), signInPassword);
+                  setShowSignInModal(false);
+                  setSignInEmail('');
+                  setSignInPassword('');
+                } catch (error) {
+                  setSignInError(error instanceof Error ? error.message : 'Failed to sign in. Please try again.');
+                } finally {
+                  setIsSigningIn(false);
+                }
+              }}
+              disabled={isSigningIn}
+              style={{
+                backgroundColor: colors.primary,
+                padding: 14,
+                borderRadius: 8,
+                alignItems: 'center',
+                opacity: isSigningIn ? 0.6 : 1,
+              }}
+            >
+              {isSigningIn ? (
+                <ActivityIndicator color="#fff" />
+              ) : (
+                <Text style={{ color: '#fff', fontSize: 16, fontWeight: '600' }}>Sign In</Text>
               )}
             </TouchableOpacity>
           </View>

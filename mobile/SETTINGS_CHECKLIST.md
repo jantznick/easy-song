@@ -93,18 +93,18 @@ This document tracks the implementation status of each setting feature.
 ## Account Actions
 
 ### ✅ Storage Implemented
-- [ ] **Sign In** - Authenticate user
-  - [ ] Create sign in screen/modal
-  - [ ] Implement API call to backend
-  - [ ] Store auth token
-  - [ ] Update user state on success
-  - [ ] Handle errors
+- [x] **Sign In** - Authenticate user
+  - [x] Create sign in screen/modal
+  - [x] Implement API call to backend (dummy API for now)
+  - [x] Store auth token
+  - [x] Update user state on success
+  - [x] Handle errors
 
-- [ ] **Sign Out** - Log out user
-  - [ ] Clear auth token
-  - [ ] Clear user data (or keep local preferences?)
-  - [ ] Reset to guest state
-  - [ ] Navigate to appropriate screen
+- [x] **Sign Out** - Log out user
+  - [x] Clear auth token
+  - [x] Reset to default preferences
+  - [x] Reset to guest state
+  - [x] Clear user profile and song history
 
 
 - [ ] **Change Password** - Update password
