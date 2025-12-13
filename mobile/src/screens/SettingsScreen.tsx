@@ -9,7 +9,6 @@ import { useUser } from '../hooks/useUser';
 import { useTheme } from '../contexts/ThemeContext';
 import { useTranslation } from '../hooks/useTranslation';
 import { useThemeClasses } from '../utils/themeClasses';
-import { useTheme } from '../contexts/ThemeContext';
 
 // Support both tab navigator (from SongDetail) and stack navigator (from root)
 type SettingsScreenProps = 
@@ -100,7 +99,6 @@ export default function SettingsScreen({ route }: Props) {
     updateLanguagePreference,
   } = useUser();
   const theme = useThemeClasses();
-  const { isDark } = useTheme();
 
   const [showLearningLanguageModal, setShowLearningLanguageModal] = useState(false);
   const [showInterfaceLanguageModal, setShowInterfaceLanguageModal] = useState(false);
@@ -305,7 +303,7 @@ export default function SettingsScreen({ route }: Props) {
           />
           <SettingItem
             icon="language"
-            title="Interface Language"
+            title={t('settings.language.interface')}
             subtitle={preferences.language.interface}
             showArrow
             onPress={() => setShowInterfaceLanguageModal(true)}

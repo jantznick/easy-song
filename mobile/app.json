@@ -9,7 +9,7 @@
     "splash": {
       "image": "./assets/icon.png",
       "resizeMode": "contain",
-      "backgroundColor": "#6366F1"
+      "backgroundColor": "#bbcedf"
     },
     "assetBundlePatterns": [
       "**/*"
@@ -29,7 +29,8 @@
       "favicon": "./assets/icon.png"
     },
     "plugins": [
-      "expo-asset"
+      "expo-asset",
+      "react-native-localize"
     ]
   }
 }
