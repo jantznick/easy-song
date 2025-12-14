@@ -165,6 +165,13 @@
       "studyMode": {
         "title": "Mode Étude",
         "description": "Plongez plus profondément dans chaque chanson avec des explications détaillées, des traductions et des sections d'apprentissage structurées pour maîtriser la langue."
+      },
+      "language": {
+        "title": "Choisissez Vos Langues",
+        "description": "Sélectionnez la langue que vous souhaitez apprendre et votre langue maternelle pour la meilleure expérience",
+        "learningLanguage": "Langue que vous voulez apprendre",
+        "nativeLanguage": "Langue maternelle",
+        "selectLanguage": "Sélectionner une Langue"
       }
     },
     "about": {

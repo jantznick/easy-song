@@ -165,6 +165,13 @@
       "studyMode": {
         "title": "Modo Estudio",
         "description": "Profundiza en cada canción con explicaciones detalladas, traducciones y secciones de aprendizaje estructuradas para dominar el idioma."
+      },
+      "language": {
+        "title": "Elige Tus Idiomas",
+        "description": "Selecciona el idioma que quieres aprender y tu idioma nativo para la mejor experiencia",
+        "learningLanguage": "Idioma que quieres aprender",
+        "nativeLanguage": "Idioma nativo",
+        "selectLanguage": "Seleccionar Idioma"
       }
     },
     "about": {

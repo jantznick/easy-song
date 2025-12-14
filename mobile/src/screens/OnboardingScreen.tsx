@@ -7,18 +7,25 @@ import {
   TouchableOpacity,
   NativeScrollEvent,
   NativeSyntheticEvent,
+  Modal,
+  Pressable,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '../types/navigation';
 import { useTranslation } from '../hooks/useTranslation';
 import { useThemeClasses, cn } from '../utils/themeClasses';
+import { useTheme } from '../contexts/ThemeContext';
 import { saveOnboardingComplete } from '../utils/storage';
+import { useUser } from '../contexts/UserContext';
+import { LANGUAGE_NAME_MAP } from '../i18n/config';
 import AuthDrawer from '../components/AuthDrawer';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Onboarding'>;
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
+
+const SUPPORTED_LANGUAGES = ['English', 'Spanish', 'Chinese (Mandarin)', 'French', 'German'];
 
 interface OnboardingPage {
   id: string;
@@ -26,14 +33,21 @@ interface OnboardingPage {
   title: string;
   description: string;
   gradient: string[];
+  isLanguagePage?: boolean;
 }
 
 export default function OnboardingScreen({ navigation }: Props) {
   const { t } = useTranslation();
   const theme = useThemeClasses();
+  const { isDark } = useTheme();
+  const { updateLanguagePreference } = useUser();
   const flatListRef = useRef<FlatList>(null);
   const [currentPage, setCurrentPage] = useState(0);
   const [showAuthDrawer, setShowAuthDrawer] = useState(false);
+  const [learningLanguage, setLearningLanguage] = useState('Spanish');
+  const [nativeLanguage, setNativeLanguage] = useState('English');
+  const [showLearningDropdown, setShowLearningDropdown] = useState(false);
+  const [showNativeDropdown, setShowNativeDropdown] = useState(false);
 
   const pages: OnboardingPage[] = [
     {
@@ -56,6 +70,14 @@ export default function OnboardingScreen({ navigation }: Props) {
       title: t('settings.onboarding.studyMode.title'),
       description: t('settings.onboarding.studyMode.description'),
       gradient: ['#4facfe', '#00f2fe'],
+    },
+    {
+      id: 'language',
+      icon: 'language',
+      title: t('settings.onboarding.language.title'),
+      description: t('settings.onboarding.language.description'),
+      gradient: ['#fa709a', '#fee140'],
+      isLanguagePage: true,
     },
   ];
 
@@ -87,12 +109,20 @@ export default function OnboardingScreen({ navigation }: Props) {
     }
   };
 
-  const handleSkip = async () => {
-    await saveOnboardingComplete();
-    navigation.replace('SongList');
+  const handleSkip = () => {
+    // Skip to the last page (language selection)
+    const lastPage = pages.length - 1;
+    flatListRef.current?.scrollToOffset({
+      offset: lastPage * SCREEN_WIDTH,
+      animated: true,
+    });
+    setCurrentPage(lastPage);
   };
 
   const handleGetStarted = async () => {
+    // Save language preferences
+    await updateLanguagePreference('learning', learningLanguage);
+    await updateLanguagePreference('interface', nativeLanguage);
     await saveOnboardingComplete();
     navigation.replace('SongList');
   };
@@ -102,52 +132,211 @@ export default function OnboardingScreen({ navigation }: Props) {
   };
 
   const handleAuthSuccess = async () => {
+    // Save language preferences
+    await updateLanguagePreference('learning', learningLanguage);
+    await updateLanguagePreference('interface', nativeLanguage);
     await saveOnboardingComplete();
     navigation.replace('SongList');
   };
 
-  const renderPage = ({ item, index }: { item: OnboardingPage; index: number }) => (
-    <View
-      className={cn('flex-1 justify-center items-center', theme.bg('bg-white', 'bg-gray-900'))}
-      style={{ width: SCREEN_WIDTH }}
+  const renderLanguageDropdown = (
+    selected: string,
+    onSelect: (lang: string) => void,
+    show: boolean,
+    onClose: () => void
+  ) => (
+    <Modal
+      visible={show}
+      transparent={true}
+      animationType="fade"
+      onRequestClose={onClose}
     >
-      {/* Back button - show on pages 2 and 3 (index 1 and 2) */}
-      {index > 0 && (
-        <TouchableOpacity
-          className="absolute top-16 left-5 z-10 p-2"
-          onPress={handleBack}
+      <Pressable
+        style={{ flex: 1, backgroundColor: 'rgba(0, 0, 0, 0.5)' }}
+        onPress={onClose}
+      >
+        <Pressable
+          style={{
+            backgroundColor: isDark ? '#1E293B' : '#ffffff',
+            margin: 20,
+            borderRadius: 12,
+            padding: 16,
+            maxHeight: '60%',
+          }}
+          onPress={(e) => e.stopPropagation()}
         >
-          <Text className={cn('text-base font-semibold', theme.text('text-gray-600', 'text-gray-400'))}>
-            {t('common.back')}
-          </Text>
-        </TouchableOpacity>
-      )}
-
-      <View className="flex-1 justify-center items-center px-8 pt-24">
-        {/* Icon with gradient background */}
-        <View
-          className="w-40 h-40 rounded-full justify-center items-center mb-12"
-          style={{ backgroundColor: item.gradient[0] + '20' }}
-        >
-          <Ionicons
-            name={item.icon}
-            size={80}
-            color={item.gradient[0]}
+          <View className="flex-row items-center justify-between mb-4">
+            <Text className={cn('text-lg font-semibold', theme.text('text-gray-900', 'text-white'))}>
+              {t('settings.onboarding.language.selectLanguage')}
+            </Text>
+            <TouchableOpacity onPress={onClose}>
+              <Ionicons name="close" size={24} color={isDark ? '#ffffff' : '#111827'} />
+            </TouchableOpacity>
+          </View>
+          <FlatList
+            data={SUPPORTED_LANGUAGES}
+            keyExtractor={(item) => item}
+            renderItem={({ item }) => (
+              <TouchableOpacity
+                onPress={() => {
+                  onSelect(item);
+                  onClose();
+                }}
+                className={cn(
+                  'py-3 px-4 rounded-lg mb-2',
+                  selected === item
+                    ? theme.bg('bg-indigo-100', 'bg-indigo-900/30')
+                    : theme.bg('bg-transparent', 'bg-transparent')
+                )}
+              >
+                <View className="flex-row items-center justify-between">
+                  <Text className={cn('text-base', theme.text('text-gray-900', 'text-white'))}>
+                    {item}
+                  </Text>
+                  {selected === item && (
+                    <Ionicons name="checkmark" size={20} color="#6366F1" />
+                  )}
+                </View>
+              </TouchableOpacity>
+            )}
           />
-        </View>
-
-        {/* Title */}
-        <Text className={cn('text-3xl font-bold text-center mb-4', theme.text('text-gray-900', 'text-white'))}>
-          {item.title}
-        </Text>
-
-        {/* Description */}
-        <Text className={cn('text-lg text-center leading-7 px-4', theme.text('text-gray-600', 'text-gray-300'))}>
-          {item.description}
-        </Text>
-      </View>
-    </View>
+        </Pressable>
+      </Pressable>
+    </Modal>
   );
+
+  const renderPage = ({ item, index }: { item: OnboardingPage; index: number }) => {
+    if (item.isLanguagePage) {
+      return (
+        <View
+          className={cn('flex-1 justify-center items-center', theme.bg('bg-white', 'bg-gray-900'))}
+          style={{ width: SCREEN_WIDTH }}
+        >
+          {/* Back button */}
+          {index > 0 && (
+            <TouchableOpacity
+              className="absolute top-16 left-5 z-10 p-2"
+              onPress={handleBack}
+            >
+              <Text className={cn('text-base font-semibold', theme.text('text-gray-600', 'text-gray-400'))}>
+                {t('common.back')}
+              </Text>
+            </TouchableOpacity>
+          )}
+
+          <View className="flex-1 justify-center items-center px-8 pt-24">
+            {/* Icon with gradient background */}
+            <View
+              className="w-40 h-40 rounded-full justify-center items-center mb-12"
+              style={{ backgroundColor: item.gradient[0] + '20' }}
+            >
+              <Ionicons
+                name={item.icon}
+                size={80}
+                color={item.gradient[0]}
+              />
+            </View>
+
+            {/* Title */}
+            <Text className={cn('text-3xl font-bold text-center mb-4', theme.text('text-gray-900', 'text-white'))}>
+              {item.title}
+            </Text>
+
+            {/* Description */}
+            <Text className={cn('text-lg text-center leading-7 px-4 mb-8', theme.text('text-gray-600', 'text-gray-300'))}>
+              {item.description}
+            </Text>
+
+            {/* Language Selection Dropdowns */}
+            <View className="w-full gap-4">
+              {/* Learning Language */}
+              <View>
+                <Text className={cn('text-sm font-medium mb-2', theme.text('text-gray-700', 'text-gray-300'))}>
+                  {t('settings.onboarding.language.learningLanguage')}
+                </Text>
+                <TouchableOpacity
+                  onPress={() => setShowLearningDropdown(true)}
+                  className={cn(
+                    'border rounded-xl px-4 py-3 flex-row items-center justify-between',
+                    theme.bg('bg-white', 'bg-gray-800'),
+                    theme.border('border-gray-300', 'border-gray-600')
+                  )}
+                >
+                  <Text className={cn('text-base', theme.text('text-gray-900', 'text-white'))}>
+                    {learningLanguage}
+                  </Text>
+                  <Ionicons name="chevron-down" size={20} color={isDark ? '#ffffff' : '#111827'} />
+                </TouchableOpacity>
+              </View>
+
+              {/* Native Language */}
+              <View>
+                <Text className={cn('text-sm font-medium mb-2', theme.text('text-gray-700', 'text-gray-300'))}>
+                  {t('settings.onboarding.language.nativeLanguage')}
+                </Text>
+                <TouchableOpacity
+                  onPress={() => setShowNativeDropdown(true)}
+                  className={cn(
+                    'border rounded-xl px-4 py-3 flex-row items-center justify-between',
+                    theme.bg('bg-white', 'bg-gray-800'),
+                    theme.border('border-gray-300', 'border-gray-600')
+                  )}
+                >
+                  <Text className={cn('text-base', theme.text('text-gray-900', 'text-white'))}>
+                    {nativeLanguage}
+                  </Text>
+                  <Ionicons name="chevron-down" size={20} color={isDark ? '#ffffff' : '#111827'} />
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
+        </View>
+      );
+    }
+
+    return (
+      <View
+        className={cn('flex-1 justify-center items-center', theme.bg('bg-white', 'bg-gray-900'))}
+        style={{ width: SCREEN_WIDTH }}
+      >
+        {/* Back button - show on pages 2, 3, and 4 (index 1, 2, and 3) */}
+        {index > 0 && (
+          <TouchableOpacity
+            className="absolute top-16 left-5 z-10 p-2"
+            onPress={handleBack}
+          >
+            <Text className={cn('text-base font-semibold', theme.text('text-gray-600', 'text-gray-400'))}>
+              {t('common.back')}
+            </Text>
+          </TouchableOpacity>
+        )}
+
+        <View className="flex-1 justify-center items-center px-8 pt-24">
+          {/* Icon with gradient background */}
+          <View
+            className="w-40 h-40 rounded-full justify-center items-center mb-12"
+            style={{ backgroundColor: item.gradient[0] + '20' }}
+          >
+            <Ionicons
+              name={item.icon}
+              size={80}
+              color={item.gradient[0]}
+            />
+          </View>
+
+          {/* Title */}
+          <Text className={cn('text-3xl font-bold text-center mb-4', theme.text('text-gray-900', 'text-white'))}>
+            {item.title}
+          </Text>
+
+          {/* Description */}
+          <Text className={cn('text-lg text-center leading-7 px-4', theme.text('text-gray-600', 'text-gray-300'))}>
+            {item.description}
+          </Text>
+        </View>
+      </View>
+    );
+  };
 
   const renderPagination = () => (
     <View className="flex-row justify-center items-center mt-8 mb-4">
@@ -168,7 +357,7 @@ export default function OnboardingScreen({ navigation }: Props) {
 
   return (
     <View className={cn('flex-1', theme.bg('bg-white', 'bg-gray-900'))}>
-      {/* Skip button */}
+      {/* Skip button - show on pages 1-3 (index 0-2) */}
       {currentPage < pages.length - 1 && (
         <TouchableOpacity
           className="absolute top-16 right-5 z-10 p-2"
@@ -234,6 +423,20 @@ export default function OnboardingScreen({ navigation }: Props) {
         )}
       </View>
 
+      {/* Language Dropdowns */}
+      {renderLanguageDropdown(
+        learningLanguage,
+        setLearningLanguage,
+        showLearningDropdown,
+        () => setShowLearningDropdown(false)
+      )}
+      {renderLanguageDropdown(
+        nativeLanguage,
+        setNativeLanguage,
+        showNativeDropdown,
+        () => setShowNativeDropdown(false)
+      )}
+
       {/* Auth Drawer */}
       <AuthDrawer
         visible={showAuthDrawer}
@@ -244,4 +447,3 @@ export default function OnboardingScreen({ navigation }: Props) {
     </View>
   );
 }
-

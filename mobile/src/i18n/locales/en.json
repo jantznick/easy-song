@@ -150,6 +150,13 @@
       "signOutOfAccount": "Sign out of your account"
     },
     "onboarding": {
+      "language": {
+        "title": "Choose Your Languages",
+        "description": "Select the language you want to learn and your native language for the best experience",
+        "learningLanguage": "Language you want to learn",
+        "nativeLanguage": "Native language",
+        "selectLanguage": "Select Language"
+      },
       "skip": "Skip",
       "next": "Next",
       "signUp": "Sign Up",

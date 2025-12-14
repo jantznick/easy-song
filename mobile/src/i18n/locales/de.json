@@ -165,6 +165,13 @@
       "studyMode": {
         "title": "Lernmodus",
         "description": "Tauchen Sie tiefer in jedes Lied ein mit detaillierten Erklärungen, Übersetzungen und strukturierten Lernabschnitten, um die Sprache zu meistern."
+      },
+      "language": {
+        "title": "Wählen Sie Ihre Sprachen",
+        "description": "Wählen Sie die Sprache, die Sie lernen möchten, und Ihre Muttersprache für die beste Erfahrung",
+        "learningLanguage": "Sprache, die Sie lernen möchten",
+        "nativeLanguage": "Muttersprache",
+        "selectLanguage": "Sprache Auswählen"
       }
     },
     "about": {

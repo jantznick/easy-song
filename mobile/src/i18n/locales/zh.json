@@ -165,6 +165,13 @@
       "studyMode": {
         "title": "学习模式",
         "description": "深入了解每首歌曲，提供详细解释、翻译和结构化学习部分，以掌握语言。"
+      },
+      "language": {
+        "title": "选择您的语言",
+        "description": "选择您想学习的语言和您的母语，以获得最佳体验",
+        "learningLanguage": "您想学习的语言",
+        "nativeLanguage": "母语",
+        "selectLanguage": "选择语言"
       }
     },
     "about": {
