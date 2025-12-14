@@ -69,24 +69,29 @@ router.get('/', requireAuth, async (req: Request, res: Response) => {
     if (page < 1) {
       return res.status(400).json({ error: 'page must be >= 1' });
     }
-    if (pageSize < 1 || pageSize > 100) {
-      return res.status(400).json({ error: 'pageSize must be between 1 and 100' });
+
+    // Get total count first to calculate max pages
+    const totalCount = await prisma.songHistory.count({
+      where: { userId: req.userId! },
+    });
+
+    const maxPage = totalCount === 0 ? 1 : Math.ceil(totalCount / pageSize);
+    if (page > maxPage) {
+      return res.status(400).json({ 
+        error: `Page ${page} is out of range. Maximum page is ${maxPage}`,
+        maxPage,
+      });
     }
 
     const skip = (page - 1) * pageSize;
 
-    // Get total count and items
-    const [totalCount, items] = await Promise.all([
-      prisma.songHistory.count({
-        where: { userId: req.userId! },
-      }),
-      prisma.songHistory.findMany({
-        where: { userId: req.userId! },
-        orderBy: { playedAt: 'desc' },
-        skip,
-        take: pageSize,
-      }),
-    ]);
+    // Fetch items for the validated page
+    const items = await prisma.songHistory.findMany({
+      where: { userId: req.userId! },
+      orderBy: { playedAt: 'desc' },
+      skip,
+      take: pageSize,
+    });
 
     const formattedItems = items.map(item => ({
       id: item.id,

@@ -7,36 +7,6 @@ import { validatePassword } from '../config/password';
 const router = Router();
 
 /**
- * GET /api/user/profile
- * Get user profile
- */
-router.get('/profile', requireAuth, async (req: Request, res: Response) => {
-  try {
-    const user = await prisma.user.findUnique({
-      where: { id: req.userId! },
-      select: {
-        id: true,
-        email: true,
-        name: true,
-        avatar: true,
-        emailVerified: true,
-        createdAt: true,
-        updatedAt: true,
-      },
-    });
-
-    if (!user) {
-      return res.status(404).json({ error: 'User not found' });
-    }
-
-    res.json(user);
-  } catch (error) {
-    console.error('Error fetching profile:', error);
-    res.status(500).json({ error: 'Failed to fetch profile' });
-  }
-});
-
-/**
  * PUT /api/user/profile
  * Update user profile
  */
@@ -44,7 +14,12 @@ router.put('/profile', requireAuth, async (req: Request, res: Response) => {
   try {
     const { name, email, avatar } = req.body;
 
-    const updateData: { name?: string; email?: string; avatar?: string | null; emailVerified?: boolean } = {};
+    const updateData: {
+      name?: string;
+      email?: string;
+      avatar?: string | null;
+      emailVerified?: boolean
+    } = {};
 
     if (name !== undefined) {
       if (typeof name !== 'string' || name.trim().length === 0) {
@@ -98,15 +73,11 @@ router.put('/profile', requireAuth, async (req: Request, res: Response) => {
 
 /**
  * POST /api/user/change-password
- * Change user password
+ * Change user password (or set password if none exists)
  */
 router.post('/change-password', requireAuth, async (req: Request, res: Response) => {
   try {
     const { currentPassword, newPassword } = req.body;
-
-    if (!currentPassword || typeof currentPassword !== 'string') {
-      return res.status(400).json({ error: 'Current password is required' });
-    }
 
     if (!newPassword || typeof newPassword !== 'string') {
       return res.status(400).json({ error: 'New password is required' });
@@ -131,18 +102,19 @@ router.post('/change-password', requireAuth, async (req: Request, res: Response)
       return res.status(404).json({ error: 'User not found' });
     }
 
-    // Check if user has a password set
-    if (!user.passwordHash) {
-      return res.status(400).json({ 
-        error: 'Account does not have a password set. Please set a password first.',
-      });
-    }
+    // If user has a password, require and verify current password
+    if (user.passwordHash) {
+      if (!currentPassword || typeof currentPassword !== 'string') {
+        return res.status(400).json({ error: 'Current password is required' });
+      }
 
-    // Verify current password
-    const passwordValid = await bcrypt.compare(currentPassword, user.passwordHash);
-    if (!passwordValid) {
-      return res.status(401).json({ error: 'Current password is incorrect' });
+      // Verify current password
+      const passwordValid = await bcrypt.compare(currentPassword, user.passwordHash);
+      if (!passwordValid) {
+        return res.status(401).json({ error: 'Current password is incorrect' });
+      }
     }
+    // If no password exists (e.g., magic link user), skip current password verification
 
     // Hash new password
     const newPasswordHash = await bcrypt.hash(newPassword, 10);
@@ -153,10 +125,51 @@ router.post('/change-password', requireAuth, async (req: Request, res: Response)
       data: { passwordHash: newPasswordHash },
     });
 
-    res.json({ success: true, message: 'Password changed successfully' });
+    const message = user.passwordHash 
+      ? 'Password changed successfully' 
+      : 'Password set successfully';
+
+    res.json({ success: true, message });
   } catch (error) {
     console.error('Error changing password:', error);
     res.status(500).json({ error: 'Failed to change password' });
+  }
+});
+
+/**
+ * GET /api/user/:id
+ * Get user profile by ID (requires authentication)
+ * Note: This route must come after specific routes like /profile and /change-password
+ */
+router.get('/:id', requireAuth, async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+
+    if (!id) {
+      return res.status(400).json({ error: 'User ID is required' });
+    }
+
+    const user = await prisma.user.findUnique({
+      where: { id },
+      select: {
+        id: true,
+        email: true,
+        name: true,
+        avatar: true,
+        emailVerified: true,
+        createdAt: true,
+        updatedAt: true,
+      },
+    });
+
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    res.json(user);
+  } catch (error) {
+    console.error('Error fetching profile:', error);
+    res.status(500).json({ error: 'Failed to fetch profile' });
   }
 });
 

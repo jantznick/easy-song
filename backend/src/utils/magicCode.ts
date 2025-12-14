@@ -1,7 +1,6 @@
-import { prisma, Prisma } from '../lib/prisma';
+import { prisma } from '../lib/prisma';
+import { MagicCodeType } from '@prisma/client';
 import { sendMagicCodeEmail } from '../lib/email';
-
-type MagicCodeType = Prisma.MagicCodeType;
 
 /**
  * Generates a random 6-digit code
@@ -11,14 +10,9 @@ export function generateMagicCode(): string {
 }
 
 /**
- * Creates a magic code and sends it via email
+ * Cleans up expired codes
  */
-export async function createAndSendMagicCode(
-  email: string,
-  type: MagicCodeType,
-  userId?: string
-): Promise<string> {
-  // Clean up expired codes
+async function cleanupExpiredCodes(): Promise<void> {
   await prisma.magicCode.deleteMany({
     where: {
       expiresAt: {
@@ -26,6 +20,36 @@ export async function createAndSendMagicCode(
       },
     },
   });
+}
+
+/**
+ * Creates a magic code and sends it via email
+ * @throws Error if too many unexpired codes exist for this email/type
+ */
+export async function createAndSendMagicCode(
+  email: string,
+  type: MagicCodeType,
+  userId?: string
+): Promise<string> {
+  // Clean up expired codes first
+  await cleanupExpiredCodes();
+
+  // Check how many unexpired codes exist for this email/type
+  const existingCodes = await prisma.magicCode.count({
+    where: {
+      email,
+      type,
+      used: false,
+      expiresAt: {
+        gt: new Date(),
+      },
+    },
+  });
+
+  const MAX_UNEXPIRED_CODES = 5;
+  if (existingCodes >= MAX_UNEXPIRED_CODES) {
+    throw new Error('TOO_MANY_REQUESTS');
+  }
 
   // Generate code
   const code = generateMagicCode();
@@ -60,6 +84,9 @@ export async function verifyMagicCode(
   code: string,
   type: MagicCodeType
 ): Promise<{ valid: boolean; userId?: string }> {
+  // Clean up expired codes first
+  await cleanupExpiredCodes();
+
   const magicCode = await prisma.magicCode.findFirst({
     where: {
       email,

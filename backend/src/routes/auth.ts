@@ -1,12 +1,11 @@
 import { Router, Request, Response } from 'express';
 import { Session } from 'express-session';
 import bcrypt from 'bcrypt';
-import { prisma, Prisma } from '../lib/prisma';
+import { prisma } from '../lib/prisma';
+import { MagicCodeType } from '@prisma/client';
 import { createAndSendMagicCode, verifyMagicCode } from '../utils/magicCode';
 import { requireAuth } from '../middleware/auth';
 import { validatePassword } from '../config/password';
-
-const MagicCodeType = Prisma.MagicCodeType;
 
 const router = Router();
 
@@ -66,11 +65,21 @@ router.post('/register', async (req: Request, res: Response) => {
     });
 
     // Send email verification code
-    await createAndSendMagicCode(
-      user.email,
-      MagicCodeType.EMAIL_VERIFICATION,
-      user.id
-    );
+    try {
+      await createAndSendMagicCode(
+        user.email,
+        MagicCodeType.EMAIL_VERIFICATION,
+        user.id
+      );
+    } catch (error: any) {
+      if (error.message === 'TOO_MANY_REQUESTS') {
+        return res.status(429).json({
+          error: 'Too many verification code requests',
+          message: 'You have requested too many verification codes. Please wait a few minutes, check your spam folder, or contact support if you continue to have issues.',
+        });
+      }
+      throw error;
+    }
 
     // Create session
     const session = req.session as Session & { userId?: string };
@@ -181,11 +190,21 @@ router.post('/request-login-code', async (req: Request, res: Response) => {
     });
 
     // Create and send magic code (even if user doesn't exist yet - they'll be created on verification)
-    await createAndSendMagicCode(
-      email.toLowerCase(),
-      MagicCodeType.LOGIN,
-      user?.id
-    );
+    try {
+      await createAndSendMagicCode(
+        email.toLowerCase(),
+        MagicCodeType.LOGIN,
+        user?.id
+      );
+    } catch (error: any) {
+      if (error.message === 'TOO_MANY_REQUESTS') {
+        return res.status(429).json({
+          error: 'Too many login code requests',
+          message: 'You have requested too many login codes. Please wait a few minutes, check your spam folder, or contact support if you continue to have issues.',
+        });
+      }
+      throw error;
+    }
 
     res.json({ success: true, message: 'Login code sent to email' });
   } catch (error) {
@@ -228,24 +247,25 @@ router.post('/verify-login-code', async (req: Request, res: Response) => {
 
     if (!user) {
       // Create new user
+      // Email is automatically verified since they successfully received and verified the login code
       user = await prisma.user.create({
         data: {
           email: email.toLowerCase(),
           name: email.split('@')[0] || 'User',
-          emailVerified: false, // Will need email verification
+          emailVerified: true, // Auto-verified since they received the login code
           preferences: {
             create: {},
           },
         },
         include: { preferences: true },
       });
-
-      // Send email verification code
-      await createAndSendMagicCode(
-        email.toLowerCase(),
-        MagicCodeType.EMAIL_VERIFICATION,
-        user.id
-      );
+    } else if (!user.emailVerified) {
+      // If existing user's email wasn't verified, verify it now since they proved email access
+      user = await prisma.user.update({
+        where: { id: user.id },
+        data: { emailVerified: true },
+        include: { preferences: true },
+      });
     }
 
     // Create session
@@ -335,11 +355,21 @@ router.post('/resend-verification', requireAuth, async (req: Request, res: Respo
       return res.status(400).json({ error: 'Email already verified' });
     }
 
-    await createAndSendMagicCode(
-      user.email,
-      MagicCodeType.EMAIL_VERIFICATION,
-      user.id
-    );
+    try {
+      await createAndSendMagicCode(
+        user.email,
+        MagicCodeType.EMAIL_VERIFICATION,
+        user.id
+      );
+    } catch (error: any) {
+      if (error.message === 'TOO_MANY_REQUESTS') {
+        return res.status(429).json({
+          error: 'Too many verification code requests',
+          message: 'You have requested too many verification codes. Please wait a few minutes, check your spam folder, or contact support if you continue to have issues.',
+        });
+      }
+      throw error;
+    }
 
     res.json({ success: true, message: 'Verification code sent' });
   } catch (error) {
