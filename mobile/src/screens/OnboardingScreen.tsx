@@ -152,7 +152,7 @@ export default function OnboardingScreen({ navigation }: Props) {
       onRequestClose={onClose}
     >
       <Pressable
-        style={{ flex: 1, backgroundColor: 'rgba(0, 0, 0, 0.5)' }}
+        style={{ flex: 1, backgroundColor: 'rgba(0, 0, 0, 0.5)', justifyContent: 'center', alignItems: 'center' }}
         onPress={onClose}
       >
         <Pressable
@@ -162,6 +162,7 @@ export default function OnboardingScreen({ navigation }: Props) {
             borderRadius: 12,
             padding: 16,
             maxHeight: '60%',
+            width: '80%',
           }}
           onPress={(e) => e.stopPropagation()}
         >

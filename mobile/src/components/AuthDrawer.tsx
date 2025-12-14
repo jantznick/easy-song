@@ -289,12 +289,8 @@ export default function AuthDrawer({ visible, onClose, initialMode = 'signup', o
             behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
             style={{ flex: 1 }}
           >
-            {/* Handle bar and close button container */}
-            <View className="flex-row items-center justify-between px-4 pt-2 pb-4">
-              <View className="flex-1" />
-              <View className="absolute left-0 right-0 items-center">
-                <View className={cn('w-12 h-1 rounded-full', theme.bg('bg-gray-300', 'bg-gray-600'))} />
-              </View>
+            {/* Close button */}
+            <View className="absolute top-4 right-4 z-10">
               <TouchableOpacity
                 onPress={onClose}
                 className="w-8 h-8 items-center justify-center rounded-full"
