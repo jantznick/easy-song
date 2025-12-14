@@ -16,6 +16,7 @@ interface VersionItemProps {
 
 function VersionItem({ version, date, changes }: VersionItemProps) {
   const theme = useThemeClasses();
+  const { t } = useTranslation();
   
   return (
     <View className="mb-6">

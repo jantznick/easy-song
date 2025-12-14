@@ -55,7 +55,6 @@ export interface UserContextType {
   songHistory: SongHistoryItem[];
   totalHistoryCount: number | null; // null means we don't know the total yet (for guest users)
   isLoadingMoreHistory: boolean;
-  hasMoreHistory: boolean;
   addToHistory: (song: string, artist: string, mode: 'Play Mode' | 'Study Mode', videoId: string) => Promise<void>;
   clearHistory: () => Promise<void>;
   fetchMoreHistory: () => Promise<void>;
@@ -89,7 +88,6 @@ export function UserProvider({ children }: UserProviderProps) {
   const [totalHistoryCount, setTotalHistoryCount] = useState<number | null>(null);
   const [profile, setProfile] = useState<StoredUserProfile>(DEFAULT_USER_PROFILE);
   const [isLoadingMoreHistory, setIsLoadingMoreHistory] = useState(false);
-  const [hasMoreHistory, setHasMoreHistory] = useState(true);
   const [historyPage, setHistoryPage] = useState(1);
 
   // Load initial data from storage
@@ -104,7 +102,6 @@ export function UserProvider({ children }: UserProviderProps) {
         ]);
 
         setPreferences(storedPreferences);
-        setSongHistory(storedHistory);
         setProfile(storedProfile);
 
         // Initialize i18n language based on stored preference
@@ -115,6 +112,22 @@ export function UserProvider({ children }: UserProviderProps) {
         if (authToken && storedProfile) {
           setUser(storedProfile);
           setIsAuthenticated(true);
+          // For authenticated users, fetch from server to get total count
+          // This will replace local history with server data
+          try {
+            const { items, totalCount } = await fetchSongHistoryAPI(1, 20);
+            setSongHistory(items);
+            setTotalHistoryCount(totalCount);
+            setHistoryPage(1);
+            await saveSongHistory(items);
+          } catch (error) {
+            console.error('Error fetching history from server:', error);
+            // Fallback to local history if server fetch fails
+            setSongHistory(storedHistory);
+          }
+        } else {
+          // For guest users, use local history
+          setSongHistory(storedHistory);
         }
       } catch (error) {
         console.error('Error loading initial data:', error);
@@ -219,7 +232,12 @@ export function UserProvider({ children }: UserProviderProps) {
 
   // Fetch more history (for pagination)
   const fetchMoreHistory = useCallback(async () => {
-    if (isLoadingMoreHistory || !hasMoreHistory || !isAuthenticated) return;
+    if (isLoadingMoreHistory || !isAuthenticated) return;
+    
+    // Don't fetch if we already have all items
+    if (totalHistoryCount !== null && songHistory.length >= totalHistoryCount) {
+      return;
+    }
     
     setIsLoadingMoreHistory(true);
     try {
@@ -233,29 +251,29 @@ export function UserProvider({ children }: UserProviderProps) {
       
       if (items.length > 0) {
         setSongHistory(prev => {
-          const updated = [...prev, ...items];
-          saveSongHistory(updated); // Save async, don't await
+          // Filter out duplicates (same videoId and mode) before appending
+          const existingIds = new Set(
+            prev.map(entry => `${entry.videoId}-${entry.mode}`)
+          );
+          const newItems = items.filter(
+            item => !existingIds.has(`${item.videoId}-${item.mode}`)
+          );
           
-          // Check if we have more history based on total count
-          if (totalCount !== null && totalCount !== undefined) {
-            setHasMoreHistory(updated.length < totalCount);
-          } else {
-            // Fallback: assume more if we got a full page
-            setHasMoreHistory(items.length >= 20);
-          }
+          const updated = [...prev, ...newItems];
+          saveSongHistory(updated).catch(err => {
+            console.error('Failed to save song history:', err);
+          });
           
           return updated;
         });
         setHistoryPage(nextPage);
-      } else {
-        setHasMoreHistory(false);
       }
     } catch (error) {
       console.error('Failed to fetch more history:', error);
     } finally {
       setIsLoadingMoreHistory(false);
     }
-  }, [isLoadingMoreHistory, hasMoreHistory, isAuthenticated, historyPage]);
+  }, [isLoadingMoreHistory, isAuthenticated, historyPage, totalHistoryCount, songHistory.length]);
 
   // Sign in
   const signIn = useCallback(async (email: string, password: string) => {
@@ -283,7 +301,6 @@ export function UserProvider({ children }: UserProviderProps) {
     await saveSongHistory(history);
     setTotalHistoryCount(totalHistoryCount);
     setHistoryPage(1);
-    setHasMoreHistory(history.length < totalHistoryCount); // Check if we have more based on total count
   }, []);
 
   // Sign out
@@ -308,7 +325,6 @@ export function UserProvider({ children }: UserProviderProps) {
     await saveSongHistory([]);
     setTotalHistoryCount(null);
     setHistoryPage(1);
-    setHasMoreHistory(false);
   }, []);
 
   // Update profile
@@ -341,7 +357,6 @@ export function UserProvider({ children }: UserProviderProps) {
     songHistory,
     totalHistoryCount,
     isLoadingMoreHistory,
-    hasMoreHistory,
     addToHistory,
     clearHistory,
     fetchMoreHistory,
