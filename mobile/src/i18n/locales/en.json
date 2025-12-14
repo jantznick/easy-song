@@ -99,10 +99,30 @@
       "signInToSync": "Sign in to sync your progress",
       "signOutOfAccount": "Sign out of your account"
     },
+    "onboarding": {
+      "skip": "Skip",
+      "next": "Next",
+      "signUp": "Sign Up",
+      "continueAsGuest": "Continue as Guest",
+      "welcome": {
+        "title": "Welcome to EasySong",
+        "description": "Learn languages through music! Discover your favorite songs, sing along, and master new languages in a fun and engaging way."
+      },
+      "playMode": {
+        "title": "Play Mode",
+        "description": "Watch music videos with synchronized lyrics. Sing along and learn naturally as you enjoy your favorite songs."
+      },
+      "studyMode": {
+        "title": "Study Mode",
+        "description": "Dive deeper into each song with detailed explanations, translations, and structured learning sections to master the language."
+      }
+    },
     "about": {
       "title": "About",
       "appVersion": "App Version",
       "helpSupport": "Help & Support",
+      "viewWalkthrough": "View Walkthrough",
+      "viewWalkthroughDescription": "See the app introduction again",
       "termsOfService": "Terms of Service",
       "privacyPolicy": "Privacy Policy"
     }

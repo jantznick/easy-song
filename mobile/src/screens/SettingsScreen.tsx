@@ -10,6 +10,7 @@ import { useTheme } from '../contexts/ThemeContext';
 import { useTranslation } from '../hooks/useTranslation';
 import { useThemeClasses } from '../utils/themeClasses';
 import { LANGUAGE_CODE_MAP } from '../i18n/config';
+import { resetOnboarding } from '../utils/storage';
 
 // Support both tab navigator (from SongDetail) and stack navigator (from root)
 type SettingsScreenProps = 
@@ -335,6 +336,16 @@ export default function SettingsScreen({ route }: Props) {
             title={t('settings.about.helpSupport')}
             showArrow
             onPress={() => navigation.navigate('Help')}
+          />
+          <SettingItem
+            icon="play-circle-outline"
+            title={t('settings.about.viewWalkthrough')}
+            subtitle={t('settings.about.viewWalkthroughDescription')}
+            showArrow
+            onPress={async () => {
+              await resetOnboarding();
+              navigation.navigate('Onboarding');
+            }}
           />
           <SettingItem
             icon="document-text"

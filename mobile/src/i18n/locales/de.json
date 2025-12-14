@@ -99,10 +99,30 @@
       "signInToSync": "Melden Sie sich an, um Ihren Fortschritt zu synchronisieren",
       "signOutOfAccount": "Von Ihrem Konto abmelden"
     },
+    "onboarding": {
+      "skip": "Überspringen",
+      "next": "Weiter",
+      "signUp": "Registrieren",
+      "continueAsGuest": "Als Gast fortfahren",
+      "welcome": {
+        "title": "Willkommen bei EasySong",
+        "description": "Lernen Sie Sprachen durch Musik! Entdecken Sie Ihre Lieblingssongs, singen Sie mit und meistern Sie neue Sprachen auf unterhaltsame und ansprechende Weise."
+      },
+      "playMode": {
+        "title": "Wiedergabemodus",
+        "description": "Sehen Sie Musikvideos mit synchronisierten Texten. Singen Sie mit und lernen Sie natürlich, während Sie Ihre Lieblingssongs genießen."
+      },
+      "studyMode": {
+        "title": "Lernmodus",
+        "description": "Tauchen Sie tiefer in jedes Lied ein mit detaillierten Erklärungen, Übersetzungen und strukturierten Lernabschnitten, um die Sprache zu meistern."
+      }
+    },
     "about": {
       "title": "Über",
       "appVersion": "App-Version",
       "helpSupport": "Hilfe & Support",
+      "viewWalkthrough": "Einführung Anzeigen",
+      "viewWalkthroughDescription": "App-Einführung erneut anzeigen",
       "termsOfService": "Nutzungsbedingungen",
       "privacyPolicy": "Datenschutzrichtlinie"
     }

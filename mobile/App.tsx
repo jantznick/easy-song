@@ -1,5 +1,5 @@
-import React from 'react';
-import { View } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, ActivityIndicator } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { StatusBar } from 'expo-status-bar';
@@ -9,6 +9,7 @@ import './global.css';
 import './src/i18n/config';
 import { UserProvider } from './src/contexts/UserContext';
 import { ThemeProvider, useTheme } from './src/contexts/ThemeContext';
+import OnboardingScreen from './src/screens/OnboardingScreen';
 import SongListScreen from './src/screens/SongListScreen';
 import SongDetailScreen from './src/screens/SongDetailScreen';
 import SettingsScreen from './src/screens/SettingsScreen';
@@ -19,6 +20,7 @@ import PrivacyPolicyScreen from './src/screens/PrivacyPolicyScreen';
 import AboutScreen from './src/screens/AboutScreen';
 import SongHistoryScreen from './src/screens/SongHistoryScreen';
 import type { RootStackParamList } from './src/types/navigation';
+import { hasCompletedOnboarding } from './src/utils/storage';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -30,15 +32,38 @@ function ThemeWrapper({ children }: { children: React.ReactNode }) {
 // Inner component that can use theme
 function AppContent() {
   const { isDark } = useTheme();
-  
+  const [isLoading, setIsLoading] = useState(true);
+  const [initialRoute, setInitialRoute] = useState<keyof RootStackParamList>('Onboarding');
+
+  useEffect(() => {
+    const checkOnboarding = async () => {
+      const completed = await hasCompletedOnboarding();
+      setInitialRoute(completed ? 'SongList' : 'Onboarding');
+      setIsLoading(false);
+    };
+    checkOnboarding();
+  }, []);
+
+  if (isLoading) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: isDark ? '#000' : '#fff' }}>
+        <ActivityIndicator size="large" color={isDark ? '#fff' : '#000'} />
+      </View>
+    );
+  }
+
   return (
     <NavigationContainer>
       <Stack.Navigator
-        initialRouteName="SongList"
+        initialRouteName={initialRoute}
         screenOptions={{
           headerShown: false,
         }}
       >
+        <Stack.Screen
+          name="Onboarding"
+          component={OnboardingScreen}
+        />
         <Stack.Screen
           name="SongList"
           component={SongListScreen}

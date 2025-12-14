@@ -5,6 +5,7 @@ const STORAGE_KEYS = {
   USER_PROFILE: '@easysong:user_profile',
   SONG_HISTORY: '@easysong:song_history',
   AUTH_TOKEN: '@easysong:auth_token',
+  ONBOARDING_COMPLETE: '@easysong:onboarding_complete',
 } as const;
 
 export interface StoredPreferences {
@@ -144,6 +145,33 @@ export async function saveAuthToken(token: string | null): Promise<void> {
   }
 }
 
+// Onboarding Storage
+export async function hasCompletedOnboarding(): Promise<boolean> {
+  try {
+    const value = await AsyncStorage.getItem(STORAGE_KEYS.ONBOARDING_COMPLETE);
+    return value === 'true';
+  } catch (error) {
+    console.error('Error checking onboarding status:', error);
+    return false;
+  }
+}
+
+export async function saveOnboardingComplete(): Promise<void> {
+  try {
+    await AsyncStorage.setItem(STORAGE_KEYS.ONBOARDING_COMPLETE, 'true');
+  } catch (error) {
+    console.error('Error saving onboarding status:', error);
+  }
+}
+
+export async function resetOnboarding(): Promise<void> {
+  try {
+    await AsyncStorage.removeItem(STORAGE_KEYS.ONBOARDING_COMPLETE);
+  } catch (error) {
+    console.error('Error resetting onboarding status:', error);
+  }
+}
+
 // Clear all storage (for sign out)
 export async function clearAllStorage(): Promise<void> {
   try {
@@ -152,6 +180,7 @@ export async function clearAllStorage(): Promise<void> {
       STORAGE_KEYS.USER_PROFILE,
       STORAGE_KEYS.SONG_HISTORY,
       STORAGE_KEYS.AUTH_TOKEN,
+      // Note: We don't clear ONBOARDING_COMPLETE on sign out
     ]);
   } catch (error) {
     console.error('Error clearing storage:', error);

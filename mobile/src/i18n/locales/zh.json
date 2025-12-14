@@ -99,10 +99,30 @@
       "signInToSync": "登录以同步您的进度",
       "signOutOfAccount": "退出您的账户"
     },
+    "onboarding": {
+      "skip": "跳过",
+      "next": "下一步",
+      "signUp": "注册",
+      "continueAsGuest": "以访客身份继续",
+      "welcome": {
+        "title": "欢迎使用 EasySong",
+        "description": "通过音乐学习语言！发现您喜爱的歌曲，跟着唱，以有趣且引人入胜的方式掌握新语言。"
+      },
+      "playMode": {
+        "title": "播放模式",
+        "description": "观看带有同步歌词的音乐视频。跟着唱，在享受您喜爱的歌曲时自然地学习。"
+      },
+      "studyMode": {
+        "title": "学习模式",
+        "description": "深入了解每首歌曲，提供详细解释、翻译和结构化学习部分，以掌握语言。"
+      }
+    },
     "about": {
       "title": "关于",
       "appVersion": "应用版本",
       "helpSupport": "帮助与支持",
+      "viewWalkthrough": "查看教程",
+      "viewWalkthroughDescription": "再次查看应用介绍",
       "termsOfService": "服务条款",
       "privacyPolicy": "隐私政策"
     }
