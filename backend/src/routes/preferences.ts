@@ -1,6 +1,7 @@
 import { Router, Request, Response } from 'express';
 import { prisma } from '../lib/prisma';
 import { requireAuth } from '../middleware/auth';
+import { t } from '../middleware/i18n';
 
 const router = Router();
 
@@ -28,7 +29,7 @@ router.get('/preferences', requireAuth, async (req: Request, res: Response) => {
     });
   } catch (error) {
     console.error('Error fetching preferences:', error);
-    res.status(500).json({ error: 'Failed to fetch preferences' });
+    res.status(500).json({ error: t('errors.preferences.failedToFetch') });
   }
 });
 
@@ -62,36 +63,36 @@ router.put('/preferences', requireAuth, async (req: Request, res: Response) => {
     if (updatedPreferences.playback) {
       const playbackPrefs = updatedPreferences.playback as any;
       if (playbackPrefs.autoplay !== undefined && typeof playbackPrefs.autoplay !== 'boolean') {
-        return res.status(400).json({ error: 'playback.autoplay must be a boolean' });
+        return res.status(400).json({ error: t('errors.preferences.autoplayInvalid') });
       }
       if (playbackPrefs.autoscroll !== undefined && typeof playbackPrefs.autoscroll !== 'boolean') {
-        return res.status(400).json({ error: 'playback.autoscroll must be a boolean' });
+        return res.status(400).json({ error: t('errors.preferences.autoscrollInvalid') });
       }
       if (playbackPrefs.loop !== undefined && typeof playbackPrefs.loop !== 'boolean') {
-        return res.status(400).json({ error: 'playback.loop must be a boolean' });
+        return res.status(400).json({ error: t('errors.preferences.loopInvalid') });
       }
     }
 
     if (updatedPreferences.display) {
       const displayPrefs = updatedPreferences.display as any;
       if (displayPrefs.fontSize !== undefined && !['small', 'medium', 'large'].includes(displayPrefs.fontSize)) {
-        return res.status(400).json({ error: 'display.fontSize must be one of: small, medium, large' });
+        return res.status(400).json({ error: t('errors.preferences.fontSizeInvalid') });
       }
       if (displayPrefs.defaultTranslation !== undefined && typeof displayPrefs.defaultTranslation !== 'boolean') {
-        return res.status(400).json({ error: 'display.defaultTranslation must be a boolean' });
+        return res.status(400).json({ error: t('errors.preferences.defaultTranslationInvalid') });
       }
       if (displayPrefs.theme !== undefined && !['light', 'dark', 'system'].includes(displayPrefs.theme)) {
-        return res.status(400).json({ error: 'display.theme must be one of: light, dark, system' });
+        return res.status(400).json({ error: t('errors.preferences.themeInvalid') });
       }
     }
 
     if (updatedPreferences.language) {
       const languagePrefs = updatedPreferences.language as any;
       if (languagePrefs.learning !== undefined && typeof languagePrefs.learning !== 'string') {
-        return res.status(400).json({ error: 'language.learning must be a string' });
+        return res.status(400).json({ error: t('errors.preferences.learningLanguageInvalid') });
       }
       if (languagePrefs.interface !== undefined && typeof languagePrefs.interface !== 'string') {
-        return res.status(400).json({ error: 'language.interface must be a string' });
+        return res.status(400).json({ error: t('errors.preferences.interfaceLanguageInvalid') });
       }
     }
 
@@ -108,7 +109,7 @@ router.put('/preferences', requireAuth, async (req: Request, res: Response) => {
     });
   } catch (error) {
     console.error('Error updating preferences:', error);
-    res.status(500).json({ error: 'Failed to update preferences' });
+    res.status(500).json({ error: t('errors.preferences.failedToUpdate') });
   }
 });
 

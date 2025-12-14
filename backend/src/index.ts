@@ -4,6 +4,7 @@ import fs from 'fs/promises';
 import path from 'path';
 import { config } from './config';
 import { sessionMiddleware } from './lib/session';
+import { i18nMiddleware, t } from './middleware/i18n';
 import authRoutes from './routes/auth';
 import userRoutes from './routes/user';
 import preferencesRoutes from './routes/preferences';
@@ -30,6 +31,7 @@ app.use(cors({
 // Middleware
 app.use(express.json());
 app.use(sessionMiddleware);
+app.use(i18nMiddleware); // Language detection middleware (must be before routes)
 
 // --- API Routes ---
 
@@ -140,7 +142,7 @@ app.get('/api/songs', async (req, res) => {
     }
   } catch (error) {
     console.error('Error fetching songs list:', error);
-    res.status(500).json({ error: 'Failed to fetch songs list.' });
+    res.status(500).json({ error: t('errors.songs.failedToFetchList') });
   }
 });
 
@@ -158,7 +160,7 @@ app.get('/api/songs/:videoId', async (req, res) => {
   } catch (error) {
     // If the file doesn't exist, it will throw an error.
     console.error(`Error fetching song ${videoId}:`, error);
-    res.status(404).json({ error: 'Song not found.' });
+    res.status(404).json({ error: t('errors.songs.songNotFound') });
   }
 });
 
@@ -177,7 +179,7 @@ app.get('/api/songs/:videoId/study', async (req, res) => {
   } catch (error) {
     // If the file doesn't exist, return 404
     console.error(`Error fetching study data for ${videoId}:`, error);
-    res.status(404).json({ error: 'Study data not found.' });
+    res.status(404).json({ error: t('errors.songs.studyDataNotFound') });
   }
 });
 

@@ -6,6 +6,7 @@ import { MagicCodeType } from '@prisma/client';
 import { createAndSendMagicCode, verifyMagicCode } from '../utils/magicCode';
 import { requireAuth } from '../middleware/auth';
 import { validatePassword } from '../config/password';
+import { t } from '../middleware/i18n';
 
 const router = Router();
 
@@ -18,22 +19,22 @@ router.post('/register', async (req: Request, res: Response) => {
     const { email, password, name } = req.body;
 
     if (!email || typeof email !== 'string' || !email.includes('@')) {
-      return res.status(400).json({ error: 'Valid email is required' });
+      return res.status(400).json({ error: t('errors.auth.emailRequired') });
     }
 
     if (!password || typeof password !== 'string') {
-      return res.status(400).json({ error: 'Password is required' });
+      return res.status(400).json({ error: t('errors.auth.passwordRequired') });
     }
 
     if (!name || typeof name !== 'string' || name.trim().length === 0) {
-      return res.status(400).json({ error: 'Name is required' });
+      return res.status(400).json({ error: t('errors.auth.nameRequired') });
     }
 
     // Validate password
     const passwordValidation = validatePassword(password);
     if (!passwordValidation.valid) {
       return res.status(400).json({ 
-        error: 'Password does not meet requirements',
+        error: t('errors.auth.passwordRequirementsNotMet'),
         errors: passwordValidation.errors,
       });
     }
@@ -44,7 +45,7 @@ router.post('/register', async (req: Request, res: Response) => {
     });
 
     if (existingUser) {
-      return res.status(400).json({ error: 'User with this email already exists' });
+      return res.status(400).json({ error: t('errors.auth.userExists') });
     }
 
     // Hash password
@@ -74,8 +75,8 @@ router.post('/register', async (req: Request, res: Response) => {
     } catch (error: any) {
       if (error.message === 'TOO_MANY_REQUESTS') {
         return res.status(429).json({
-          error: 'Too many verification code requests',
-          message: 'You have requested too many verification codes. Please wait a few minutes, check your spam folder, or contact support if you continue to have issues.',
+          error: t('errors.auth.tooManyVerificationRequests'),
+          message: t('errors.auth.tooManyVerificationRequestsMessage'),
         });
       }
       throw error;
@@ -103,7 +104,7 @@ router.post('/register', async (req: Request, res: Response) => {
     });
   } catch (error) {
     console.error('Error registering user:', error);
-    res.status(500).json({ error: 'Failed to register user' });
+    res.status(500).json({ error: t('errors.auth.failedToRegister') });
   }
 });
 
@@ -116,11 +117,11 @@ router.post('/login', async (req: Request, res: Response) => {
     const { email, password } = req.body;
 
     if (!email || typeof email !== 'string' || !email.includes('@')) {
-      return res.status(400).json({ error: 'Valid email is required' });
+      return res.status(400).json({ error: t('errors.auth.emailRequired') });
     }
 
     if (!password || typeof password !== 'string') {
-      return res.status(400).json({ error: 'Password is required' });
+      return res.status(400).json({ error: t('errors.auth.passwordRequired') });
     }
 
     // Find user
@@ -130,20 +131,20 @@ router.post('/login', async (req: Request, res: Response) => {
     });
 
     if (!user) {
-      return res.status(401).json({ error: 'Invalid email or password' });
+      return res.status(401).json({ error: t('errors.auth.invalidCredentials') });
     }
 
     // Check if user has a password set
     if (!user.passwordHash) {
       return res.status(401).json({ 
-        error: 'This account does not have a password set. Please use magic code login.',
+        error: t('errors.auth.noPasswordSetMessage'),
       });
     }
 
     // Verify password
     const passwordValid = await bcrypt.compare(password, user.passwordHash);
     if (!passwordValid) {
-      return res.status(401).json({ error: 'Invalid email or password' });
+      return res.status(401).json({ error: t('errors.auth.invalidCredentials') });
     }
 
     // Create session (email verification not required for login)
@@ -168,7 +169,7 @@ router.post('/login', async (req: Request, res: Response) => {
     });
   } catch (error) {
     console.error('Error logging in:', error);
-    res.status(500).json({ error: 'Failed to login' });
+    res.status(500).json({ error: t('errors.auth.failedToLogin') });
   }
 });
 
@@ -181,7 +182,7 @@ router.post('/request-login-code', async (req: Request, res: Response) => {
     const { email } = req.body;
 
     if (!email || typeof email !== 'string' || !email.includes('@')) {
-      return res.status(400).json({ error: 'Valid email is required' });
+      return res.status(400).json({ error: t('errors.auth.emailRequired') });
     }
 
     // Check if user exists
@@ -199,17 +200,17 @@ router.post('/request-login-code', async (req: Request, res: Response) => {
     } catch (error: any) {
       if (error.message === 'TOO_MANY_REQUESTS') {
         return res.status(429).json({
-          error: 'Too many login code requests',
-          message: 'You have requested too many login codes. Please wait a few minutes, check your spam folder, or contact support if you continue to have issues.',
+          error: t('errors.auth.tooManyRequests'),
+          message: t('errors.auth.tooManyRequestsMessage'),
         });
       }
       throw error;
     }
 
-    res.json({ success: true, message: 'Login code sent to email' });
+    res.json({ success: true, message: t('success.loginCodeSent') });
   } catch (error) {
     console.error('Error requesting login code:', error);
-    res.status(500).json({ error: 'Failed to send login code' });
+    res.status(500).json({ error: t('errors.auth.failedToSendCode') });
   }
 });
 
@@ -222,11 +223,11 @@ router.post('/verify-login-code', async (req: Request, res: Response) => {
     const { email, code } = req.body;
 
     if (!email || typeof email !== 'string' || !email.includes('@')) {
-      return res.status(400).json({ error: 'Valid email is required' });
+      return res.status(400).json({ error: t('errors.auth.emailRequired') });
     }
 
     if (!code || typeof code !== 'string' || code.length !== 6) {
-      return res.status(400).json({ error: 'Valid 6-digit code is required' });
+      return res.status(400).json({ error: t('errors.auth.codeRequired') });
     }
 
     const verification = await verifyMagicCode(
@@ -236,7 +237,7 @@ router.post('/verify-login-code', async (req: Request, res: Response) => {
     );
 
     if (!verification.valid) {
-      return res.status(401).json({ error: 'Invalid or expired code' });
+      return res.status(401).json({ error: t('errors.auth.invalidCode') });
     }
 
     // Find or create user
@@ -290,7 +291,7 @@ router.post('/verify-login-code', async (req: Request, res: Response) => {
     });
   } catch (error) {
     console.error('Error verifying login code:', error);
-    res.status(500).json({ error: 'Failed to verify code' });
+    res.status(500).json({ error: t('errors.auth.verifyCodeFailed') });
   }
 });
 
@@ -303,7 +304,7 @@ router.post('/verify-email', requireAuth, async (req: Request, res: Response) =>
     const { code } = req.body;
 
     if (!code || typeof code !== 'string' || code.length !== 6) {
-      return res.status(400).json({ error: 'Valid 6-digit code is required' });
+      return res.status(400).json({ error: t('errors.auth.codeRequired') });
     }
 
     const user = await prisma.user.findUnique({
@@ -311,7 +312,7 @@ router.post('/verify-email', requireAuth, async (req: Request, res: Response) =>
     });
 
     if (!user) {
-      return res.status(404).json({ error: 'User not found' });
+      return res.status(404).json({ error: t('errors.user.notFound') });
     }
 
     const verification = await verifyMagicCode(
@@ -321,7 +322,7 @@ router.post('/verify-email', requireAuth, async (req: Request, res: Response) =>
     );
 
     if (!verification.valid) {
-      return res.status(401).json({ error: 'Invalid or expired code' });
+      return res.status(401).json({ error: t('errors.auth.invalidCode') });
     }
 
     // Update user email verification status
@@ -330,10 +331,10 @@ router.post('/verify-email', requireAuth, async (req: Request, res: Response) =>
       data: { emailVerified: true },
     });
 
-    res.json({ success: true, message: 'Email verified successfully' });
+    res.json({ success: true, message: t('success.emailVerified') });
   } catch (error) {
     console.error('Error verifying email:', error);
-    res.status(500).json({ error: 'Failed to verify email' });
+    res.status(500).json({ error: t('errors.auth.failedToVerifyEmail') });
   }
 });
 
@@ -348,11 +349,11 @@ router.post('/resend-verification', requireAuth, async (req: Request, res: Respo
     });
 
     if (!user) {
-      return res.status(404).json({ error: 'User not found' });
+      return res.status(404).json({ error: t('errors.user.notFound') });
     }
 
     if (user.emailVerified) {
-      return res.status(400).json({ error: 'Email already verified' });
+      return res.status(400).json({ error: t('errors.auth.emailAlreadyVerified') });
     }
 
     try {
@@ -364,17 +365,17 @@ router.post('/resend-verification', requireAuth, async (req: Request, res: Respo
     } catch (error: any) {
       if (error.message === 'TOO_MANY_REQUESTS') {
         return res.status(429).json({
-          error: 'Too many verification code requests',
-          message: 'You have requested too many verification codes. Please wait a few minutes, check your spam folder, or contact support if you continue to have issues.',
+          error: t('errors.auth.tooManyVerificationRequests'),
+          message: t('errors.auth.tooManyVerificationRequestsMessage'),
         });
       }
       throw error;
     }
 
-    res.json({ success: true, message: 'Verification code sent' });
+    res.json({ success: true, message: t('success.verificationCodeSent') });
   } catch (error) {
     console.error('Error resending verification:', error);
-    res.status(500).json({ error: 'Failed to send verification code' });
+    res.status(500).json({ error: t('errors.auth.failedToResendVerification') });
   }
 });
 
@@ -391,10 +392,10 @@ router.post('/logout', requireAuth, async (req: Request, res: Response) => {
       });
     });
 
-    res.json({ success: true, message: 'Logged out successfully' });
+    res.json({ success: true, message: t('success.logoutSuccess') });
   } catch (error) {
     console.error('Error logging out:', error);
-    res.status(500).json({ error: 'Failed to log out' });
+    res.status(500).json({ error: t('errors.auth.logoutFailed') });
   }
 });
 
@@ -410,7 +411,7 @@ router.get('/me', requireAuth, async (req: Request, res: Response) => {
     });
 
     if (!user) {
-      return res.status(404).json({ error: 'User not found' });
+      return res.status(404).json({ error: t('errors.user.notFound') });
     }
 
     res.json({
@@ -422,7 +423,7 @@ router.get('/me', requireAuth, async (req: Request, res: Response) => {
     });
   } catch (error) {
     console.error('Error fetching user:', error);
-    res.status(500).json({ error: 'Failed to fetch user' });
+    res.status(500).json({ error: t('errors.auth.fetchUserFailed') });
   }
 });
 

@@ -3,6 +3,7 @@ import bcrypt from 'bcrypt';
 import { prisma } from '../lib/prisma';
 import { requireAuth } from '../middleware/auth';
 import { validatePassword } from '../config/password';
+import { t } from '../middleware/i18n';
 
 const router = Router();
 
@@ -23,21 +24,21 @@ router.put('/profile', requireAuth, async (req: Request, res: Response) => {
 
     if (name !== undefined) {
       if (typeof name !== 'string' || name.trim().length === 0) {
-        return res.status(400).json({ error: 'Name must be a non-empty string' });
+        return res.status(400).json({ error: t('errors.user.nameInvalid') });
       }
       updateData.name = name.trim();
     }
 
     if (email !== undefined) {
       if (typeof email !== 'string' || !email.includes('@')) {
-        return res.status(400).json({ error: 'Valid email is required' });
+        return res.status(400).json({ error: t('errors.user.emailInvalid') });
       }
       // Check if email is already taken by another user
       const existingUser = await prisma.user.findUnique({
         where: { email: email.toLowerCase() },
       });
       if (existingUser && existingUser.id !== req.userId) {
-        return res.status(400).json({ error: 'Email already in use' });
+        return res.status(400).json({ error: t('errors.user.emailInUse') });
       }
       updateData.email = email.toLowerCase();
       // If email changed, mark as unverified
@@ -46,7 +47,7 @@ router.put('/profile', requireAuth, async (req: Request, res: Response) => {
 
     if (avatar !== undefined) {
       if (avatar !== null && typeof avatar !== 'string') {
-        return res.status(400).json({ error: 'Avatar must be a string or null' });
+        return res.status(400).json({ error: t('errors.user.avatarInvalid') });
       }
       updateData.avatar = avatar || null;
     }
@@ -67,7 +68,7 @@ router.put('/profile', requireAuth, async (req: Request, res: Response) => {
     res.json(user);
   } catch (error) {
     console.error('Error updating profile:', error);
-    res.status(500).json({ error: 'Failed to update profile' });
+    res.status(500).json({ error: t('errors.user.failedToUpdateProfile') });
   }
 });
 
@@ -80,14 +81,14 @@ router.post('/change-password', requireAuth, async (req: Request, res: Response)
     const { currentPassword, newPassword } = req.body;
 
     if (!newPassword || typeof newPassword !== 'string') {
-      return res.status(400).json({ error: 'New password is required' });
+      return res.status(400).json({ error: t('errors.user.newPasswordRequired') });
     }
 
     // Validate new password
     const passwordValidation = validatePassword(newPassword);
     if (!passwordValidation.valid) {
       return res.status(400).json({ 
-        error: 'New password does not meet requirements',
+        error: t('errors.auth.passwordRequirementsNotMet'),
         errors: passwordValidation.errors,
       });
     }
@@ -99,19 +100,19 @@ router.post('/change-password', requireAuth, async (req: Request, res: Response)
     });
 
     if (!user) {
-      return res.status(404).json({ error: 'User not found' });
+      return res.status(404).json({ error: t('errors.user.notFound') });
     }
 
     // If user has a password, require and verify current password
     if (user.passwordHash) {
       if (!currentPassword || typeof currentPassword !== 'string') {
-        return res.status(400).json({ error: 'Current password is required' });
+        return res.status(400).json({ error: t('errors.user.currentPasswordRequired') });
       }
 
       // Verify current password
       const passwordValid = await bcrypt.compare(currentPassword, user.passwordHash);
       if (!passwordValid) {
-        return res.status(401).json({ error: 'Current password is incorrect' });
+        return res.status(401).json({ error: t('errors.user.currentPasswordIncorrect') });
       }
     }
     // If no password exists (e.g., magic link user), skip current password verification
@@ -126,13 +127,13 @@ router.post('/change-password', requireAuth, async (req: Request, res: Response)
     });
 
     const message = user.passwordHash 
-      ? 'Password changed successfully' 
-      : 'Password set successfully';
+      ? t('errors.user.passwordChanged') 
+      : t('errors.user.passwordSet');
 
     res.json({ success: true, message });
   } catch (error) {
     console.error('Error changing password:', error);
-    res.status(500).json({ error: 'Failed to change password' });
+    res.status(500).json({ error: t('errors.user.failedToChangePassword') });
   }
 });
 
@@ -146,7 +147,7 @@ router.get('/:id', requireAuth, async (req: Request, res: Response) => {
     const { id } = req.params;
 
     if (!id) {
-      return res.status(400).json({ error: 'User ID is required' });
+      return res.status(400).json({ error: t('errors.user.notFound') });
     }
 
     const user = await prisma.user.findUnique({
@@ -163,13 +164,13 @@ router.get('/:id', requireAuth, async (req: Request, res: Response) => {
     });
 
     if (!user) {
-      return res.status(404).json({ error: 'User not found' });
+      return res.status(404).json({ error: t('errors.user.notFound') });
     }
 
     res.json(user);
   } catch (error) {
     console.error('Error fetching profile:', error);
-    res.status(500).json({ error: 'Failed to fetch profile' });
+    res.status(500).json({ error: t('errors.user.failedToFetchProfile') });
   }
 });
 

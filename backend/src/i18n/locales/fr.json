@@ -1,0 +1,89 @@
+{
+  "errors": {
+    "auth": {
+      "emailRequired": "Un email valide est requis",
+      "passwordRequired": "Un mot de passe est requis",
+      "nameRequired": "Un nom est requis",
+      "userExists": "Un utilisateur avec cet email existe déjà",
+      "invalidCredentials": "Email ou mot de passe invalide",
+      "invalidCode": "Code invalide ou expiré",
+      "tooManyRequests": "Trop de demandes de code de connexion",
+      "tooManyRequestsMessage": "Vous avez demandé trop de codes de connexion. Veuillez attendre quelques minutes, vérifier votre dossier spam, ou contacter le support si vous continuez à avoir des problèmes.",
+      "tooManyVerificationRequests": "Trop de demandes de code de vérification",
+      "tooManyVerificationRequestsMessage": "Vous avez demandé trop de codes de vérification. Veuillez attendre quelques minutes, vérifier votre dossier spam, ou contacter le support si vous continuez à avoir des problèmes.",
+      "emailAlreadyVerified": "L'email est déjà vérifié",
+      "failedToRegister": "Échec de l'enregistrement de l'utilisateur",
+      "failedToLogin": "Échec de la connexion",
+      "failedToSendCode": "Échec de l'envoi du code de connexion",
+      "failedToVerifyEmail": "Échec de la vérification de l'email",
+      "failedToResendVerification": "Échec de l'envoi du code de vérification",
+      "codeRequired": "Un code valide à 6 chiffres est requis",
+      "noPasswordSetMessage": "Ce compte n'a pas de mot de passe configuré. Veuillez utiliser la connexion par code magique.",
+      "verifyCodeFailed": "Échec de la vérification du code",
+      "fetchUserFailed": "Échec de la récupération de l'utilisateur",
+      "logoutFailed": "Échec de la déconnexion",
+      "passwordRequirementsNotMet": "Le mot de passe ne répond pas aux exigences"
+    },
+    "user": {
+      "notFound": "Utilisateur non trouvé",
+      "nameInvalid": "Le nom doit être une chaîne non vide",
+      "emailInvalid": "Un email valide est requis",
+      "emailInUse": "L'email est déjà utilisé",
+      "avatarInvalid": "L'avatar doit être une chaîne ou null",
+      "currentPasswordRequired": "Le mot de passe actuel est requis",
+      "newPasswordRequired": "Un nouveau mot de passe est requis",
+      "currentPasswordIncorrect": "Le mot de passe actuel est incorrect",
+      "noPasswordSet": "Le compte n'a pas de mot de passe configuré. Veuillez définir un mot de passe d'abord.",
+      "failedToFetchProfile": "Échec de la récupération du profil",
+      "failedToUpdateProfile": "Échec de la mise à jour du profil",
+      "failedToChangePassword": "Échec du changement de mot de passe",
+      "passwordChanged": "Mot de passe changé avec succès",
+      "passwordSet": "Mot de passe défini avec succès"
+    },
+    "preferences": {
+      "failedToFetch": "Échec de la récupération des préférences",
+      "failedToUpdate": "Échec de la mise à jour des préférences",
+      "autoplayInvalid": "playback.autoplay doit être un booléen",
+      "autoscrollInvalid": "playback.autoscroll doit être un booléen",
+      "loopInvalid": "playback.loop doit être un booléen",
+      "fontSizeInvalid": "display.fontSize doit être l'un des suivants: small, medium, large",
+      "defaultTranslationInvalid": "display.defaultTranslation doit être un booléen",
+      "themeInvalid": "display.theme doit être l'un des suivants: light, dark, system",
+      "learningLanguageInvalid": "language.learning doit être une chaîne",
+      "interfaceLanguageInvalid": "language.interface doit être une chaîne"
+    },
+    "history": {
+      "failedToAdd": "Échec de l'ajout à l'historique",
+      "failedToFetch": "Échec de la récupération de l'historique",
+      "failedToClear": "Échec de l'effacement de l'historique",
+      "failedToDelete": "Échec de la suppression de l'entrée de l'historique",
+      "entryNotFound": "Entrée de l'historique non trouvée",
+      "notAuthorized": "Non autorisé à supprimer cette entrée",
+      "pageOutOfRange": "La page {{page}} est hors limites. La page maximale est {{maxPage}}",
+      "pageInvalid": "la page doit être >= 1",
+      "songRequired": "la chanson est requise et doit être une chaîne",
+      "artistRequired": "l'artiste est requis et doit être une chaîne",
+      "modeInvalid": "le mode doit être \"Play Mode\" ou \"Study Mode\"",
+      "videoIdRequired": "videoId est requis et doit être une chaîne"
+    },
+    "common": {
+      "serverError": "Une erreur s'est produite sur le serveur",
+      "notFound": "Ressource non trouvée",
+      "unauthorized": "Non autorisé",
+      "forbidden": "Interdit"
+    },
+    "songs": {
+      "failedToFetchList": "Échec de la récupération de la liste des chansons",
+      "songNotFound": "Chanson non trouvée",
+      "studyDataNotFound": "Données d'étude non trouvées"
+    }
+  },
+  "success": {
+    "loginCodeSent": "Code de connexion envoyé par email",
+    "emailVerified": "Email vérifié avec succès",
+    "verificationCodeSent": "Code de vérification envoyé",
+    "historyCleared": "Historique effacé",
+    "historyEntryDeleted": "Entrée de l'historique supprimée",
+    "logoutSuccess": "Déconnexion réussie"
+  }
+}

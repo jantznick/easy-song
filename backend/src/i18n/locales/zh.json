@@ -1,0 +1,89 @@
+{
+  "errors": {
+    "auth": {
+      "emailRequired": "需要有效的电子邮件地址",
+      "passwordRequired": "需要密码",
+      "nameRequired": "需要姓名",
+      "userExists": "使用此电子邮件的用户已存在",
+      "invalidCredentials": "电子邮件或密码无效",
+      "invalidCode": "代码无效或已过期",
+      "tooManyRequests": "登录代码请求过多",
+      "tooManyRequestsMessage": "您请求了太多登录代码。请等待几分钟，检查您的垃圾邮件文件夹，或如果您继续遇到问题，请联系支持。",
+      "tooManyVerificationRequests": "验证代码请求过多",
+      "tooManyVerificationRequestsMessage": "您请求了太多验证代码。请等待几分钟，检查您的垃圾邮件文件夹，或如果您继续遇到问题，请联系支持。",
+      "emailAlreadyVerified": "电子邮件已验证",
+      "failedToRegister": "注册用户失败",
+      "failedToLogin": "登录失败",
+      "failedToSendCode": "发送登录代码失败",
+      "failedToVerifyEmail": "验证电子邮件失败",
+      "failedToResendVerification": "发送验证代码失败",
+      "codeRequired": "需要有效的6位数字代码",
+      "noPasswordSetMessage": "此账户未设置密码。请使用魔法代码登录。",
+      "verifyCodeFailed": "验证代码失败",
+      "fetchUserFailed": "获取用户失败",
+      "logoutFailed": "登出失败",
+      "passwordRequirementsNotMet": "密码不符合要求"
+    },
+    "user": {
+      "notFound": "未找到用户",
+      "nameInvalid": "姓名必须是非空字符串",
+      "emailInvalid": "需要有效的电子邮件地址",
+      "emailInUse": "电子邮件已被使用",
+      "avatarInvalid": "头像必须是字符串或 null",
+      "currentPasswordRequired": "需要当前密码",
+      "newPasswordRequired": "需要新密码",
+      "currentPasswordIncorrect": "当前密码不正确",
+      "noPasswordSet": "账户未设置密码。请先设置密码。",
+      "failedToFetchProfile": "获取个人资料失败",
+      "failedToUpdateProfile": "更新个人资料失败",
+      "failedToChangePassword": "更改密码失败",
+      "passwordChanged": "密码更改成功",
+      "passwordSet": "密码设置成功"
+    },
+    "preferences": {
+      "failedToFetch": "获取首选项失败",
+      "failedToUpdate": "更新首选项失败",
+      "autoplayInvalid": "playback.autoplay 必须是布尔值",
+      "autoscrollInvalid": "playback.autoscroll 必须是布尔值",
+      "loopInvalid": "playback.loop 必须是布尔值",
+      "fontSizeInvalid": "display.fontSize 必须是以下之一：small, medium, large",
+      "defaultTranslationInvalid": "display.defaultTranslation 必须是布尔值",
+      "themeInvalid": "display.theme 必须是以下之一：light, dark, system",
+      "learningLanguageInvalid": "language.learning 必须是字符串",
+      "interfaceLanguageInvalid": "language.interface 必须是字符串"
+    },
+    "history": {
+      "failedToAdd": "添加到历史记录失败",
+      "failedToFetch": "获取历史记录失败",
+      "failedToClear": "清除历史记录失败",
+      "failedToDelete": "删除历史记录条目失败",
+      "entryNotFound": "未找到历史记录条目",
+      "notAuthorized": "无权删除此条目",
+      "pageOutOfRange": "第 {{page}} 页超出范围。最大页数为 {{maxPage}}",
+      "pageInvalid": "页码必须 >= 1",
+      "songRequired": "需要歌曲且必须是字符串",
+      "artistRequired": "需要艺术家且必须是字符串",
+      "modeInvalid": "模式必须是 \"Play Mode\" 或 \"Study Mode\"",
+      "videoIdRequired": "需要 videoId 且必须是字符串"
+    },
+    "common": {
+      "serverError": "服务器上发生错误",
+      "notFound": "未找到资源",
+      "unauthorized": "未授权",
+      "forbidden": "禁止"
+    },
+    "songs": {
+      "failedToFetchList": "获取歌曲列表失败",
+      "songNotFound": "未找到歌曲",
+      "studyDataNotFound": "未找到学习数据"
+    }
+  },
+  "success": {
+    "loginCodeSent": "登录代码已发送到电子邮件",
+    "emailVerified": "电子邮件验证成功",
+    "verificationCodeSent": "验证代码已发送",
+    "historyCleared": "历史记录已清除",
+    "historyEntryDeleted": "历史记录条目已删除",
+    "logoutSuccess": "登出成功"
+  }
+}

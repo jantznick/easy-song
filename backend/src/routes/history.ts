@@ -1,6 +1,7 @@
 import { Router, Request, Response } from 'express';
 import { prisma } from '../lib/prisma';
 import { requireAuth } from '../middleware/auth';
+import { t } from '../middleware/i18n';
 import { SongMode } from '@prisma/client';
 
 const router = Router();
@@ -16,16 +17,16 @@ router.post('/', requireAuth, async (req: Request, res: Response) => {
     const { song, artist, mode, videoId } = req.body;
 
     if (!song || typeof song !== 'string') {
-      return res.status(400).json({ error: 'song is required and must be a string' });
+      return res.status(400).json({ error: t('errors.history.songRequired') });
     }
     if (!artist || typeof artist !== 'string') {
-      return res.status(400).json({ error: 'artist is required and must be a string' });
+      return res.status(400).json({ error: t('errors.history.artistRequired') });
     }
     if (!mode || !['Play Mode', 'Study Mode'].includes(mode)) {
-      return res.status(400).json({ error: 'mode must be "Play Mode" or "Study Mode"' });
+      return res.status(400).json({ error: t('errors.history.modeInvalid') });
     }
     if (!videoId || typeof videoId !== 'string') {
-      return res.status(400).json({ error: 'videoId is required and must be a string' });
+      return res.status(400).json({ error: t('errors.history.videoIdRequired') });
     }
 
     // Convert mode string to enum
@@ -53,7 +54,7 @@ router.post('/', requireAuth, async (req: Request, res: Response) => {
     });
   } catch (error) {
     console.error('Error adding to history:', error);
-    res.status(500).json({ error: 'Failed to add to history' });
+    res.status(500).json({ error: t('errors.history.failedToAdd') });
   }
 });
 
@@ -67,7 +68,7 @@ router.get('/', requireAuth, async (req: Request, res: Response) => {
     const pageSize = parseInt(req.query.pageSize as string) || DEFAULT_PAGE_SIZE;
 
     if (page < 1) {
-      return res.status(400).json({ error: 'page must be >= 1' });
+      return res.status(400).json({ error: t('errors.history.pageInvalid') });
     }
 
     // Get total count first to calculate max pages
@@ -78,7 +79,7 @@ router.get('/', requireAuth, async (req: Request, res: Response) => {
     const maxPage = totalCount === 0 ? 1 : Math.ceil(totalCount / pageSize);
     if (page > maxPage) {
       return res.status(400).json({ 
-        error: `Page ${page} is out of range. Maximum page is ${maxPage}`,
+        error: t('errors.history.pageOutOfRange', { page, maxPage }),
         maxPage,
       });
     }
@@ -112,7 +113,7 @@ router.get('/', requireAuth, async (req: Request, res: Response) => {
     });
   } catch (error) {
     console.error('Error fetching history:', error);
-    res.status(500).json({ error: 'Failed to fetch history' });
+    res.status(500).json({ error: t('errors.history.failedToFetch') });
   }
 });
 
@@ -126,10 +127,10 @@ router.delete('/', requireAuth, async (req: Request, res: Response) => {
       where: { userId: req.userId! },
     });
 
-    res.json({ success: true, message: 'History cleared' });
+    res.json({ success: true, message: t('success.historyCleared') });
   } catch (error) {
     console.error('Error clearing history:', error);
-    res.status(500).json({ error: 'Failed to clear history' });
+    res.status(500).json({ error: t('errors.history.failedToClear') });
   }
 });
 
@@ -146,21 +147,21 @@ router.delete('/:id', requireAuth, async (req: Request, res: Response) => {
     });
 
     if (!historyEntry) {
-      return res.status(404).json({ error: 'History entry not found' });
+      return res.status(404).json({ error: t('errors.history.entryNotFound') });
     }
 
     if (historyEntry.userId !== req.userId) {
-      return res.status(403).json({ error: 'Not authorized to delete this entry' });
+      return res.status(403).json({ error: t('errors.history.notAuthorized') });
     }
 
     await prisma.songHistory.delete({
       where: { id },
     });
 
-    res.json({ success: true, message: 'History entry deleted' });
+    res.json({ success: true, message: t('success.historyEntryDeleted') });
   } catch (error) {
     console.error('Error deleting history entry:', error);
-    res.status(500).json({ error: 'Failed to delete history entry' });
+    res.status(500).json({ error: t('errors.history.failedToDelete') });
   }
 });
 

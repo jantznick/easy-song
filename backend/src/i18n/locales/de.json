@@ -1,0 +1,89 @@
+{
+  "errors": {
+    "auth": {
+      "emailRequired": "Eine gültige E-Mail-Adresse ist erforderlich",
+      "passwordRequired": "Ein Passwort ist erforderlich",
+      "nameRequired": "Ein Name ist erforderlich",
+      "userExists": "Ein Benutzer mit dieser E-Mail-Adresse existiert bereits",
+      "invalidCredentials": "Ungültige E-Mail-Adresse oder Passwort",
+      "invalidCode": "Ungültiger oder abgelaufener Code",
+      "tooManyRequests": "Zu viele Anmeldungscode-Anfragen",
+      "tooManyRequestsMessage": "Sie haben zu viele Anmeldungscodes angefordert. Bitte warten Sie einige Minuten, überprüfen Sie Ihren Spam-Ordner oder kontaktieren Sie den Support, wenn Sie weiterhin Probleme haben.",
+      "tooManyVerificationRequests": "Zu viele Verifizierungscode-Anfragen",
+      "tooManyVerificationRequestsMessage": "Sie haben zu viele Verifizierungscodes angefordert. Bitte warten Sie einige Minuten, überprüfen Sie Ihren Spam-Ordner oder kontaktieren Sie den Support, wenn Sie weiterhin Probleme haben.",
+      "emailAlreadyVerified": "E-Mail-Adresse ist bereits verifiziert",
+      "failedToRegister": "Benutzerregistrierung fehlgeschlagen",
+      "failedToLogin": "Anmeldung fehlgeschlagen",
+      "failedToSendCode": "Anmeldungscode konnte nicht gesendet werden",
+      "failedToVerifyEmail": "E-Mail-Verifizierung fehlgeschlagen",
+      "failedToResendVerification": "Verifizierungscode konnte nicht gesendet werden",
+      "codeRequired": "Ein gültiger 6-stelliger Code ist erforderlich",
+      "noPasswordSetMessage": "Dieses Konto hat kein Passwort festgelegt. Bitte verwenden Sie die Anmeldung mit magischem Code.",
+      "verifyCodeFailed": "Code-Verifizierung fehlgeschlagen",
+      "fetchUserFailed": "Benutzer konnte nicht abgerufen werden",
+      "logoutFailed": "Abmeldung fehlgeschlagen",
+      "passwordRequirementsNotMet": "Das Passwort erfüllt nicht die Anforderungen"
+    },
+    "user": {
+      "notFound": "Benutzer nicht gefunden",
+      "nameInvalid": "Der Name muss eine nicht leere Zeichenkette sein",
+      "emailInvalid": "Eine gültige E-Mail-Adresse ist erforderlich",
+      "emailInUse": "E-Mail-Adresse wird bereits verwendet",
+      "avatarInvalid": "Avatar muss eine Zeichenkette oder null sein",
+      "currentPasswordRequired": "Aktuelles Passwort ist erforderlich",
+      "newPasswordRequired": "Ein neues Passwort ist erforderlich",
+      "currentPasswordIncorrect": "Aktuelles Passwort ist falsch",
+      "noPasswordSet": "Das Konto hat kein Passwort festgelegt. Bitte legen Sie zuerst ein Passwort fest.",
+      "failedToFetchProfile": "Profil konnte nicht abgerufen werden",
+      "failedToUpdateProfile": "Profil konnte nicht aktualisiert werden",
+      "failedToChangePassword": "Passwortänderung fehlgeschlagen",
+      "passwordChanged": "Passwort erfolgreich geändert",
+      "passwordSet": "Passwort erfolgreich festgelegt"
+    },
+    "preferences": {
+      "failedToFetch": "Einstellungen konnten nicht abgerufen werden",
+      "failedToUpdate": "Einstellungen konnten nicht aktualisiert werden",
+      "autoplayInvalid": "playback.autoplay muss ein Boolean sein",
+      "autoscrollInvalid": "playback.autoscroll muss ein Boolean sein",
+      "loopInvalid": "playback.loop muss ein Boolean sein",
+      "fontSizeInvalid": "display.fontSize muss einer der folgenden sein: small, medium, large",
+      "defaultTranslationInvalid": "display.defaultTranslation muss ein Boolean sein",
+      "themeInvalid": "display.theme muss einer der folgenden sein: light, dark, system",
+      "learningLanguageInvalid": "language.learning muss eine Zeichenkette sein",
+      "interfaceLanguageInvalid": "language.interface muss eine Zeichenkette sein"
+    },
+    "history": {
+      "failedToAdd": "Hinzufügen zum Verlauf fehlgeschlagen",
+      "failedToFetch": "Verlauf konnte nicht abgerufen werden",
+      "failedToClear": "Verlauf konnte nicht gelöscht werden",
+      "failedToDelete": "Verlaufseintrag konnte nicht gelöscht werden",
+      "entryNotFound": "Verlaufseintrag nicht gefunden",
+      "notAuthorized": "Nicht berechtigt, diesen Eintrag zu löschen",
+      "pageOutOfRange": "Seite {{page}} ist außerhalb des Bereichs. Die maximale Seite ist {{maxPage}}",
+      "pageInvalid": "Seite muss >= 1 sein",
+      "songRequired": "Lied ist erforderlich und muss eine Zeichenkette sein",
+      "artistRequired": "Künstler ist erforderlich und muss eine Zeichenkette sein",
+      "modeInvalid": "Modus muss \"Play Mode\" oder \"Study Mode\" sein",
+      "videoIdRequired": "videoId ist erforderlich und muss eine Zeichenkette sein"
+    },
+    "common": {
+      "serverError": "Ein Fehler ist auf dem Server aufgetreten",
+      "notFound": "Ressource nicht gefunden",
+      "unauthorized": "Nicht autorisiert",
+      "forbidden": "Verboten"
+    },
+    "songs": {
+      "failedToFetchList": "Liedliste konnte nicht abgerufen werden",
+      "songNotFound": "Lied nicht gefunden",
+      "studyDataNotFound": "Studiendaten nicht gefunden"
+    }
+  },
+  "success": {
+    "loginCodeSent": "Anmeldungscode per E-Mail gesendet",
+    "emailVerified": "E-Mail-Adresse erfolgreich verifiziert",
+    "verificationCodeSent": "Verifizierungscode gesendet",
+    "historyCleared": "Verlauf gelöscht",
+    "historyEntryDeleted": "Verlaufseintrag gelöscht",
+    "logoutSuccess": "Erfolgreich abgemeldet"
+  }
+}

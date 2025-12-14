@@ -1,0 +1,102 @@
+{
+  "errors": {
+    "auth": {
+      "emailRequired": "Valid email is required",
+      "passwordRequired": "Password is required",
+      "nameRequired": "Name is required",
+      "userExists": "User with this email already exists",
+      "invalidCredentials": "Invalid email or password",
+      "invalidCode": "Invalid or expired code",
+      "tooManyRequests": "Too many login code requests",
+      "tooManyRequestsMessage": "You have requested too many login codes. Please wait a few minutes, check your spam folder, or contact support if you continue to have issues.",
+      "tooManyVerificationRequests": "Too many verification code requests",
+      "tooManyVerificationRequestsMessage": "You have requested too many verification codes. Please wait a few minutes, check your spam folder, or contact support if you continue to have issues.",
+      "emailAlreadyVerified": "Email already verified",
+      "failedToRegister": "Failed to register user",
+      "failedToLogin": "Failed to login",
+      "failedToSendCode": "Failed to send login code",
+      "failedToVerifyEmail": "Failed to verify email",
+      "failedToResendVerification": "Failed to send verification code",
+      "codeRequired": "Valid 6-digit code is required",
+      "noPasswordSetMessage": "This account does not have a password set. Please use magic code login.",
+      "verifyCodeFailed": "Failed to verify code",
+      "fetchUserFailed": "Failed to fetch user",
+      "logoutSuccess": "Logged out successfully",
+      "logoutFailed": "Failed to log out",
+      "passwordRequirementsNotMet": "Password does not meet requirements",
+      "codeRequired": "Valid 6-digit code is required",
+      "noPasswordSetMessage": "This account does not have a password set. Please use magic code login.",
+      "verifyCodeFailed": "Failed to verify code",
+      "fetchUserFailed": "Failed to fetch user",
+      "logoutSuccess": "Logged out successfully",
+      "logoutFailed": "Failed to log out",
+      "passwordRequirementsNotMet": "Password does not meet requirements"
+    },
+    "user": {
+      "notFound": "User not found",
+      "nameInvalid": "Name must be a non-empty string",
+      "emailInvalid": "Valid email is required",
+      "emailInUse": "Email already in use",
+      "avatarInvalid": "Avatar must be a string or null",
+      "currentPasswordRequired": "Current password is required",
+      "newPasswordRequired": "New password is required",
+      "currentPasswordIncorrect": "Current password is incorrect",
+      "noPasswordSet": "Account does not have a password set. Please set a password first.",
+      "failedToFetchProfile": "Failed to fetch profile",
+      "failedToUpdateProfile": "Failed to update profile",
+      "failedToChangePassword": "Failed to change password",
+      "passwordChanged": "Password changed successfully",
+      "passwordSet": "Password set successfully"
+    },
+    "preferences": {
+      "failedToFetch": "Failed to fetch preferences",
+      "failedToUpdate": "Failed to update preferences",
+      "autoplayInvalid": "playback.autoplay must be a boolean",
+      "autoscrollInvalid": "playback.autoscroll must be a boolean",
+      "loopInvalid": "playback.loop must be a boolean",
+      "fontSizeInvalid": "display.fontSize must be one of: small, medium, large",
+      "defaultTranslationInvalid": "display.defaultTranslation must be a boolean",
+      "themeInvalid": "display.theme must be one of: light, dark, system",
+      "learningLanguageInvalid": "language.learning must be a string",
+      "interfaceLanguageInvalid": "language.interface must be a string"
+    },
+    "history": {
+      "failedToAdd": "Failed to add to history",
+      "failedToFetch": "Failed to fetch history",
+      "failedToClear": "Failed to clear history",
+      "failedToDelete": "Failed to delete history entry",
+      "entryNotFound": "History entry not found",
+      "notAuthorized": "Not authorized to delete this entry",
+      "pageOutOfRange": "Page {{page}} is out of range. Maximum page is {{maxPage}}",
+      "pageInvalid": "page must be >= 1",
+      "songRequired": "song is required and must be a string",
+      "artistRequired": "artist is required and must be a string",
+      "modeInvalid": "mode must be \"Play Mode\" or \"Study Mode\"",
+      "videoIdRequired": "videoId is required and must be a string"
+    },
+    "common": {
+      "serverError": "An error occurred on the server",
+      "notFound": "Resource not found",
+      "unauthorized": "Unauthorized",
+      "forbidden": "Forbidden"
+    },
+    "songs": {
+      "failedToFetchList": "Failed to fetch songs list",
+      "songNotFound": "Song not found",
+      "studyDataNotFound": "Study data not found"
+    },
+    "songs": {
+      "failedToFetchList": "Failed to fetch songs list",
+      "songNotFound": "Song not found",
+      "studyDataNotFound": "Study data not found"
+    }
+  },
+  "success": {
+    "loginCodeSent": "Login code sent to email",
+    "emailVerified": "Email verified successfully",
+    "verificationCodeSent": "Verification code sent",
+    "historyCleared": "History cleared",
+    "historyEntryDeleted": "History entry deleted",
+    "logoutSuccess": "Logged out successfully"
+  }
+}

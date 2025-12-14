@@ -1,0 +1,89 @@
+{
+  "errors": {
+    "auth": {
+      "emailRequired": "Se requiere un email válido",
+      "passwordRequired": "Se requiere una contraseña",
+      "nameRequired": "Se requiere un nombre",
+      "userExists": "Ya existe un usuario con este email",
+      "invalidCredentials": "Email o contraseña inválidos",
+      "invalidCode": "Código inválido o expirado",
+      "tooManyRequests": "Demasiadas solicitudes de código de inicio de sesión",
+      "tooManyRequestsMessage": "Has solicitado demasiados códigos de inicio de sesión. Por favor espera unos minutos, revisa tu carpeta de spam, o contacta con soporte si continúas teniendo problemas.",
+      "tooManyVerificationRequests": "Demasiadas solicitudes de código de verificación",
+      "tooManyVerificationRequestsMessage": "Has solicitado demasiados códigos de verificación. Por favor espera unos minutos, revisa tu carpeta de spam, o contacta con soporte si continúas teniendo problemas.",
+      "emailAlreadyVerified": "El email ya está verificado",
+      "failedToRegister": "Error al registrar usuario",
+      "failedToLogin": "Error al iniciar sesión",
+      "failedToSendCode": "Error al enviar código de inicio de sesión",
+      "failedToVerifyEmail": "Error al verificar email",
+      "failedToResendVerification": "Error al enviar código de verificación",
+      "codeRequired": "Se requiere un código válido de 6 dígitos",
+      "noPasswordSetMessage": "Esta cuenta no tiene una contraseña configurada. Por favor usa el inicio de sesión con código mágico.",
+      "verifyCodeFailed": "Error al verificar código",
+      "fetchUserFailed": "Error al obtener usuario",
+      "logoutFailed": "Error al cerrar sesión",
+      "passwordRequirementsNotMet": "La contraseña no cumple con los requisitos"
+    },
+    "user": {
+      "notFound": "Usuario no encontrado",
+      "nameInvalid": "El nombre debe ser una cadena no vacía",
+      "emailInvalid": "Se requiere un email válido",
+      "emailInUse": "El email ya está en uso",
+      "avatarInvalid": "El avatar debe ser una cadena o null",
+      "currentPasswordRequired": "Se requiere la contraseña actual",
+      "newPasswordRequired": "Se requiere una nueva contraseña",
+      "currentPasswordIncorrect": "La contraseña actual es incorrecta",
+      "noPasswordSet": "La cuenta no tiene una contraseña configurada. Por favor configura una contraseña primero.",
+      "failedToFetchProfile": "Error al obtener perfil",
+      "failedToUpdateProfile": "Error al actualizar perfil",
+      "failedToChangePassword": "Error al cambiar contraseña",
+      "passwordChanged": "Contraseña cambiada exitosamente",
+      "passwordSet": "Contraseña configurada exitosamente"
+    },
+    "preferences": {
+      "failedToFetch": "Error al obtener preferencias",
+      "failedToUpdate": "Error al actualizar preferencias",
+      "autoplayInvalid": "playback.autoplay debe ser un booleano",
+      "autoscrollInvalid": "playback.autoscroll debe ser un booleano",
+      "loopInvalid": "playback.loop debe ser un booleano",
+      "fontSizeInvalid": "display.fontSize debe ser uno de: small, medium, large",
+      "defaultTranslationInvalid": "display.defaultTranslation debe ser un booleano",
+      "themeInvalid": "display.theme debe ser uno de: light, dark, system",
+      "learningLanguageInvalid": "language.learning debe ser una cadena",
+      "interfaceLanguageInvalid": "language.interface debe ser una cadena"
+    },
+    "history": {
+      "failedToAdd": "Error al agregar al historial",
+      "failedToFetch": "Error al obtener historial",
+      "failedToClear": "Error al limpiar historial",
+      "failedToDelete": "Error al eliminar entrada del historial",
+      "entryNotFound": "Entrada del historial no encontrada",
+      "notAuthorized": "No autorizado para eliminar esta entrada",
+      "pageOutOfRange": "La página {{page}} está fuera de rango. La página máxima es {{maxPage}}",
+      "pageInvalid": "la página debe ser >= 1",
+      "songRequired": "se requiere canción y debe ser una cadena",
+      "artistRequired": "se requiere artista y debe ser una cadena",
+      "modeInvalid": "el modo debe ser \"Play Mode\" o \"Study Mode\"",
+      "videoIdRequired": "se requiere videoId y debe ser una cadena"
+    },
+    "common": {
+      "serverError": "Ocurrió un error en el servidor",
+      "notFound": "Recurso no encontrado",
+      "unauthorized": "No autorizado",
+      "forbidden": "Prohibido"
+    },
+    "songs": {
+      "failedToFetchList": "Error al obtener la lista de canciones",
+      "songNotFound": "Canción no encontrada",
+      "studyDataNotFound": "Datos de estudio no encontrados"
+    }
+  },
+  "success": {
+    "loginCodeSent": "Código de inicio de sesión enviado al email",
+    "emailVerified": "Email verificado exitosamente",
+    "verificationCodeSent": "Código de verificación enviado",
+    "historyCleared": "Historial limpiado",
+    "historyEntryDeleted": "Entrada del historial eliminada",
+    "logoutSuccess": "Sesión cerrada exitosamente"
+  }
+}

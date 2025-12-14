@@ -16,10 +16,10 @@ export interface PasswordRequirements {
 export const PASSWORD_REQUIREMENTS: PasswordRequirements = {
   minLength: 8,
   maxLength: 128,
-  requireUppercase: true,
-  requireLowercase: true,
-  requireNumbers: true,
-  requireSpecialChars: true,
+  requireUppercase: false,
+  requireLowercase: false,
+  requireNumbers: false,
+  requireSpecialChars: false,
   specialChars: '!@#$%^&*()_+-=[]{}|;:,.<>?',
 };
 
