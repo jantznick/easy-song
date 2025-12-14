@@ -23,6 +23,13 @@ const getApiUrl = () => {
 
 const BASE_URL = getApiUrl();
 
+// Helper to get API URL without /api suffix for auth endpoints
+const getAuthUrl = () => {
+  const base = getApiUrl();
+  // Remove /api if present, then add /api/auth
+  return base.replace(/\/api$/, '') + '/api/auth';
+};
+
 /**
  * Fetches a list of all available songs.
  * @param options Optional parameters for filtering songs
@@ -199,6 +206,7 @@ export async function signInUser(email: string, password: string): Promise<{
  */
 export async function fetchSongHistory(page: number = 1, pageSize: number = 20): Promise<{
   items: Array<{ 
+    id: string;
     song: string; 
     artist: string; 
     mode: 'Play Mode' | 'Study Mode'; 
@@ -208,28 +216,32 @@ export async function fetchSongHistory(page: number = 1, pageSize: number = 20):
   }>;
   totalCount: number;
 }> {
-  // TODO: Replace with actual API call when backend is ready
-  // Simulate API delay
-  await new Promise(resolve => setTimeout(resolve, 300));
+  const url = `${BASE_URL.replace('/api', '')}/api/history?page=${page}&pageSize=${pageSize}`;
+  const response = await fetch(url, {
+    method: 'GET',
+    credentials: 'include', // Include cookies for session
+  });
+
+  if (!response.ok) {
+    throw new Error('Failed to fetch history');
+  }
+
+  const data = await response.json();
   
-  // In real implementation, this would call: GET /api/user/history?page=${page}&pageSize=${pageSize}
-  // const response = await fetch(`${BASE_URL}/user/history?page=${page}&pageSize=${pageSize}`, {
-  //   headers: { 'Authorization': `Bearer ${token}` },
-  // });
-  // if (!response.ok) throw new Error('Failed to fetch history');
-  // const data = await response.json();
-  // return { items: data.items, totalCount: data.totalCount };
-  
-  // Return dummy data for the requested page
-  const TOTAL_HISTORY_COUNT = 103; // Total songs in user's history
-  const startIndex = (page - 1) * pageSize;
-  const endIndex = Math.min(startIndex + pageSize, TOTAL_HISTORY_COUNT);
-  const allHistory = generateDummyHistory(TOTAL_HISTORY_COUNT);
-  const items = allHistory.slice(startIndex, endIndex);
-  
+  // Transform backend format to frontend format
+  const items = data.items.map((item: any) => ({
+    id: item.id,
+    song: item.song,
+    artist: item.artist,
+    mode: item.mode === 'PLAY_MODE' ? 'Play Mode' : 'Study Mode',
+    date: item.date,
+    time: item.time,
+    videoId: item.videoId,
+  })).filter((item: any) => item.song && item.artist); // Filter out any invalid items
+
   return {
     items,
-    totalCount: TOTAL_HISTORY_COUNT,
+    totalCount: data.totalCount,
   };
 }
 
@@ -275,5 +287,160 @@ function generateDummyHistory(count: number): Array<{
   }
   
   return history;
+}
+
+/**
+ * Register a new user
+ */
+export async function registerUser(email: string, password: string, name: string): Promise<{
+  success: boolean;
+  user: {
+    id: string;
+    email: string;
+    name: string;
+    avatar?: string;
+    emailVerified: boolean;
+  };
+}> {
+  const response = await fetch(`${getAuthUrl()}/register`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include', // Include cookies for session
+    body: JSON.stringify({ email, password, name }),
+  });
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.error || 'Registration failed');
+  }
+
+  return data;
+}
+
+/**
+ * Login with email and password
+ */
+export async function loginUser(email: string, password: string): Promise<{
+  success: boolean;
+  user: {
+    id: string;
+    email: string;
+    name: string;
+    avatar?: string;
+    emailVerified: boolean;
+  };
+}> {
+  const response = await fetch(`${getAuthUrl()}/login`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include', // Include cookies for session
+    body: JSON.stringify({ email, password }),
+  });
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.error || 'Login failed');
+  }
+
+  return data;
+}
+
+/**
+ * Request a magic login code
+ */
+export async function requestMagicCode(email: string, isSignup: boolean = false): Promise<{
+  success: boolean;
+  message: string;
+}> {
+  const response = await fetch(`${getAuthUrl()}/request-login-code`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
+    body: JSON.stringify({ email, isSignup }),
+  });
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.error || data.message || 'Failed to send magic code');
+  }
+
+  return data;
+}
+
+/**
+ * Verify magic login code
+ */
+export async function verifyMagicCode(email: string, code: string, isSignup: boolean = false): Promise<{
+  success: boolean;
+  user: {
+    id: string;
+    email: string;
+    name: string;
+    avatar?: string;
+    emailVerified: boolean;
+  };
+}> {
+  const response = await fetch(`${getAuthUrl()}/verify-login-code`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
+    body: JSON.stringify({ email, code, isSignup }),
+  });
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.error || 'Invalid or expired code');
+  }
+
+  return data;
+}
+
+/**
+ * Get current user (check if authenticated)
+ */
+export async function getCurrentUser(): Promise<{
+  id: string;
+  email: string;
+  name: string;
+  avatar?: string;
+  emailVerified: boolean;
+} | null> {
+  try {
+    const response = await fetch(`${getAuthUrl()}/me`, {
+      method: 'GET',
+      credentials: 'include',
+    });
+
+    if (response.status === 401 || response.status === 403) {
+      return null;
+    }
+
+    if (!response.ok) {
+      return null;
+    }
+
+    return response.json();
+  } catch (error) {
+    console.error('Error fetching current user:', error);
+    return null;
+  }
+}
+
+/**
+ * Logout user
+ */
+export async function logoutUser(): Promise<void> {
+  try {
+    await fetch(`${getAuthUrl()}/logout`, {
+      method: 'POST',
+      credentials: 'include',
+    });
+  } catch (error) {
+    console.error('Error logging out:', error);
+  }
 }
 

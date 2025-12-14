@@ -4,12 +4,15 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 import './global.css';
 // Initialize i18n before other imports that might use it
 import './src/i18n/config';
 import { UserProvider } from './src/contexts/UserContext';
 import { ThemeProvider, useTheme } from './src/contexts/ThemeContext';
 import OnboardingScreen from './src/screens/OnboardingScreen';
+import AuthScreen from './src/screens/AuthScreen';
 import SongListScreen from './src/screens/SongListScreen';
 import SongDetailScreen from './src/screens/SongDetailScreen';
 import SettingsScreen from './src/screens/SettingsScreen';
@@ -65,6 +68,10 @@ function AppContent() {
           component={OnboardingScreen}
         />
         <Stack.Screen
+          name="Auth"
+          component={AuthScreen}
+        />
+        <Stack.Screen
           name="SongList"
           component={SongListScreen}
         />
@@ -108,15 +115,19 @@ function AppContent() {
 
 export default function App() {
   return (
-    <SafeAreaProvider>
-      <UserProvider>
-        <ThemeProvider>
-          <ThemeWrapper>
-            <AppContent />
-          </ThemeWrapper>
-        </ThemeProvider>
-      </UserProvider>
-    </SafeAreaProvider>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <SafeAreaProvider>
+        <BottomSheetModalProvider>
+          <UserProvider>
+            <ThemeProvider>
+              <ThemeWrapper>
+                <AppContent />
+              </ThemeWrapper>
+            </ThemeProvider>
+          </UserProvider>
+        </BottomSheetModalProvider>
+      </SafeAreaProvider>
+    </GestureHandlerRootView>
   );
 }
 

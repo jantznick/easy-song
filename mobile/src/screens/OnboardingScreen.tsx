@@ -14,6 +14,7 @@ import type { RootStackParamList } from '../types/navigation';
 import { useTranslation } from '../hooks/useTranslation';
 import { useThemeClasses, cn } from '../utils/themeClasses';
 import { saveOnboardingComplete } from '../utils/storage';
+import AuthDrawer from '../components/AuthDrawer';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Onboarding'>;
 
@@ -32,6 +33,7 @@ export default function OnboardingScreen({ navigation }: Props) {
   const theme = useThemeClasses();
   const flatListRef = useRef<FlatList>(null);
   const [currentPage, setCurrentPage] = useState(0);
+  const [showAuthDrawer, setShowAuthDrawer] = useState(false);
 
   const pages: OnboardingPage[] = [
     {
@@ -95,9 +97,12 @@ export default function OnboardingScreen({ navigation }: Props) {
     navigation.replace('SongList');
   };
 
-  const handleSignUp = async () => {
+  const handleSignUp = () => {
+    setShowAuthDrawer(true);
+  };
+
+  const handleAuthSuccess = async () => {
     await saveOnboardingComplete();
-    // TODO: Navigate to sign up screen when implemented
     navigation.replace('SongList');
   };
 
@@ -228,6 +233,14 @@ export default function OnboardingScreen({ navigation }: Props) {
           </View>
         )}
       </View>
+
+      {/* Auth Drawer */}
+      <AuthDrawer
+        visible={showAuthDrawer}
+        onClose={() => setShowAuthDrawer(false)}
+        initialMode="signup"
+        onSuccess={handleAuthSuccess}
+      />
     </View>
   );
 }

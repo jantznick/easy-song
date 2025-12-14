@@ -13,6 +13,56 @@
     "version": "Version",
     "guest": "Guest User"
   },
+  "auth": {
+    "signup": {
+      "title": "Create Account",
+      "subtitle": "Join EasySong and start learning languages through music",
+      "button": "Sign Up"
+    },
+    "login": {
+      "title": "Welcome Back",
+      "subtitle": "Sign in to continue your language learning journey",
+      "button": "Sign In"
+    },
+    "magicCode": {
+      "title": "Magic Code Login",
+      "subtitle": "We'll send a code to your email",
+      "signupTitle": "Magic Code Sign Up",
+      "signupSubtitle": "We'll send a code to your email to create your account",
+      "loginTitle": "Magic Code Login",
+      "loginSubtitle": "We'll send a code to your email to sign you in",
+      "sendCode": "Send Code",
+      "code": "Enter Code",
+      "verify": "Verify Code",
+      "resend": "Resend Code",
+      "sent": "Code Sent",
+      "checkEmail": "Check your email for the 6-digit code",
+      "usePassword": "Use password instead"
+    },
+    "name": "Name",
+    "namePlaceholder": "Enter your name",
+    "email": "Email",
+    "emailPlaceholder": "Enter your email",
+    "password": "Password",
+    "passwordPlaceholder": "Enter your password",
+    "passwordHint": "At least 8 characters",
+    "signupWithMagicCode": "Sign up with a magic code instead",
+    "loginWithMagicCode": "Login with magic code instead",
+    "alreadyHaveAccount": "Already have an account? Sign in",
+    "dontHaveAccount": "Don't have an account? Sign up",
+    "errors": {
+      "invalidEmail": "Please enter a valid email address",
+      "nameRequired": "Name is required",
+      "passwordRequired": "Password is required",
+      "passwordTooShort": "Password must be at least 8 characters",
+      "invalidCode": "Please enter a valid 6-digit code",
+      "signupFailed": "Failed to create account. Please try again.",
+      "loginFailed": "Login failed. Please check your credentials.",
+      "sendCodeFailed": "Failed to send code. Please try again.",
+      "invalidCredentials": "Invalid email or password",
+      "userAlreadyExists": "An account with this email already exists. Please sign in instead."
+    }
+  },
   "songs": {
     "title": "Songs",
     "loading": "Loading songs...",

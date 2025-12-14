@@ -16,7 +16,12 @@ import {
   DEFAULT_USER_PROFILE,
 } from '../utils/storage';
 import { changeLanguage } from '../i18n/config';
-import { updateUserProfile as updateUserProfileAPI, signInUser as signInUserAPI, fetchSongHistory as fetchSongHistoryAPI } from '../utils/api';
+import { updateUserProfile as updateUserProfileAPI, signInUser as signInUserAPI, fetchSongHistory as fetchSongHistoryAPI, loginUser, getCurrentUser, logoutUser as logoutUserAPI } from '../utils/api';
+
+// Get API base URL
+const getApiBaseUrl = () => {
+  return process.env.EXPO_PUBLIC_API_URL || 'http://localhost:3001/api';
+};
 
 export interface User {
   name: string;
@@ -109,20 +114,46 @@ export function UserProvider({ children }: UserProviderProps) {
           changeLanguage(storedPreferences.language.interface);
         }
 
-        if (authToken && storedProfile) {
-          setUser(storedProfile);
-          setIsAuthenticated(true);
-          // For authenticated users, fetch from server to get total count
-          // This will replace local history with server data
+        // Check if user is authenticated via session
+        if (authToken) {
           try {
-            const { items, totalCount } = await fetchSongHistoryAPI(1, 20);
-            setSongHistory(items);
-            setTotalHistoryCount(totalCount);
-            setHistoryPage(1);
-            await saveSongHistory(items);
+            const currentUser = await getCurrentUser();
+            if (currentUser) {
+              setUser({
+                name: currentUser.name,
+                email: currentUser.email,
+                avatar: currentUser.avatar,
+              });
+              setIsAuthenticated(true);
+              
+              // Update profile with server data
+              const userProfile: StoredUserProfile = {
+                name: currentUser.name,
+                email: currentUser.email,
+                avatar: currentUser.avatar,
+              };
+              setProfile(userProfile);
+              await saveUserProfile(userProfile);
+              
+              // Fetch history from server
+              try {
+                const { items, totalCount } = await fetchSongHistoryAPI(1, 20);
+                setSongHistory(items);
+                setTotalHistoryCount(totalCount);
+                setHistoryPage(1);
+                await saveSongHistory(items);
+              } catch (error) {
+                console.error('Error fetching history from server:', error);
+                // Fallback to local history if server fetch fails
+                setSongHistory(storedHistory);
+              }
+            } else {
+              // Token exists but session invalid, clear it
+              await saveAuthToken(null);
+              setSongHistory(storedHistory);
+            }
           } catch (error) {
-            console.error('Error fetching history from server:', error);
-            // Fallback to local history if server fetch fails
+            console.error('Error checking authentication:', error);
             setSongHistory(storedHistory);
           }
         } else {
@@ -215,11 +246,50 @@ export function UserProvider({ children }: UserProviderProps) {
       videoId,
     };
 
-    // Add to beginning of history (most recent first)
+    // If authenticated, add to backend
+    if (isAuthenticated) {
+      try {
+        const apiBase = getApiBaseUrl().replace('/api', '');
+        const response = await fetch(`${apiBase}/api/history`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify({
+            song,
+            artist,
+            mode,
+            videoId,
+          }),
+        });
+        
+        if (response.ok) {
+          const data = await response.json();
+          // Update local history with the new entry from server
+          const serverEntry: SongHistoryItem = {
+            id: data.id,
+            song: data.song,
+            artist: data.artist,
+            mode: data.mode === 'PLAY_MODE' ? 'Play Mode' : 'Study Mode',
+            date: data.date,
+            time: data.time,
+            videoId: data.videoId,
+          };
+          const newHistory = [serverEntry, ...songHistory];
+          setSongHistory(newHistory);
+          await saveSongHistory(newHistory);
+          return;
+        }
+      } catch (error) {
+        console.error('Failed to add to history on server:', error);
+        // Fall through to local storage
+      }
+    }
+
+    // Add to beginning of history (most recent first) - for guest users or if API fails
     const newHistory = [newEntry, ...songHistory];
     setSongHistory(newHistory);
     await saveSongHistory(newHistory);
-  }, [songHistory]);
+  }, [songHistory, isAuthenticated]);
 
   // Clear history
   const clearHistory = useCallback(async () => {
@@ -227,7 +297,6 @@ export function UserProvider({ children }: UserProviderProps) {
     await saveSongHistory([]);
     setTotalHistoryCount(null);
     setHistoryPage(1);
-    setHasMoreHistory(false);
   }, []);
 
   // Fetch more history (for pagination)
@@ -277,30 +346,70 @@ export function UserProvider({ children }: UserProviderProps) {
 
   // Sign in
   const signIn = useCallback(async (email: string, password: string) => {
-    // Call dummy API
-    const { token, user, songHistory: history, totalHistoryCount } = await signInUserAPI(email, password);
+    // If password is 'magic-code-login', user is already logged in via magic code
+    if (password === 'magic-code-login') {
+      // Check current user from session
+      const currentUser = await getCurrentUser();
+      if (currentUser) {
+        setUser({
+          name: currentUser.name,
+          email: currentUser.email,
+          avatar: currentUser.avatar,
+        });
+        setIsAuthenticated(true);
+        
+        const userProfile: StoredUserProfile = {
+          name: currentUser.name,
+          email: currentUser.email,
+          avatar: currentUser.avatar,
+        };
+        setProfile(userProfile);
+        await saveUserProfile(userProfile);
+        
+        // Fetch history from API
+        try {
+          const { items, totalCount } = await fetchSongHistoryAPI(1, 20);
+          setSongHistory(items);
+          setTotalHistoryCount(totalCount);
+          await saveSongHistory(items);
+        } catch (error) {
+          console.error('Failed to fetch history:', error);
+        }
+        return;
+      }
+      throw new Error('Not authenticated');
+    }
     
-    // Store auth token
-    await saveAuthToken(token);
+    // Login with email and password
+    const result = await loginUser(email, password);
     
     // Update user state
-    setUser(user);
+    setUser({
+      name: result.user.name,
+      email: result.user.email,
+      avatar: result.user.avatar,
+    });
     setIsAuthenticated(true);
     
     // Update profile with user data
     const userProfile: StoredUserProfile = {
-      name: user.name,
-      email: user.email,
-      avatar: user.avatar,
+      name: result.user.name,
+      email: result.user.email,
+      avatar: result.user.avatar,
     };
     setProfile(userProfile);
     await saveUserProfile(userProfile);
     
     // Load song history from API (most recent 20)
-    setSongHistory(history);
-    await saveSongHistory(history);
-    setTotalHistoryCount(totalHistoryCount);
-    setHistoryPage(1);
+    try {
+      const { items, totalCount } = await fetchSongHistoryAPI(1, 20);
+      setSongHistory(items);
+      setTotalHistoryCount(totalCount);
+      setHistoryPage(1);
+      await saveSongHistory(items);
+    } catch (error) {
+      console.error('Failed to fetch history:', error);
+    }
   }, []);
 
   // Sign out
@@ -325,6 +434,10 @@ export function UserProvider({ children }: UserProviderProps) {
     await saveSongHistory([]);
     setTotalHistoryCount(null);
     setHistoryPage(1);
+    
+    // Clear preferences (optional - you might want to keep them)
+    // setPreferences(DEFAULT_PREFERENCES);
+    // await savePreferences(DEFAULT_PREFERENCES);
   }, []);
 
   // Update profile

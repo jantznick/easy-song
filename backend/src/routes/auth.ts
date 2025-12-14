@@ -75,8 +75,7 @@ router.post('/register', async (req: Request, res: Response) => {
     } catch (error: any) {
       if (error.message === 'TOO_MANY_REQUESTS') {
         return res.status(429).json({
-          error: t('errors.auth.tooManyVerificationRequests'),
-          message: t('errors.auth.tooManyVerificationRequestsMessage'),
+          error: t('errors.auth.tooManyVerificationRequestsMessage'),
         });
       }
       throw error;
@@ -179,7 +178,7 @@ router.post('/login', async (req: Request, res: Response) => {
  */
 router.post('/request-login-code', async (req: Request, res: Response) => {
   try {
-    const { email } = req.body;
+    const { email, isSignup } = req.body;
 
     if (!email || typeof email !== 'string' || !email.includes('@')) {
       return res.status(400).json({ error: t('errors.auth.emailRequired') });
@@ -189,6 +188,11 @@ router.post('/request-login-code', async (req: Request, res: Response) => {
     const user = await prisma.user.findUnique({
       where: { email: email.toLowerCase() },
     });
+
+    // If it's a signup flow and user already exists, return error
+    if (isSignup && user) {
+      return res.status(400).json({ error: t('errors.auth.userExists') });
+    }
 
     // Create and send magic code (even if user doesn't exist yet - they'll be created on verification)
     try {
@@ -200,8 +204,7 @@ router.post('/request-login-code', async (req: Request, res: Response) => {
     } catch (error: any) {
       if (error.message === 'TOO_MANY_REQUESTS') {
         return res.status(429).json({
-          error: t('errors.auth.tooManyRequests'),
-          message: t('errors.auth.tooManyRequestsMessage'),
+          error: t('errors.auth.tooManyRequestsMessage'),
         });
       }
       throw error;
@@ -220,7 +223,7 @@ router.post('/request-login-code', async (req: Request, res: Response) => {
  */
 router.post('/verify-login-code', async (req: Request, res: Response) => {
   try {
-    const { email, code } = req.body;
+    const { email, code, isSignup } = req.body;
 
     if (!email || typeof email !== 'string' || !email.includes('@')) {
       return res.status(400).json({ error: t('errors.auth.emailRequired') });
@@ -245,6 +248,11 @@ router.post('/verify-login-code', async (req: Request, res: Response) => {
       where: { email: email.toLowerCase() },
       include: { preferences: true },
     });
+
+    // If it's a signup flow and user already exists, return error
+    if (isSignup && user) {
+      return res.status(400).json({ error: t('errors.auth.userExists') });
+    }
 
     if (!user) {
       // Create new user
@@ -365,8 +373,7 @@ router.post('/resend-verification', requireAuth, async (req: Request, res: Respo
     } catch (error: any) {
       if (error.message === 'TOO_MANY_REQUESTS') {
         return res.status(429).json({
-          error: t('errors.auth.tooManyVerificationRequests'),
-          message: t('errors.auth.tooManyVerificationRequestsMessage'),
+          error: t('errors.auth.tooManyVerificationRequestsMessage'),
         });
       }
       throw error;

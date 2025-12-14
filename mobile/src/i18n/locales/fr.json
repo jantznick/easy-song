@@ -13,6 +13,56 @@
     "version": "Version",
     "guest": "Utilisateur Invité"
   },
+  "auth": {
+    "signup": {
+      "title": "Créer un Compte",
+      "subtitle": "Rejoignez EasySong et commencez à apprendre les langues grâce à la musique",
+      "button": "S'inscrire"
+    },
+    "login": {
+      "title": "Bon Retour",
+      "subtitle": "Connectez-vous pour continuer votre parcours d'apprentissage des langues",
+      "button": "Se Connecter"
+    },
+    "magicCode": {
+      "title": "Connexion par Code Magique",
+      "subtitle": "Nous enverrons un code à votre email",
+      "signupTitle": "Inscription par Code Magique",
+      "signupSubtitle": "Nous enverrons un code à votre email pour créer votre compte",
+      "loginTitle": "Connexion par Code Magique",
+      "loginSubtitle": "Nous enverrons un code à votre email pour vous connecter",
+      "sendCode": "Envoyer le Code",
+      "code": "Entrer le Code",
+      "verify": "Vérifier le Code",
+      "resend": "Renvoyer le Code",
+      "sent": "Code Envoyé",
+      "checkEmail": "Vérifiez votre email pour le code à 6 chiffres",
+      "usePassword": "Utiliser le mot de passe à la place"
+    },
+    "name": "Nom",
+    "namePlaceholder": "Entrez votre nom",
+    "email": "Email",
+    "emailPlaceholder": "Entrez votre email",
+    "password": "Mot de passe",
+    "passwordPlaceholder": "Entrez votre mot de passe",
+    "passwordHint": "Au moins 8 caractères",
+    "signupWithMagicCode": "S'inscrire avec un code magique à la place",
+    "loginWithMagicCode": "Se connecter avec un code magique à la place",
+    "alreadyHaveAccount": "Vous avez déjà un compte ? Connectez-vous",
+    "dontHaveAccount": "Vous n'avez pas de compte ? Inscrivez-vous",
+    "errors": {
+      "invalidEmail": "Veuillez entrer une adresse email valide",
+      "nameRequired": "Le nom est requis",
+      "passwordRequired": "Le mot de passe est requis",
+      "passwordTooShort": "Le mot de passe doit contenir au moins 8 caractères",
+      "invalidCode": "Veuillez entrer un code valide à 6 chiffres",
+      "signupFailed": "Échec de la création du compte. Veuillez réessayer.",
+      "loginFailed": "Échec de la connexion. Veuillez vérifier vos identifiants.",
+      "sendCodeFailed": "Échec de l'envoi du code. Veuillez réessayer.",
+      "invalidCredentials": "Email ou mot de passe invalide",
+      "userAlreadyExists": "Un compte avec cet email existe déjà. Veuillez vous connecter à la place."
+    }
+  },
   "songs": {
     "title": "Chansons",
     "loading": "Chargement des chansons...",

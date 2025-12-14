@@ -13,6 +13,56 @@
     "version": "Version",
     "guest": "Gastbenutzer"
   },
+  "auth": {
+    "signup": {
+      "title": "Konto Erstellen",
+      "subtitle": "Treten Sie EasySong bei und beginnen Sie, Sprachen durch Musik zu lernen",
+      "button": "Registrieren"
+    },
+    "login": {
+      "title": "Willkommen Zurück",
+      "subtitle": "Melden Sie sich an, um Ihre Sprachlernreise fortzusetzen",
+      "button": "Anmelden"
+    },
+    "magicCode": {
+      "title": "Anmeldung mit Magischem Code",
+      "subtitle": "Wir senden Ihnen einen Code an Ihre E-Mail",
+      "signupTitle": "Registrierung mit Magischem Code",
+      "signupSubtitle": "Wir senden Ihnen einen Code an Ihre E-Mail, um Ihr Konto zu erstellen",
+      "loginTitle": "Anmeldung mit Magischem Code",
+      "loginSubtitle": "Wir senden Ihnen einen Code an Ihre E-Mail, um Sie anzumelden",
+      "sendCode": "Code Senden",
+      "code": "Code Eingeben",
+      "verify": "Code Verifizieren",
+      "resend": "Code Erneut Senden",
+      "sent": "Code Gesendet",
+      "checkEmail": "Überprüfen Sie Ihre E-Mail für den 6-stelligen Code",
+      "usePassword": "Stattdessen Passwort verwenden"
+    },
+    "name": "Name",
+    "namePlaceholder": "Geben Sie Ihren Namen ein",
+    "email": "E-Mail",
+    "emailPlaceholder": "Geben Sie Ihre E-Mail ein",
+    "password": "Passwort",
+    "passwordPlaceholder": "Geben Sie Ihr Passwort ein",
+    "passwordHint": "Mindestens 8 Zeichen",
+    "signupWithMagicCode": "Stattdessen mit magischem Code registrieren",
+    "loginWithMagicCode": "Stattdessen mit magischem Code anmelden",
+    "alreadyHaveAccount": "Haben Sie bereits ein Konto? Anmelden",
+    "dontHaveAccount": "Haben Sie noch kein Konto? Registrieren",
+    "errors": {
+      "invalidEmail": "Bitte geben Sie eine gültige E-Mail-Adresse ein",
+      "nameRequired": "Name ist erforderlich",
+      "passwordRequired": "Passwort ist erforderlich",
+      "passwordTooShort": "Passwort muss mindestens 8 Zeichen lang sein",
+      "invalidCode": "Bitte geben Sie einen gültigen 6-stelligen Code ein",
+      "signupFailed": "Konto konnte nicht erstellt werden. Bitte versuchen Sie es erneut.",
+      "loginFailed": "Anmeldung fehlgeschlagen. Bitte überprüfen Sie Ihre Anmeldedaten.",
+      "sendCodeFailed": "Code konnte nicht gesendet werden. Bitte versuchen Sie es erneut.",
+      "invalidCredentials": "Ungültige E-Mail oder Passwort",
+      "userAlreadyExists": "Ein Konto mit dieser E-Mail existiert bereits. Bitte melden Sie sich stattdessen an."
+    }
+  },
   "songs": {
     "title": "Lieder",
     "loading": "Lieder werden geladen...",

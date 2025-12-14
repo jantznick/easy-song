@@ -13,6 +13,56 @@
     "version": "版本",
     "guest": "访客用户"
   },
+  "auth": {
+    "signup": {
+      "title": "创建账户",
+      "subtitle": "加入 EasySong，通过音乐开始学习语言",
+      "button": "注册"
+    },
+    "login": {
+      "title": "欢迎回来",
+      "subtitle": "登录以继续您的语言学习之旅",
+      "button": "登录"
+    },
+    "magicCode": {
+      "title": "魔法代码登录",
+      "subtitle": "我们将向您的电子邮件发送代码",
+      "signupTitle": "魔法代码注册",
+      "signupSubtitle": "我们将向您的电子邮件发送代码以创建您的账户",
+      "loginTitle": "魔法代码登录",
+      "loginSubtitle": "我们将向您的电子邮件发送代码以登录",
+      "sendCode": "发送代码",
+      "code": "输入代码",
+      "verify": "验证代码",
+      "resend": "重新发送代码",
+      "sent": "代码已发送",
+      "checkEmail": "请查看您的电子邮件以获取6位数字代码",
+      "usePassword": "改用密码"
+    },
+    "name": "姓名",
+    "namePlaceholder": "输入您的姓名",
+    "email": "电子邮件",
+    "emailPlaceholder": "输入您的电子邮件",
+    "password": "密码",
+    "passwordPlaceholder": "输入您的密码",
+    "passwordHint": "至少8个字符",
+    "signupWithMagicCode": "改用魔法代码注册",
+    "loginWithMagicCode": "改用魔法代码登录",
+    "alreadyHaveAccount": "已有账户？登录",
+    "dontHaveAccount": "没有账户？注册",
+    "errors": {
+      "invalidEmail": "请输入有效的电子邮件地址",
+      "nameRequired": "姓名是必需的",
+      "passwordRequired": "密码是必需的",
+      "passwordTooShort": "密码必须至少8个字符",
+      "invalidCode": "请输入有效的6位数字代码",
+      "signupFailed": "创建账户失败。请重试。",
+      "loginFailed": "登录失败。请检查您的凭据。",
+      "sendCodeFailed": "发送代码失败。请重试。",
+      "invalidCredentials": "电子邮件或密码无效",
+      "userAlreadyExists": "此电子邮件已存在账户。请改为登录。"
+    }
+  },
   "songs": {
     "title": "歌曲",
     "loading": "正在加载歌曲...",

@@ -49,3 +49,4 @@ export function t(key: string, options?: any): string {
   const result = i18next.t(key, options);
   return typeof result === 'string' ? result : String(result);
 }
+

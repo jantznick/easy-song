@@ -13,6 +13,56 @@
     "version": "Versión",
     "guest": "Usuario Invitado"
   },
+  "auth": {
+    "signup": {
+      "title": "Crear Cuenta",
+      "subtitle": "Únete a EasySong y comienza a aprender idiomas a través de la música",
+      "button": "Registrarse"
+    },
+    "login": {
+      "title": "Bienvenido de Nuevo",
+      "subtitle": "Inicia sesión para continuar tu viaje de aprendizaje de idiomas",
+      "button": "Iniciar Sesión"
+    },
+    "magicCode": {
+      "title": "Inicio de Sesión con Código Mágico",
+      "subtitle": "Enviaremos un código a tu email",
+      "signupTitle": "Registro con Código Mágico",
+      "signupSubtitle": "Enviaremos un código a tu email para crear tu cuenta",
+      "loginTitle": "Inicio de Sesión con Código Mágico",
+      "loginSubtitle": "Enviaremos un código a tu email para iniciar sesión",
+      "sendCode": "Enviar Código",
+      "code": "Ingresar Código",
+      "verify": "Verificar Código",
+      "resend": "Reenviar Código",
+      "sent": "Código Enviado",
+      "checkEmail": "Revisa tu email para el código de 6 dígitos",
+      "usePassword": "Usar contraseña en su lugar"
+    },
+    "name": "Nombre",
+    "namePlaceholder": "Ingresa tu nombre",
+    "email": "Email",
+    "emailPlaceholder": "Ingresa tu email",
+    "password": "Contraseña",
+    "passwordPlaceholder": "Ingresa tu contraseña",
+    "passwordHint": "Al menos 8 caracteres",
+    "signupWithMagicCode": "Regístrate con un código mágico en su lugar",
+    "loginWithMagicCode": "Inicia sesión con código mágico en su lugar",
+    "alreadyHaveAccount": "¿Ya tienes una cuenta? Inicia sesión",
+    "dontHaveAccount": "¿No tienes una cuenta? Regístrate",
+    "errors": {
+      "invalidEmail": "Por favor ingresa un email válido",
+      "nameRequired": "El nombre es requerido",
+      "passwordRequired": "La contraseña es requerida",
+      "passwordTooShort": "La contraseña debe tener al menos 8 caracteres",
+      "invalidCode": "Por favor ingresa un código válido de 6 dígitos",
+      "signupFailed": "Error al crear la cuenta. Por favor intenta de nuevo.",
+      "loginFailed": "Error al iniciar sesión. Por favor verifica tus credenciales.",
+      "sendCodeFailed": "Error al enviar el código. Por favor intenta de nuevo.",
+      "invalidCredentials": "Email o contraseña inválidos",
+      "userAlreadyExists": "Ya existe una cuenta con este email. Por favor, inicia sesión en su lugar."
+    }
+  },
   "songs": {
     "title": "Canciones",
     "loading": "Cargando canciones...",
