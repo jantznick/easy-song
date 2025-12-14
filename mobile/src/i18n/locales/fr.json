@@ -10,13 +10,16 @@
     "next": "Suivant",
     "previous": "Précédent",
     "close": "Fermer",
-    "version": "Version"
+    "version": "Version",
+    "guest": "Utilisateur Invité"
   },
   "songs": {
     "title": "Chansons",
     "loading": "Chargement des chansons...",
     "noSongs": "Aucune chanson disponible",
     "noSongsDescription": "Revenez bientôt pour voir du nouveau contenu !",
+    "noSongsInSection": "Aucune chanson dans cette section",
+    "allSongs": "Toutes les Chansons",
     "error": "Échec du chargement des chansons",
     "errorDescription": "Une erreur inconnue s'est produite.",
     "loadingSong": "Chargement de la chanson...",
@@ -117,7 +120,10 @@
     "failedToSignOut": "Échec de la déconnexion",
     "password": "Mot de passe",
     "emailAndPasswordRequired": "L'e-mail et le mot de passe sont requis",
-    "failedToSignIn": "Échec de la connexion. Veuillez réessayer."
+    "failedToSignIn": "Échec de la connexion. Veuillez réessayer.",
+    "songsLearned": "Chansons Apprises",
+    "playMode": "Mode Lecture",
+    "studyMode": "Mode Étude"
   },
   "history": {
     "title": "Historique des Chansons",

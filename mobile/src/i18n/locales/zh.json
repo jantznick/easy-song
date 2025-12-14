@@ -10,13 +10,16 @@
     "next": "下一步",
     "previous": "上一步",
     "close": "关闭",
-    "version": "版本"
+    "version": "版本",
+    "guest": "访客用户"
   },
   "songs": {
     "title": "歌曲",
     "loading": "正在加载歌曲...",
     "noSongs": "暂无歌曲",
     "noSongsDescription": "请稍后再来查看新内容！",
+    "noSongsInSection": "此部分暂无歌曲",
+    "allSongs": "所有歌曲",
     "error": "加载歌曲失败",
     "errorDescription": "发生未知错误。",
     "loadingSong": "正在加载歌曲...",
@@ -117,7 +120,10 @@
     "failedToSignOut": "退出登录失败",
     "password": "密码",
     "emailAndPasswordRequired": "需要电子邮件和密码",
-    "failedToSignIn": "登录失败。请重试。"
+    "failedToSignIn": "登录失败。请重试。",
+    "songsLearned": "已学歌曲",
+    "playMode": "播放模式",
+    "studyMode": "学习模式"
   },
   "history": {
     "title": "歌曲历史",

@@ -1,4 +1,4 @@
-import type { Song, SongSummary, StudyData, LyricLine } from '../types/song';
+import type { Song, SongSummary, StudyData, LyricLine, SongsResponse } from '../types/song';
 
 // Configuration: Set to 'api' for Express backend, or 'static' for S3/static file hosting
 // For mobile, we'll default to API mode but can be configured via environment variables
@@ -27,20 +27,37 @@ const BASE_URL = getApiUrl();
  * Fetches a list of all available songs.
  * @param options Optional parameters for filtering songs
  * @param options.language Optional language filter (e.g., "Spanish") - TODO: Implement when backend supports it
- * @returns A promise that resolves to an array of SongSummary objects.
+ * @param options.format Optional format: 'flat' for array, 'sections' for organized sections
+ * @returns A promise that resolves to either an array of SongSummary objects or a SongsResponse with sections.
  */
-export const fetchSongs = async (options?: { language?: string }): Promise<SongSummary[]> => {
+export const fetchSongs = async (options?: { 
+    language?: string;
+    format?: 'flat' | 'sections';
+}): Promise<SongSummary[] | SongsResponse> => {
     if (API_MODE === 'static') {
         const response = await fetch(`${BASE_URL}/songs-list.json`);
         if (!response.ok) {
             throw new Error(`Network response was not ok (${response.status})`);
         }
+        // Static mode always returns flat array
         return response.json();
     }
     
+    // Build URL with query parameters
+    const params = new URLSearchParams();
+    if (options?.format === 'sections') {
+        params.append('format', 'sections');
+    }
     // TODO: When backend supports language filtering, add query parameter:
-    // const url = options?.language ? `${BASE_URL}/songs?language=${options.language}` : `${BASE_URL}/songs`;
-    const response = await fetch(`${BASE_URL}/songs`);
+    // if (options?.language) {
+    //     params.append('language', options.language);
+    // }
+    
+    const url = params.toString() 
+        ? `${BASE_URL}/songs?${params.toString()}`
+        : `${BASE_URL}/songs`;
+    
+    const response = await fetch(url);
     if (!response.ok) {
         throw new Error(`Network response was not ok (${response.status})`);
     }

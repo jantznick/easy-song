@@ -10,13 +10,16 @@
     "next": "Next",
     "previous": "Previous",
     "close": "Close",
-    "version": "Version"
+    "version": "Version",
+    "guest": "Guest User"
   },
   "songs": {
     "title": "Songs",
     "loading": "Loading songs...",
     "noSongs": "No songs available",
     "noSongsDescription": "Check back soon for new content!",
+    "noSongsInSection": "No songs in this section",
+    "allSongs": "All Songs",
     "error": "Failed to fetch songs",
     "errorDescription": "An unknown error occurred.",
     "loadingSong": "Loading song...",
@@ -117,7 +120,10 @@
     "failedToSignOut": "Failed to sign out",
     "password": "Password",
     "emailAndPasswordRequired": "Email and password are required",
-    "failedToSignIn": "Failed to sign in. Please try again."
+    "failedToSignIn": "Failed to sign in. Please try again.",
+    "songsLearned": "Songs Learned",
+    "playMode": "Play Mode",
+    "studyMode": "Study Mode"
   },
   "history": {
     "title": "Song History",

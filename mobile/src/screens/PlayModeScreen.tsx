@@ -1,9 +1,10 @@
 import { useEffect, useState, useRef, useMemo } from 'react';
-import { View, Text, ScrollView, ActivityIndicator, TouchableOpacity, SafeAreaView, Switch } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, SafeAreaView, Switch } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import type { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
 import { fetchSongById } from '../utils/api';
 import VideoPlayer from '../components/VideoPlayer';
+import StatusDisplay from '../components/StatusDisplay';
 import type { Song, SongSection, LyricLine } from '../types/song';
 import type { SongDetailTabParamList } from '../types/navigation';
 import { useUser } from '../hooks/useUser';
@@ -153,26 +154,8 @@ export default function PlayModeScreen({ route }: Props) {
     }
   };
 
-  if (isLoading) {
-    return (
-      <SafeAreaView className={theme.bg('bg-background', 'bg-[#0F172A]')} style={{ flex: 1 }}>
-        <View className="flex-1 items-center justify-center">
-          <ActivityIndicator size="large" color="#6366F1" />
-          <Text className={theme.text('text-text-secondary', 'text-[#94A3B8]') + ' mt-4 text-base'}>{t('songs.loadingSong')}</Text>
-        </View>
-      </SafeAreaView>
-    );
-  }
-
-  if (error || !song) {
-    return (
-      <SafeAreaView className={theme.bg('bg-background', 'bg-[#0F172A]')} style={{ flex: 1 }}>
-        <View className="flex-1 items-center justify-center px-4">
-          <Text className="text-center mb-2 text-lg font-semibold text-red-500">{t('common.error')}</Text>
-          <Text className={theme.text('text-text-secondary', 'text-[#94A3B8]') + ' text-center text-base'}>{error || t('songs.songNotFound')}</Text>
-        </View>
-      </SafeAreaView>
-    );
+  if (isLoading || error || !song) {
+    return <StatusDisplay loading={isLoading} error={error || (!song ? t('songs.songNotFound') : null)} loadingText={t('songs.loadingSong')} />;
   }
 
   return (

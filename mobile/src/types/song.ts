@@ -24,6 +24,17 @@ export interface SongSummary {
     title: string;
     artist: string;
     thumbnailUrl: string;
+    genre?: string | null;
+}
+
+export interface SongListSection {
+    id: string;
+    title: string;
+    songs: SongSummary[];
+}
+
+export interface SongsResponse {
+    sections: SongListSection[];
 }
 
 // Study Mode Types

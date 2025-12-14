@@ -1,10 +1,12 @@
 import { useEffect, useState } from 'react';
-import { View, Text, ScrollView, ActivityIndicator, SafeAreaView, TouchableOpacity } from 'react-native';
+import { View, Text, ScrollView, SafeAreaView, TouchableOpacity, FlatList, Dimensions } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
-import type { SongSummary } from '../types/song';
+import type { SongsResponse, SongSummary } from '../types/song';
 import { fetchSongs } from '../utils/api';
 import SongListItem from '../components/SongListItem';
+import UserProfileCard from '../components/UserProfileCard';
+import StatusDisplay from '../components/StatusDisplay';
 import type { RootStackParamList } from '../types/navigation';
 import { useUser } from '../hooks/useUser';
 import { useTranslation } from '../hooks/useTranslation';
@@ -16,21 +18,37 @@ import { useThemeClasses } from '../utils/themeClasses';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'SongList'>;
 
+const { width: SCREEN_WIDTH } = Dimensions.get('window');
+const ITEM_WIDTH = SCREEN_WIDTH * 0.48; // 48% of screen width for 2 columns with gap
+const HORIZONTAL_PADDING = 16;
+const ITEM_GAP = 8;
+
 export default function SongListScreen({ navigation }: Props) {
   const { preferences } = useUser();
   const { t } = useTranslation();
   const theme = useThemeClasses();
-  const [songs, setSongs] = useState<SongSummary[]>([]);
+  const [sections, setSections] = useState<SongsResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
   useEffect(() => {
     const getSongs = async () => {
       try {
-        // TODO: When backend supports language filtering, pass learning language:
-        // const data = await fetchSongs({ language: preferences.language.learning });
-        const data = await fetchSongs();
-        setSongs(data);
+        // Fetch songs in sections format
+        const data = await fetchSongs({ format: 'sections' });
+        if (data && 'sections' in data) {
+          setSections(data);
+        } else {
+          // Fallback: if we get flat array, convert to sections format
+          const flatSongs = data as SongSummary[];
+          setSections({
+            sections: [{
+              id: 'all',
+              title: 'all', // Use a key instead of translated text
+              songs: flatSongs,
+            }],
+          });
+        }
       } catch (e) {
         if (e instanceof Error) {
           setError(`Failed to fetch songs: ${e.message}. Is the backend server running?`);
@@ -46,27 +64,49 @@ export default function SongListScreen({ navigation }: Props) {
     getSongs();
   }, []);
 
-  if (isLoading) {
-    return (
-      <SafeAreaView className={theme.bg('bg-background', 'bg-[#0F172A]')} style={{ flex: 1 }}>
-        <View className="flex-1 items-center justify-center">
-          <ActivityIndicator size="large" color="#6366F1" />
-          <Text className={theme.text('text-text-secondary', 'text-[#94A3B8]') + ' mt-4 text-base'}>Loading songs...</Text>
-        </View>
-      </SafeAreaView>
-    );
-  }
+  const renderSection = ({ item: section }: { item: { id: string; title: string; songs: SongSummary[] } }) => {
+    if (section.songs.length === 0) return null;
 
-  if (error) {
+    // Translate "All Songs" section title if it's the 'all' section
+    const sectionTitle = section.id === 'all' || section.title === 'All Songs' || section.title === 'all'
+      ? t('songs.allSongs') 
+      : section.title;
+
     return (
-      <SafeAreaView className={theme.bg('bg-background', 'bg-[#0F172A]')} style={{ flex: 1 }}>
-        <View className="flex-1 items-center justify-center px-4">
-          <Text className="text-red-400 text-center mb-2 text-lg font-semibold">{t('common.error')}</Text>
-          <Text className={theme.text('text-text-secondary', 'text-[#94A3B8]') + ' text-center text-base'}>{error}</Text>
+      <View className="mb-8">
+        {/* Section Title */}
+        <View className="px-4 mb-3">
+          <Text className={theme.text('text-text-primary', 'text-[#F1F5F9]') + ' text-2xl font-bold'}>
+            {sectionTitle}
+          </Text>
         </View>
-      </SafeAreaView>
+
+        {/* Horizontal Scrollable Songs */}
+        <FlatList
+          data={section.songs}
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={{ paddingHorizontal: HORIZONTAL_PADDING }}
+          keyExtractor={(song) => song.videoId}
+          renderItem={({ item: song }) => (
+            <View style={{ width: ITEM_WIDTH, marginRight: ITEM_GAP }}>
+              <SongListItem
+                song={song}
+                onPress={() => navigation.navigate('SongDetail', { videoId: song.videoId })}
+              />
+            </View>
+          )}
+          ListEmptyComponent={
+            <View className="px-4 py-8 items-center">
+              <Text className={theme.text('text-text-secondary', 'text-[#94A3B8]') + ' text-sm'}>
+                {t('songs.noSongsInSection') || 'No songs in this section'}
+              </Text>
+            </View>
+          }
+        />
+      </View>
     );
-  }
+  };
 
   return (
     <SafeAreaView className={theme.bg('bg-background', 'bg-[#0F172A]')} style={{ flex: 1 }}>
@@ -75,40 +115,56 @@ export default function SongListScreen({ navigation }: Props) {
         contentContainerStyle={{ paddingBottom: 32 }}
         showsVerticalScrollIndicator={false}
       >
-        {/* Header */}
-        <View className={theme.border('border-border', 'border-[#334155]') + ' px-5 pt-4 pb-5 border-b flex-row items-center justify-between'}>
-          <Text className={theme.text('text-text-primary', 'text-[#F1F5F9]') + ' text-3xl font-bold'}>Songs</Text>
-          <TouchableOpacity
-            onPress={() => navigation.navigate('Settings', {})}
-            activeOpacity={0.7}
-            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-          >
-            <Ionicons name="settings-outline" size={24} color="#4B5563" />
-          </TouchableOpacity>
-        </View>
+        <UserProfileCard onPress={() => navigation.navigate('Settings', {})} />
 
-        {/* Songs Grid */}
-        {songs.length === 0 ? (
-          <View className="items-center py-20 px-4">
-            <View className={theme.bg('bg-surface', 'bg-[#1E293B]') + ' p-5 rounded-full mb-5'}>
-              <Text className="text-5xl">🎵</Text>
+        <StatusDisplay 
+          loading={isLoading} 
+          loadingText={t('songs.loading')}
+          error={error}
+        />
+
+        {!isLoading && !error && (
+          <>
+            {/* Header */}
+            <View className={theme.border('border-border', 'border-[#334155]') + ' px-5 pt-2 pb-4 border-b flex-row items-center justify-between mb-2'}>
+              <Text className={theme.text('text-text-primary', 'text-[#F1F5F9]') + ' text-3xl font-bold'}>{t('songs.title')}</Text>
             </View>
-            <Text className={theme.text('text-text-primary', 'text-[#F1F5F9]') + ' text-lg font-semibold mb-1'}>No songs available</Text>
-            <Text className={theme.text('text-text-muted', 'text-[#64748B]') + ' text-sm'}>Check back soon for new content!</Text>
-          </View>
-        ) : (
-          <View className="px-4 pt-5">
-            <View className="flex-row flex-wrap justify-between">
-              {songs.map((song) => (
-                <View key={song.videoId} className="w-[48%] mb-4">
-                  <SongListItem
-                    song={song}
-                    onPress={() => navigation.navigate('SongDetail', { videoId: song.videoId })}
-                  />
+
+            {/* Sections */}
+            {!sections || sections.sections.length === 0 ? (
+              <View className="items-center py-20 px-4">
+                <View className={theme.bg('bg-surface', 'bg-[#1E293B]') + ' p-5 rounded-full mb-5'}>
+                  <Text className="text-5xl">🎵</Text>
                 </View>
-              ))}
-            </View>
-          </View>
+                <Text className={theme.text('text-text-primary', 'text-[#F1F5F9]') + ' text-lg font-semibold mb-1'}>
+                  {t('songs.noSongs')}
+                </Text>
+                <Text className={theme.text('text-text-muted', 'text-[#64748B]') + ' text-sm'}>
+                  {t('songs.noSongsDescription')}
+                </Text>
+              </View>
+            ) : (
+              <FlatList
+                data={sections.sections}
+                renderItem={renderSection}
+                keyExtractor={(section) => section.id}
+                scrollEnabled={false}
+                ListEmptyComponent={
+                  <View className="items-center py-20 px-4">
+                    <View className={theme.bg('bg-surface', 'bg-[#1E293B]') + ' p-5 rounded-full mb-5'}>
+                      <Text className="text-5xl">🎵</Text>
+                    </View>
+                    <Text className={theme.text('text-text-primary', 'text-[#F1F5F9]') + ' text-lg font-semibold mb-1'}>
+                      {t('songs.noSongs')}
+                    </Text>
+                    <Text className={theme.text('text-text-muted', 'text-[#64748B]') + ' text-sm'}>
+                      {t('songs.noSongsDescription')}
+                    </Text>
+                  </View>
+                }
+              />
+            )}
+          </>
         )}
       </ScrollView>
     </SafeAreaView>

@@ -10,13 +10,16 @@
     "next": "Weiter",
     "previous": "Zurück",
     "close": "Schließen",
-    "version": "Version"
+    "version": "Version",
+    "guest": "Gastbenutzer"
   },
   "songs": {
     "title": "Lieder",
     "loading": "Lieder werden geladen...",
     "noSongs": "Keine Lieder verfügbar",
     "noSongsDescription": "Kommen Sie bald wieder, um neue Inhalte zu sehen!",
+    "noSongsInSection": "Keine Lieder in diesem Abschnitt",
+    "allSongs": "Alle Lieder",
     "error": "Fehler beim Laden der Lieder",
     "errorDescription": "Ein unbekannter Fehler ist aufgetreten.",
     "loadingSong": "Lied wird geladen...",
@@ -117,7 +120,10 @@
     "failedToSignOut": "Fehler beim Abmelden",
     "password": "Passwort",
     "emailAndPasswordRequired": "E-Mail und Passwort sind erforderlich",
-    "failedToSignIn": "Anmeldung fehlgeschlagen. Bitte versuchen Sie es erneut."
+    "failedToSignIn": "Anmeldung fehlgeschlagen. Bitte versuchen Sie es erneut.",
+    "songsLearned": "Gelernte Lieder",
+    "playMode": "Wiedergabemodus",
+    "studyMode": "Lernmodus"
   },
   "history": {
     "title": "Liedverlauf",
