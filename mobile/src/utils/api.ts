@@ -448,3 +448,86 @@ export async function logoutUser(): Promise<void> {
   }
 }
 
+/**
+ * Get user preferences from backend
+ */
+export async function fetchPreferences(): Promise<{
+  playback: {
+    autoplay: boolean;
+    autoscroll: boolean;
+    loop: boolean;
+  };
+  display: {
+    fontSize: 'small' | 'medium' | 'large';
+    defaultTranslation: boolean;
+    theme: 'light' | 'dark' | 'system';
+  };
+  language: {
+    learning: string;
+    interface: string;
+  };
+}> {
+  const baseUrl = getApiUrl().replace('/api', '');
+  const response = await fetch(`${baseUrl}/api/user/preferences`, {
+    method: 'GET',
+    credentials: 'include',
+  });
+
+  if (!response.ok) {
+    throw new Error('Failed to fetch preferences');
+  }
+
+  return response.json();
+}
+
+/**
+ * Update user preferences on backend
+ */
+export async function updatePreferences(updates: {
+  playback?: {
+    autoplay?: boolean;
+    autoscroll?: boolean;
+    loop?: boolean;
+  };
+  display?: {
+    fontSize?: 'small' | 'medium' | 'large';
+    defaultTranslation?: boolean;
+    theme?: 'light' | 'dark' | 'system';
+  };
+  language?: {
+    learning?: string;
+    interface?: string;
+  };
+}): Promise<{
+  playback: {
+    autoplay: boolean;
+    autoscroll: boolean;
+    loop: boolean;
+  };
+  display: {
+    fontSize: 'small' | 'medium' | 'large';
+    defaultTranslation: boolean;
+    theme: 'light' | 'dark' | 'system';
+  };
+  language: {
+    learning: string;
+    interface: string;
+  };
+}> {
+  const baseUrl = getApiUrl().replace('/api', '');
+  const response = await fetch(`${baseUrl}/api/user/preferences`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
+    body: JSON.stringify(updates),
+  });
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.error || 'Failed to update preferences');
+  }
+
+  return data;
+}
+
