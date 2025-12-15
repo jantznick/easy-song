@@ -16,7 +16,7 @@ import {
   DEFAULT_USER_PROFILE,
 } from '../utils/storage';
 import { changeLanguage } from '../i18n/config';
-import { updateUserProfile as updateUserProfileAPI, signInUser as signInUserAPI, fetchSongHistory as fetchSongHistoryAPI, loginUser, getCurrentUser, logoutUser as logoutUserAPI } from '../utils/api';
+import { updateUserProfile as updateUserProfileAPI, fetchSongHistory as fetchSongHistoryAPI, loginUser, getCurrentUser, logoutUser as logoutUserAPI } from '../utils/api';
 
 // Get API base URL
 const getApiBaseUrl = () => {
@@ -82,6 +82,61 @@ export function useUser(): UserContextType {
 
 interface UserProviderProps {
   children: ReactNode;
+}
+
+// Deduplication window constant (10 minutes in milliseconds)
+const DEDUPLICATION_WINDOW_MS = 10 * 60 * 1000;
+
+/**
+ * Helper function to check if a recent history entry exists
+ * Parses date/time strings and checks if entry is within the deduplication window
+ */
+function hasRecentHistoryEntry(
+  history: SongHistoryItem[],
+  videoId: string,
+  mode: 'Play Mode' | 'Study Mode',
+  minutesThreshold: number = 10
+): boolean {
+  const thresholdMs = minutesThreshold * 60 * 1000;
+  const now = Date.now();
+
+  for (const entry of history) {
+    // Check if same videoId and mode
+    if (entry.videoId === videoId && entry.mode === mode) {
+      try {
+        // Parse date and time strings
+        // Date format: "Jan 15, 2025", Time format: "2:34 PM"
+        const dateStr = entry.date; // e.g., "Jan 15, 2025"
+        const timeStr = entry.time; // e.g., "2:34 PM"
+        
+        // Combine date and time, then parse
+        // Format: "Jan 15, 2025 2:34 PM"
+        const combinedDateTime = `${dateStr} ${timeStr}`;
+        const entryDate = new Date(combinedDateTime);
+        
+        // Check if the date is valid
+        if (isNaN(entryDate.getTime())) {
+          // If parsing fails, skip this entry
+          continue;
+        }
+        
+        const entryTimestamp = entryDate.getTime();
+        const timeDiff = now - entryTimestamp;
+        
+        // If entry is within the threshold window (0 to thresholdMs), it's a duplicate
+        // timeDiff >= 0 ensures the entry is in the past (not future)
+        if (timeDiff >= 0 && timeDiff <= thresholdMs) {
+          return true;
+        }
+      } catch (error) {
+        // If parsing fails, skip this entry and continue
+        console.warn('Failed to parse history entry date/time:', entry, error);
+        continue;
+      }
+    }
+  }
+  
+  return false;
 }
 
 export function UserProvider({ children }: UserProviderProps) {
@@ -157,8 +212,14 @@ export function UserProvider({ children }: UserProviderProps) {
             setSongHistory(storedHistory);
           }
         } else {
-          // For guest users, use local history
-          setSongHistory(storedHistory);
+          // For guest users, use local history (limit to 3 most recent items)
+          // Trim to 3 items if there are more (in case old dummy data exists)
+          const guestHistory = storedHistory.length > 3 ? storedHistory.slice(0, 3) : storedHistory;
+          setSongHistory(guestHistory);
+          // Save trimmed history back to storage if it was trimmed
+          if (storedHistory.length > 3) {
+            await saveSongHistory(guestHistory);
+          }
         }
       } catch (error) {
         console.error('Error loading initial data:', error);
@@ -237,6 +298,14 @@ export function UserProvider({ children }: UserProviderProps) {
     mode: 'Play Mode' | 'Study Mode',
     videoId: string
   ) => {
+    // Client-side deduplication check: Check if recent entry exists
+    const hasRecent = hasRecentHistoryEntry(songHistory, videoId, mode, 10);
+    if (hasRecent) {
+      // Recent entry found within 10 minutes, skip adding (no duplicate)
+      console.log(`Skipping duplicate history entry: ${song} (${mode}) - recent entry found`);
+      return;
+    }
+
     const newEntry: SongHistoryItem = {
       song,
       artist,
@@ -286,7 +355,13 @@ export function UserProvider({ children }: UserProviderProps) {
     }
 
     // Add to beginning of history (most recent first) - for guest users or if API fails
-    const newHistory = [newEntry, ...songHistory];
+    let newHistory = [newEntry, ...songHistory];
+    
+    // For guest users, enforce 3-item limit (keep only most recent 3)
+    if (!isAuthenticated && newHistory.length > 3) {
+      newHistory = newHistory.slice(0, 3);
+    }
+    
     setSongHistory(newHistory);
     await saveSongHistory(newHistory);
   }, [songHistory, isAuthenticated]);
