@@ -6,9 +6,11 @@ Integrate history functionality with proper deduplication, user tier limits, and
 ## Requirements Summary
 1. **Free users (logged in)**: View last 20 songs, but save all to backend (for premium conversion)
 2. **Guest users**: View last 20 songs, save only 20 on-device
-3. **Premium field**: Add to User model (DB toggle for future use)
-4. **Deduplication**: Don't log if same song/mode was saved within 10 minutes
-5. **Fix current bug**: Currently updating time on duplicates - should create separate entries
+3. **Subscription tiers**: Add subscription tier to User model (FREE, PREMIUM, PREMIUM_PLUS) - supports future study mode limits
+4. **Song table**: Add Song model to database (hybrid approach - metadata in DB, full content in files)
+5. **History references**: Update SongHistory to reference Song table instead of duplicating song/artist/videoId
+6. **Deduplication**: Don't log if same song/mode was saved within 10 minutes
+7. **Fix current bug**: Currently updating time on duplicates - should create separate entries
 
 ## Current State Analysis
 
@@ -30,21 +32,37 @@ Integrate history functionality with proper deduplication, user tier limits, and
 
 ### Database Schema
 - ✅ `SongHistory` model exists with proper fields
-- ❌ `User` model missing `isPremium` field
+- ❌ `User` model missing subscription tier field
+- ❌ `Song` model doesn't exist (need to add for hybrid approach)
+- ❌ `SongHistory` duplicates song/artist/videoId (should reference Song table)
 
 ## Implementation Plan
 
 ### Phase 1: Database Schema Updates
-**Goal**: Add premium field to User model
+**Goal**: Add subscription tiers, Song table, and update SongHistory to reference Song
 
 **Tasks**:
-1. Add `isPremium` boolean field to User model in Prisma schema (default: false)
-2. Create and run migration
-3. Update TypeScript types
+1. Add `SubscriptionTier` enum (FREE, PREMIUM, PREMIUM_PLUS) to Prisma schema
+2. Add `subscriptionTier` field to User model (default: FREE)
+3. Add `Song` model with:
+   - Basic metadata (videoId, title, artist, thumbnailUrl, genre, year, duration)
+   - Multi-language lyrics text fields:
+     - `lyricsTextSpanish` (required) - Original Spanish lyrics for search
+     - `lyricsTextEnglish` (optional) - English translation for search
+     - Additional languages can be added later (e.g., French, Portuguese)
+   - File paths (songFilePath, studyFilePath)
+4. Update `SongHistory` model:
+   - Remove `song`, `artist`, `videoId` fields (now in Song table)
+   - Add `songId` foreign key to Song table
+   - Add composite index for deduplication queries
+5. Create and run migration
+6. Update TypeScript types
 
 **Testing**:
 - Verify migration runs successfully
-- Verify existing users default to `isPremium: false`
+- Verify existing users default to `subscriptionTier: FREE`
+- Verify Song table structure is correct
+- Verify SongHistory foreign key relationship works
 
 ---
 
@@ -53,10 +71,13 @@ Integrate history functionality with proper deduplication, user tier limits, and
 
 **Tasks**:
 1. Update POST `/api/history` endpoint to check for recent entry:
-   - Query for last entry with same `userId`, `videoId`, and `mode`
+   - First, find or create Song record (by videoId)
+   - Query for last entry with same `userId`, `songId`, and `mode`
    - If found and `playedAt` is within 10 minutes, return existing entry (don't create new)
    - If not found or >10 minutes, create new entry
-2. Add helper function `findRecentHistoryEntry(userId, videoId, mode, minutesThreshold)`
+2. Add helper function `findOrCreateSong(videoId, song, artist, ...)` to get/create Song record
+3. Add helper function `findRecentHistoryEntry(userId, songId, mode, minutesThreshold)`
+4. Update response to include song metadata from Song table
 
 **Testing**:
 - Test: Add same song/mode twice within 10 minutes → should return existing entry
@@ -71,17 +92,19 @@ Integrate history functionality with proper deduplication, user tier limits, and
 
 **Tasks**:
 1. Update GET `/api/history` endpoint:
-   - Check user's `isPremium` status
-   - If free user: Limit query to last 20 items (but don't delete others)
-   - If premium user: Return all items as before
-   - Update `totalCount` calculation accordingly
-2. Ensure POST still saves all entries regardless of premium status
+   - Check user's `subscriptionTier` status
+   - If FREE user: Limit query to last 20 items (but don't delete others)
+   - If PREMIUM or PREMIUM_PLUS: Return all items as before
+   - Always return full `totalCount` (so UI can show "Viewing 20 of 50 songs")
+   - Include song metadata from Song table in response
+2. Ensure POST still saves all entries regardless of subscription tier
 
 **Testing**:
-- Test: Free user with 50 history items → GET returns only 20, totalCount shows 20
-- Test: Premium user with 50 history items → GET returns all 50, totalCount shows 50
-- Test: Free user adds new entry → POST succeeds, entry is saved
-- Test: Free user with 20+ items → Verify older items still exist in DB (not deleted)
+- Test: FREE user with 50 history items → GET returns only 20, totalCount shows 50 (full count)
+- Test: PREMIUM user with 50 history items → GET returns all 50, totalCount shows 50
+- Test: PREMIUM_PLUS user with 50 history items → GET returns all 50, totalCount shows 50
+- Test: FREE user adds new entry → POST succeeds, entry is saved
+- Test: FREE user with 20+ items → Verify older items still exist in DB (not deleted)
 
 ---
 
@@ -143,16 +166,64 @@ Integrate history functionality with proper deduplication, user tier limits, and
 ---
 
 ### Phase 7: Update API Response Handling
-**Goal**: Ensure client properly handles premium status and view limits
+**Goal**: Ensure client properly handles subscription tier and view limits
 
 **Tasks**:
-1. Update `fetchSongHistory` in `api.ts` to handle premium status if returned
-2. Update `UserContext.tsx` to track user's premium status
-3. Update `getCurrentUser` response handling if premium status is included
+1. Update `fetchSongHistory` in `api.ts` to handle subscription tier if returned
+2. Update `UserContext.tsx` to track user's subscription tier
+3. Update `getCurrentUser` response handling to include subscription tier
+4. Update auth endpoints to return subscription tier in user object
 
 **Testing**:
-- Test: Free user login → Premium status correctly set to false
-- Test: Premium user login → Premium status correctly set to true
+- Test: FREE user login → Subscription tier correctly set to FREE
+- Test: PREMIUM user login → Subscription tier correctly set to PREMIUM
+- Test: PREMIUM_PLUS user login → Subscription tier correctly set to PREMIUM_PLUS
+
+---
+
+### Phase 8: Guest History Warnings
+**Goal**: Show warnings to guest users as they approach the 20-song limit
+
+**Tasks**:
+1. Update `UserContext.tsx`:
+   - Add `shouldShowHistoryWarning` computed property (true if guest and history.length >= 10)
+   - Add `historyWarningLevel` ('info' if >= 10, 'urgent' if >= 15)
+2. Update `SongHistoryScreen.tsx`:
+   - Show info banner at 10 songs: "You have X songs in your history. Sign up to save them permanently!"
+   - Show urgent banner at 15 songs: "You have X songs! Sign up now to save your entire listening history!"
+   - Add "Sign up" CTA button
+
+**Testing**:
+- Test: Guest user with 9 songs → No warning shown
+- Test: Guest user with 10 songs → Info banner shown
+- Test: Guest user with 15 songs → Urgent banner shown
+- Test: Guest user with 20 songs → Urgent banner still shown
+- Test: Authenticated user → No warnings shown
+
+---
+
+### Phase 9: Guest History Migration on Signup
+**Goal**: Migrate guest user's local history to their new account when they sign up
+
+**Tasks**:
+1. Update `signIn` function in `UserContext.tsx`:
+   - Before clearing local history, check if guest history exists
+   - If exists and user is now authenticated, migrate all items to server:
+     - POST each item to `/api/history` endpoint
+     - Handle deduplication (server will handle 10-min window)
+     - Use `Promise.allSettled` to continue even if some fail
+   - Clear local history after successful migration
+   - Fetch fresh history from server
+2. Handle edge cases:
+   - Network failures during migration → Log errors but don't fail signup
+   - Partial migration → Continue with successfully migrated items
+
+**Testing**:
+- Test: Guest user with 5 songs signs up → All 5 songs migrated to account
+- Test: Guest user with 20 songs signs up → All 20 songs migrated to account
+- Test: Guest user with 0 songs signs up → No migration, no errors
+- Test: Network failure during migration → Signup succeeds, errors logged
+- Test: Duplicate entries → Server deduplication handles correctly
 
 ---
 
@@ -162,8 +233,11 @@ Integrate history functionality with proper deduplication, user tier limits, and
 
 #### Phase 1: Database
 - [ ] Run migration successfully
-- [ ] Verify existing users have `isPremium: false`
-- [ ] Manually set a user to premium in DB, verify it persists
+- [ ] Verify existing users have `subscriptionTier: FREE`
+- [ ] Verify Song table structure is correct
+- [ ] Verify SongHistory foreign key relationship works
+- [ ] Manually set a user to PREMIUM in DB, verify it persists
+- [ ] Manually set a user to PREMIUM_PLUS in DB, verify it persists
 
 #### Phase 2: Backend Deduplication
 - [ ] Login as authenticated user
@@ -173,11 +247,13 @@ Integrate history functionality with proper deduplication, user tier limits, and
 - [ ] Check database directly to verify entries
 
 #### Phase 3: Backend View Limits
-- [ ] Create free user account
+- [ ] Create FREE user account
 - [ ] Add 25 history entries (via API or app)
-- [ ] GET `/api/history` → Should return only 20 items, totalCount = 20
+- [ ] GET `/api/history` → Should return only 20 items, totalCount = 25 (full count)
 - [ ] Check database → Should have all 25 entries
-- [ ] Upgrade user to premium in DB
+- [ ] Upgrade user to PREMIUM in DB
+- [ ] GET `/api/history` → Should return all 25 items, totalCount = 25
+- [ ] Upgrade user to PREMIUM_PLUS in DB
 - [ ] GET `/api/history` → Should return all 25 items, totalCount = 25
 
 #### Phase 4: Client Deduplication
@@ -194,9 +270,21 @@ Integrate history functionality with proper deduplication, user tier limits, and
 - [ ] Test as premium user: View history screen → All items shown
 - [ ] Test pagination for both user types
 
+#### Phase 8: Guest History Warnings
+- [ ] Guest user with 9 songs → No warning
+- [ ] Guest user with 10 songs → Info banner appears
+- [ ] Guest user with 15 songs → Urgent banner appears
+- [ ] Authenticated user → No warnings
+
+#### Phase 9: Guest History Migration
+- [ ] Guest user with 5 songs signs up → All migrated
+- [ ] Guest user with 20 songs signs up → All migrated
+- [ ] Network failure during migration → Signup succeeds, errors logged
+- [ ] Duplicate entries → Server deduplication works
+
 #### Phase 7: Integration
 - [ ] Full flow: Guest user → Add songs → Convert to free account → History syncs
-- [ ] Full flow: Free user → Add 30 songs → View history (20 shown) → Upgrade to premium → All 30 shown
+- [ ] Full flow: FREE user → Add 30 songs → View history (20 shown, totalCount=30) → Upgrade to PREMIUM → All 30 shown
 - [ ] Edge cases: Network failures, offline mode, etc.
 
 ---
@@ -210,6 +298,8 @@ Integrate history functionality with proper deduplication, user tier limits, and
 5. **Phase 5** - Guest storage limits (client-side enforcement)
 6. **Phase 6** - Free user view limits (UI)
 7. **Phase 7** - API response handling (polish)
+8. **Phase 8** - Guest history warnings (UX enhancement)
+9. **Phase 9** - Guest history migration (data preservation)
 
 ---
 
@@ -240,8 +330,8 @@ Integrate history functionality with proper deduplication, user tier limits, and
 ## Files to Modify
 
 ### Backend
-- `backend/prisma/schema.prisma` - Add `isPremium` field
-- `backend/src/routes/history.ts` - Add deduplication, view limits
+- `backend/prisma/schema.prisma` - Add `SubscriptionTier` enum, `subscriptionTier` field, `Song` model, update `SongHistory`
+- `backend/src/routes/history.ts` - Add deduplication, view limits, Song lookup/creation
 - `backend/prisma/migrations/` - New migration file
 
 ### Frontend
@@ -254,8 +344,11 @@ Integrate history functionality with proper deduplication, user tier limits, and
 
 ## Future Considerations
 
-1. **Premium Toggle**: Add admin endpoint or user settings to toggle premium status
-2. **History Export**: Allow users to export full history
-3. **Analytics**: Track how many users hit the 20-item limit
-4. **Upgrade Prompts**: Show upgrade prompts when free users hit limits
-5. **Sync on Upgrade**: Ensure guest → free → premium transitions preserve all history
+1. **Subscription Management**: Add admin endpoint or user settings to manage subscription tiers
+2. **Study Mode Limits**: Implement daily song limits for study mode based on subscription tier
+3. **History Export**: Allow users to export full history
+4. **Analytics**: Track how many users hit the 20-item limit
+5. **Upgrade Prompts**: Show upgrade prompts when free users hit limits
+6. **Sync on Upgrade**: Ensure guest → free → premium transitions preserve all history
+7. **Song Migration**: Create script to populate Song table from existing JSON files
+8. **Search Feature**: Implement full-text search on lyrics using PostgreSQL FTS

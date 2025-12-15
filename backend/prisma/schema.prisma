@@ -9,21 +9,29 @@ datasource db {
   provider = "postgresql"
 }
 
-model User {
-  id            String    @id @default(uuid())
-  email         String    @unique
-  name          String
-  avatar        String?
-  passwordHash  String?   // Nullable - users can use magic code login without password
-  emailVerified Boolean   @default(false)
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+enum SubscriptionTier {
+  FREE
+  PREMIUM
+  PREMIUM_PLUS
+}
 
-  preferences   UserPreferences?
-  magicCodes    MagicCode[]
-  songHistory   SongHistory[]
+model User {
+  id               String           @id @default(uuid())
+  email            String           @unique
+  name             String
+  avatar           String?
+  passwordHash     String?          // Nullable - users can use magic code login without password
+  emailVerified    Boolean          @default(false)
+  subscriptionTier SubscriptionTier @default(FREE)
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
+
+  preferences      UserPreferences?
+  magicCodes       MagicCode[]
+  songHistory      SongHistory[]
 
   @@index([email])
+  @@index([subscriptionTier])
 }
 
 model UserPreferences {
@@ -64,20 +72,55 @@ enum MagicCodeType {
   EMAIL_VERIFICATION
 }
 
+model Song {
+  id            String       @id @default(uuid())
+  videoId       String       @unique
+  title         String
+  artist        String
+  thumbnailUrl  String?
+  genre         String?
+  year          Int?
+  duration      Int?         // Duration in seconds
+  
+  // Searchable plain text lyrics in multiple languages (no timestamps, for full-text search)
+  // Spanish lyrics (original language - required for most songs)
+  lyricsTextSpanish String   @db.Text
+  // English translation (optional but recommended)
+  lyricsTextEnglish String?  @db.Text
+  // Additional languages can be added as needed (e.g., lyricsTextFrench, lyricsTextPortuguese)
+  
+  // File paths (relative to data directory)
+  songFilePath  String       // e.g., "songs/{videoId}.json"
+  studyFilePath String?      // e.g., "study/{videoId}.json" (optional)
+  
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+  
+  history       SongHistory[]
+
+  @@index([artist])
+  @@index([title])
+  @@index([genre])
+  @@index([videoId])
+  // Note: Full-text search indexes will be created via raw SQL migration
+  // CREATE INDEX songs_lyrics_spanish_fts_idx ON "Song" USING gin(to_tsvector('spanish', "lyricsTextSpanish"));
+  // CREATE INDEX songs_lyrics_english_fts_idx ON "Song" USING gin(to_tsvector('english', "lyricsTextEnglish"));
+}
+
 model SongHistory {
   id        String   @id @default(uuid())
   userId    String
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  song      String
-  artist    String
+  songId    String
+  song      Song     @relation(fields: [songId], references: [id], onDelete: Cascade)
   mode      SongMode
-  videoId   String
   playedAt  DateTime @default(now())
   createdAt DateTime @default(now())
 
   @@index([userId, playedAt])
-  @@index([videoId])
+  @@index([songId])
   @@index([playedAt])
+  @@index([userId, songId, mode, playedAt]) // For deduplication queries
 }
 
 enum SongMode {
