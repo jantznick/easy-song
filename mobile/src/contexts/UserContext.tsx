@@ -25,6 +25,7 @@ export interface User {
   avatar?: string;
   subscriptionTier?: 'FREE' | 'PREMIUM' | 'PREMIUM_PLUS';
   hasPassword?: boolean; // Whether user has a password set (vs magic code only)
+  emailVerified?: boolean; // Whether user's email is verified
 }
 
 // Guest user fallback (always available for non-authenticated users)
@@ -181,6 +182,7 @@ export function UserProvider({ children }: UserProviderProps) {
                 avatar: currentUser.avatar,
                 subscriptionTier: currentUser.subscriptionTier,
                 hasPassword: currentUser.hasPassword,
+                emailVerified: currentUser.emailVerified,
               };
               setUser(userData);
               setIsAuthenticated(true);
@@ -483,6 +485,7 @@ export function UserProvider({ children }: UserProviderProps) {
           avatar: currentUser.avatar,
           subscriptionTier: currentUser.subscriptionTier,
           hasPassword: currentUser.hasPassword,
+          emailVerified: currentUser.emailVerified,
         };
         setUser(userData);
         setIsAuthenticated(true);
@@ -519,6 +522,7 @@ export function UserProvider({ children }: UserProviderProps) {
       avatar: result.user.avatar,
       subscriptionTier: result.user.subscriptionTier,
       hasPassword: currentUser?.hasPassword ?? true, // If login worked with password, they have one
+      emailVerified: currentUser?.emailVerified ?? result.user.emailVerified ?? false,
     };
     setUser(userData);
     setIsAuthenticated(true);
@@ -592,6 +596,7 @@ export function UserProvider({ children }: UserProviderProps) {
           avatar: currentUser.avatar,
           subscriptionTier: currentUser.subscriptionTier,
           hasPassword: currentUser.hasPassword,
+          emailVerified: currentUser.emailVerified,
         };
         setUser(userData);
       }

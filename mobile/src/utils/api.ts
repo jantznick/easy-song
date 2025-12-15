@@ -592,3 +592,50 @@ export async function changePassword(
   return data;
 }
 
+/**
+ * Verify email with a 6-digit code
+ */
+export async function verifyEmail(code: string): Promise<{
+  success: boolean;
+  message: string;
+}> {
+  const baseUrl = getApiUrl().replace('/api', '');
+  const response = await fetch(`${baseUrl}/api/auth/verify-email`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
+    body: JSON.stringify({ code }),
+  });
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.error || 'Failed to verify email');
+  }
+
+  return data;
+}
+
+/**
+ * Resend email verification code
+ */
+export async function resendVerificationCode(): Promise<{
+  success: boolean;
+  message: string;
+}> {
+  const baseUrl = getApiUrl().replace('/api', '');
+  const response = await fetch(`${baseUrl}/api/auth/resend-verification`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
+  });
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.error || 'Failed to resend verification code');
+  }
+
+  return data;
+}
+

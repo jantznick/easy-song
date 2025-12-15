@@ -41,6 +41,15 @@
       "checkEmail": "Check your email for the 6-digit code",
       "usePassword": "Use password instead"
     },
+    "emailVerification": {
+      "title": "Verify Your Email",
+      "description": "We sent a 6-digit verification code to {email}. Please enter it below.",
+      "pleaseVerify": "Please verify your email address to continue",
+      "verify": "Verify",
+      "resend": "Resend Code",
+      "emailVerified": "Email verified successfully!",
+      "verificationCodeResent": "Verification code sent to your email"
+    },
     "name": "Name",
     "namePlaceholder": "Enter your name",
     "email": "Email",
@@ -62,7 +71,9 @@
       "loginFailed": "Login failed. Please check your credentials.",
       "sendCodeFailed": "Failed to send code. Please try again.",
       "invalidCredentials": "Invalid email or password",
-      "userAlreadyExists": "An account with this email already exists. Please sign in instead."
+      "userAlreadyExists": "An account with this email already exists. Please sign in instead.",
+      "verificationFailed": "Failed to verify email. Please check the code and try again.",
+      "resendFailed": "Failed to resend verification code. Please try again."
     }
   },
   "songs": {

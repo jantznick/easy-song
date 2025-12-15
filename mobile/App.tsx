@@ -3,7 +3,7 @@ import { View, ActivityIndicator } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { StatusBar } from 'expo-status-bar';
-import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 import './global.css';
@@ -23,6 +23,7 @@ import PrivacyPolicyScreen from './src/screens/PrivacyPolicyScreen';
 import AboutScreen from './src/screens/AboutScreen';
 import PremiumBenefitsScreen from './src/screens/PremiumBenefitsScreen';
 import SongHistoryScreen from './src/screens/SongHistoryScreen';
+import EmailVerificationBanner from './src/components/EmailVerificationBanner';
 import type { RootStackParamList } from './src/types/navigation';
 import { hasCompletedOnboarding } from './src/utils/storage';
 
@@ -58,12 +59,14 @@ function AppContent() {
 
   return (
     <NavigationContainer>
-      <Stack.Navigator
-        initialRouteName={initialRoute}
-        screenOptions={{
-          headerShown: false,
-        }}
-      >
+      <SafeAreaView edges={['top']} style={{ flex: 1, backgroundColor: isDark ? '#0F172A' : '#FFFFFF' }}>
+        <EmailVerificationBanner />
+        <Stack.Navigator
+          initialRouteName={initialRoute}
+          screenOptions={{
+            headerShown: false,
+          }}
+        >
         <Stack.Screen
           name="Onboarding"
           component={OnboardingScreen}
@@ -112,7 +115,8 @@ function AppContent() {
           name="SongHistory"
           component={SongHistoryScreen}
         />
-      </Stack.Navigator>
+        </Stack.Navigator>
+      </SafeAreaView>
       <StatusBar style={isDark ? 'light' : 'dark'} />
     </NavigationContainer>
   );
