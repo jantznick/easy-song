@@ -4,14 +4,15 @@
 
 ### Current State
 - Backend already returns `totalCount` in GET `/api/history` response
-- Free users see 20 items but get the full count
+- Free users see 10 items but get the full count
+- Premium users see all items
 
 ### Implementation Approach
 
 **UI Enhancement:**
-- Show pagination info: "Page 1 of 3 (50 total songs)"
+- Show pagination info: "Page 1 of 1 (50 total songs)"
 - Add upgrade prompt: "Upgrade to Premium to view all 50 songs in your history"
-- Could show a progress indicator: "Viewing 20 of 50 songs"
+- Could show a progress indicator: "Viewing 10 of 50 songs"
 
 **Location:** `mobile/src/screens/SongHistoryScreen.tsx`
 
@@ -26,8 +27,8 @@
 ## 2. Guest History Migration on Signup
 
 ### Requirements
-- When guest user signs up, migrate their local history (up to 20 items) to their new account
-- Show warning at 10-15 songs: "Join now to save your entire listening history"
+- When guest user signs up, migrate their local history (up to 3 items) to their new account
+- Show warning at 2 songs: "Join now to save your entire listening history"
 
 ### Implementation Strategy
 
@@ -36,15 +37,15 @@
 
 **Logic:**
 - Monitor `songHistory.length` for guest users
-- At 10 songs: Show subtle banner/info message
-- At 15 songs: Show more prominent warning
+- At 2 songs: Show subtle banner/info message
+- At 3 songs: Show more prominent warning (at limit)
 - Message: "You have X songs in your history. Sign up to save them permanently!"
 
 **Implementation:**
 ```typescript
 // In UserContext.tsx
-const shouldShowHistoryWarning = !isAuthenticated && songHistory.length >= 10;
-const historyWarningLevel = songHistory.length >= 15 ? 'urgent' : 'info';
+const shouldShowHistoryWarning = !isAuthenticated && songHistory.length >= 2;
+const historyWarningLevel = songHistory.length >= 3 ? 'urgent' : 'info';
 ```
 
 #### Phase B: Migration on Signup
@@ -52,7 +53,7 @@ const historyWarningLevel = songHistory.length >= 15 ? 'urgent' : 'info';
 
 **Flow:**
 1. User signs up/logs in
-2. Before clearing local history, check if guest history exists
+2. Before clearing local history, check if guest history exists (up to 3 items)
 3. If exists, POST each item to `/api/history` endpoint
 4. Handle deduplication (server will handle 10-min window)
 5. Clear local history after successful migration
@@ -62,8 +63,9 @@ const historyWarningLevel = songHistory.length >= 15 ? 'urgent' : 'info';
 ```typescript
 // In signIn function
 if (!isAuthenticated && songHistory.length > 0) {
-  // Migrate guest history to account
-  const migrationPromises = songHistory.map(item => 
+  // Migrate guest history to account (up to 3 items)
+  const itemsToMigrate = songHistory.slice(0, 3);
+  const migrationPromises = itemsToMigrate.map(item => 
     fetch(`${apiBase}/api/history`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },

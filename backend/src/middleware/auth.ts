@@ -1,5 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { Session } from 'express-session';
+import { prisma } from '../lib/prisma';
+import { SubscriptionTier } from '@prisma/client';
 
 // Extend Express Session to include userId
 declare module 'express-session' {
@@ -8,25 +10,50 @@ declare module 'express-session' {
   }
 }
 
-// Extend Express Request to include userId helper
+// Extend Express Request to include userId and user helper
 declare global {
   namespace Express {
     interface Request {
       userId?: string;
+      user?: {
+        id: string;
+        subscriptionTier: SubscriptionTier;
+      };
     }
   }
 }
 
 /**
  * Middleware to check if user is authenticated
+ * Also attaches user object (including subscriptionTier) to request
  */
-export function requireAuth(req: Request, res: Response, next: NextFunction): void {
+export async function requireAuth(req: Request, res: Response, next: NextFunction): Promise<void> {
   const session = req.session as Session & { userId?: string };
   if (!session.userId) {
     res.status(401).json({ error: 'Authentication required' });
     return;
   }
+  
   req.userId = session.userId;
+  
+  // Fetch and attach user data (including subscriptionTier) to request
+  try {
+    const user = await prisma.user.findUnique({
+      where: { id: session.userId },
+      select: {
+        id: true,
+        subscriptionTier: true,
+      },
+    });
+    
+    if (user) {
+      req.user = user;
+    }
+  } catch (error) {
+    // If user fetch fails, continue anyway (userId is still set)
+    console.error('Error fetching user in requireAuth:', error);
+  }
+  
   next();
 }
 

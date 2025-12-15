@@ -4,13 +4,14 @@
 Integrate history functionality with proper deduplication, user tier limits, and correct entry logging behavior.
 
 ## Requirements Summary
-1. **Free users (logged in)**: View last 20 songs, but save all to backend (for premium conversion)
-2. **Guest users**: View last 20 songs, save only 20 on-device
-3. **Subscription tiers**: Add subscription tier to User model (FREE, PREMIUM, PREMIUM_PLUS) - supports future study mode limits
-4. **Song table**: Add Song model to database (hybrid approach - metadata in DB, full content in files)
-5. **History references**: Update SongHistory to reference Song table instead of duplicating song/artist/videoId
-6. **Deduplication**: Don't log if same song/mode was saved within 10 minutes
-7. **Fix current bug**: Currently updating time on duplicates - should create separate entries
+1. **Free users (logged in)**: View last 10 songs, but save all to backend (for premium conversion)
+2. **Guest users**: View last 3 songs, save only 3 on-device
+3. **Premium users (both tiers)**: View all songs in history
+4. **Subscription tiers**: Add subscription tier to User model (FREE, PREMIUM, PREMIUM_PLUS) - supports future study mode limits
+5. **Song table**: Add Song model to database (hybrid approach - metadata in DB, full content in files)
+6. **History references**: Update SongHistory to reference Song table instead of duplicating song/artist/videoId
+7. **Deduplication**: Don't log if same song/mode was saved within 10 minutes
+8. **Fix current bug**: Currently updating time on duplicates - should create separate entries
 
 ## Current State Analysis
 
@@ -87,24 +88,24 @@ Integrate history functionality with proper deduplication, user tier limits, and
 
 ---
 
-### Phase 3: Backend View Limits for Free Users
-**Goal**: Return only last 20 items for free users, but still save all
+### Phase 3: Backend View Limits Based on Subscription Tier
+**Goal**: Return limited items for free users, all items for premium users, but still save all
 
 **Tasks**:
 1. Update GET `/api/history` endpoint:
    - Check user's `subscriptionTier` status
-   - If FREE user: Limit query to last 20 items (but don't delete others)
-   - If PREMIUM or PREMIUM_PLUS: Return all items as before
-   - Always return full `totalCount` (so UI can show "Viewing 20 of 50 songs")
+   - If FREE user: Limit query to last 10 items (but don't delete others)
+   - If PREMIUM or PREMIUM_PLUS: Return all items
+   - Always return full `totalCount` (so UI can show "Viewing 10 of 50 songs")
    - Include song metadata from Song table in response
 2. Ensure POST still saves all entries regardless of subscription tier
 
 **Testing**:
-- Test: FREE user with 50 history items → GET returns only 20, totalCount shows 50 (full count)
+- Test: FREE user with 50 history items → GET returns only 10, totalCount shows 50 (full count)
 - Test: PREMIUM user with 50 history items → GET returns all 50, totalCount shows 50
 - Test: PREMIUM_PLUS user with 50 history items → GET returns all 50, totalCount shows 50
 - Test: FREE user adds new entry → POST succeeds, entry is saved
-- Test: FREE user with 20+ items → Verify older items still exist in DB (not deleted)
+- Test: FREE user with 10+ items → Verify older items still exist in DB (not deleted)
 
 ---
 
@@ -126,42 +127,43 @@ Integrate history functionality with proper deduplication, user tier limits, and
 ---
 
 ### Phase 5: Guest User Storage Limits
-**Goal**: Limit guest users to storing only 20 items on-device
+**Goal**: Limit guest users to storing only 3 items on-device
 
 **Tasks**:
 1. Update `addToHistory` in `UserContext.tsx` for guest users:
-   - After adding new entry, check if history length > 20
-   - If > 20, remove oldest entries (keep only last 20)
+   - After adding new entry, check if history length > 3
+   - If > 3, remove oldest entries (keep only last 3)
    - Update local storage with trimmed history
 2. Update `saveSongHistory` to enforce this limit for guest users
 
 **Testing**:
-- Test: Guest user adds 21st entry → Only 20 entries remain (oldest removed)
-- Test: Guest user adds entries over time → Always maintains exactly 20 most recent
+- Test: Guest user adds 4th entry → Only 3 entries remain (oldest removed)
+- Test: Guest user adds entries over time → Always maintains exactly 3 most recent
 - Test: Authenticated user → No limit applied (all entries saved)
 
 ---
 
 ### Phase 6: Free User View Limits (Client-Side)
-**Goal**: Limit displayed history to 20 items for free users, but keep all in state
+**Goal**: Limit displayed history to 10 items for free users, but keep all in state
 
 **Tasks**:
 1. Update `UserContext.tsx`:
    - Add `displayedHistory` computed property that returns:
-     - For free users: Last 20 items from `songHistory`
+     - For free users: Last 10 items from `songHistory`
      - For premium users: All items from `songHistory`
-   - Keep `songHistory` with all items (for free users, backend already limits to 20, but we want to be ready)
+   - Keep `songHistory` with all items (for free users, backend already limits to 10, but we want to be ready)
 2. Update `SongHistoryScreen.tsx`:
    - Use `displayedHistory` instead of `songHistory` for rendering
    - Update pagination logic to work with displayed items
-   - Show message if user has more than 20 items (e.g., "Upgrade to see full history")
+   - Show message if user has more than 10 items (e.g., "Upgrade to see full history")
 
-**Note**: Since backend already limits free users to 20 items, this is mainly for UI consistency and future-proofing.
+**Note**: Since backend already limits free users to 10 items, this is mainly for UI consistency and future-proofing.
 
 **Testing**:
-- Test: Free user → Only sees 20 items in history screen
+- Test: Free user → Only sees 10 items in history screen
 - Test: Premium user → Sees all items
-- Test: Free user pagination → Works correctly with 20-item limit
+- Test: Premium_plus user → Sees all items
+- Test: Free user pagination → Works correctly with 10-item limit
 
 ---
 
@@ -249,7 +251,7 @@ Integrate history functionality with proper deduplication, user tier limits, and
 #### Phase 3: Backend View Limits
 - [ ] Create FREE user account
 - [ ] Add 25 history entries (via API or app)
-- [ ] GET `/api/history` → Should return only 20 items, totalCount = 25 (full count)
+- [ ] GET `/api/history` → Should return only 10 items, totalCount = 25 (full count)
 - [ ] Check database → Should have all 25 entries
 - [ ] Upgrade user to PREMIUM in DB
 - [ ] GET `/api/history` → Should return all 25 items, totalCount = 25
@@ -261,14 +263,15 @@ Integrate history functionality with proper deduplication, user tier limits, and
 - [ ] Test as authenticated user: Add same song/mode twice within 10 min → Only 1 entry (client + server check)
 
 #### Phase 5: Guest Storage Limits
-- [ ] Test as guest user: Add 21 songs → Verify only 20 stored
-- [ ] Test as guest user: Add more songs over time → Always maintains 20 most recent
-- [ ] Test as authenticated user: Add 21+ songs → All stored (no limit)
+- [ ] Test as guest user: Add 4 songs → Verify only 3 stored
+- [ ] Test as guest user: Add more songs over time → Always maintains 3 most recent
+- [ ] Test as authenticated user: Add 4+ songs → All stored (no limit)
 
 #### Phase 6: Free User View Limits
-- [ ] Test as free user: View history screen → Only 20 items shown
+- [ ] Test as free user: View history screen → Only 10 items shown
 - [ ] Test as premium user: View history screen → All items shown
-- [ ] Test pagination for both user types
+- [ ] Test as premium_plus user: View history screen → All items shown
+- [ ] Test pagination for all user types
 
 #### Phase 8: Guest History Warnings
 - [ ] Guest user with 9 songs → No warning
@@ -317,13 +320,17 @@ Integrate history functionality with proper deduplication, user tier limits, and
 
 ### Free User Strategy
 - **Save all**: Enables seamless upgrade to premium (no data loss)
-- **View 20**: Provides value while encouraging upgrade
+- **View 10**: Provides value while encouraging upgrade
 - **Backend enforcement**: Prevents client manipulation
 
 ### Guest User Strategy
-- **Save 20**: On-device storage is limited, no backend sync
-- **View 20**: Same as free users for consistency
+- **Save 3**: On-device storage is limited, no backend sync
+- **View 3**: Minimal storage footprint
 - **Client enforcement**: No backend to enforce, must be client-side
+
+### Premium User Strategy
+- **View all**: Full access to complete history
+- **No limits**: Both PREMIUM and PREMIUM_PLUS tiers have unlimited history viewing
 
 ---
 
