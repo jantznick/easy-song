@@ -4,7 +4,6 @@ const STORAGE_KEYS = {
   USER_PREFERENCES: '@easysong:user_preferences',
   USER_PROFILE: '@easysong:user_profile',
   SONG_HISTORY: '@easysong:song_history',
-  AUTH_TOKEN: '@easysong:auth_token',
   ONBOARDING_COMPLETE: '@easysong:onboarding_complete',
 } as const;
 
@@ -123,28 +122,6 @@ export async function saveSongHistory(history: any[]): Promise<void> {
   }
 }
 
-// Auth Token Storage
-export async function loadAuthToken(): Promise<string | null> {
-  try {
-    return await AsyncStorage.getItem(STORAGE_KEYS.AUTH_TOKEN);
-  } catch (error) {
-    console.error('Error loading auth token:', error);
-    return null;
-  }
-}
-
-export async function saveAuthToken(token: string | null): Promise<void> {
-  try {
-    if (token) {
-      await AsyncStorage.setItem(STORAGE_KEYS.AUTH_TOKEN, token);
-    } else {
-      await AsyncStorage.removeItem(STORAGE_KEYS.AUTH_TOKEN);
-    }
-  } catch (error) {
-    console.error('Error saving auth token:', error);
-  }
-}
-
 // Onboarding Storage
 export async function hasCompletedOnboarding(): Promise<boolean> {
   try {
@@ -179,8 +156,8 @@ export async function clearAllStorage(): Promise<void> {
       STORAGE_KEYS.USER_PREFERENCES,
       STORAGE_KEYS.USER_PROFILE,
       STORAGE_KEYS.SONG_HISTORY,
-      STORAGE_KEYS.AUTH_TOKEN,
       // Note: We don't clear ONBOARDING_COMPLETE on sign out
+      // Note: Session cookies are cleared via cookieStorage.clearCookies() in the logout flow
     ]);
   } catch (error) {
     console.error('Error clearing storage:', error);

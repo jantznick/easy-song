@@ -5,14 +5,13 @@ import {
   savePreferences,
   loadSongHistory,
   saveSongHistory,
-  loadAuthToken,
-  saveAuthToken,
   clearAllStorage,
   type StoredPreferences,
   DEFAULT_PREFERENCES,
 } from '../utils/storage';
 import { changeLanguage } from '../i18n/config';
 import { updateUserProfile as updateUserProfileAPI, fetchSongHistory as fetchSongHistoryAPI, loginUser, getCurrentUser, logoutUser as logoutUserAPI } from '../utils/api';
+import { clearCookies } from '../utils/cookieStorage';
 
 // Get API base URL
 const getApiBaseUrl = () => {
@@ -158,10 +157,9 @@ export function UserProvider({ children }: UserProviderProps) {
   useEffect(() => {
     const loadInitialData = async () => {
       try {
-        const [storedPreferences, storedHistory, authToken] = await Promise.all([
+        const [storedPreferences, storedHistory] = await Promise.all([
           loadPreferences(),
           loadSongHistory(),
-          loadAuthToken(),
         ]);
 
         setPreferences(storedPreferences);
@@ -171,69 +169,70 @@ export function UserProvider({ children }: UserProviderProps) {
           changeLanguage(storedPreferences.language.interface);
         }
 
-        // Check if user is authenticated via session
-        if (authToken) {
-          try {
-            const currentUser = await getCurrentUser();
-            if (currentUser) {
-              const userData: User = {
-                name: currentUser.name,
-                email: currentUser.email,
-                avatar: currentUser.avatar,
-                subscriptionTier: currentUser.subscriptionTier,
-                hasPassword: currentUser.hasPassword,
-                emailVerified: currentUser.emailVerified,
-              };
-              setUser(userData);
-              setIsAuthenticated(true);
-              
-              // Fetch history from server
-              try {
-                const { items, totalCount } = await fetchSongHistoryAPI(1, 20);
-                setSongHistory(items);
-                setTotalHistoryCount(totalCount);
-                setHistoryPage(1);
-                // Limit local storage based on subscription tier
-                let historyToSave = items;
-                if (currentUser.subscriptionTier === 'FREE' && items.length > 10) {
-                  historyToSave = items.slice(0, 10);
-                }
-                await saveSongHistory(historyToSave);
-              } catch (error) {
-                console.error('Error fetching history from server:', error);
-                // Fallback to local history if server fetch fails
-                // Limit based on subscription tier
-                let fallbackHistory = storedHistory;
-                if (currentUser.subscriptionTier === 'FREE' && storedHistory.length > 10) {
-                  fallbackHistory = storedHistory.slice(0, 10);
-                  await saveSongHistory(fallbackHistory);
-                }
-                setSongHistory(fallbackHistory);
+        // Check if user is authenticated via session cookie
+        // The cookie is stored separately in AsyncStorage via cookieStorage.ts
+        // We'll try to get the current user - if a valid cookie exists, it will work
+        try {
+          const currentUser = await getCurrentUser();
+          if (currentUser) {
+            // Valid session cookie exists - user is authenticated
+            const userData: User = {
+              name: currentUser.name,
+              email: currentUser.email,
+              avatar: currentUser.avatar,
+              subscriptionTier: currentUser.subscriptionTier,
+              hasPassword: currentUser.hasPassword,
+              emailVerified: currentUser.emailVerified,
+            };
+            setUser(userData);
+            setIsAuthenticated(true);
+            
+            // Fetch history from server
+            try {
+              const { items, totalCount } = await fetchSongHistoryAPI(1, 20);
+              setSongHistory(items);
+              setTotalHistoryCount(totalCount);
+              setHistoryPage(1);
+              // Limit local storage based on subscription tier
+              let historyToSave = items;
+              if (currentUser.subscriptionTier === 'FREE' && items.length > 10) {
+                historyToSave = items.slice(0, 10);
               }
-            } else {
-              // Token exists but session invalid, clear it
-              await saveAuthToken(null);
-              // Reset to guest user
-              setUser(GUEST_USER);
-              setIsAuthenticated(false);
-              setSongHistory(storedHistory);
+              await saveSongHistory(historyToSave);
+            } catch (error) {
+              console.error('Error fetching history from server:', error);
+              // Fallback to local history if server fetch fails
+              // Limit based on subscription tier
+              let fallbackHistory = storedHistory;
+              if (currentUser.subscriptionTier === 'FREE' && storedHistory.length > 10) {
+                fallbackHistory = storedHistory.slice(0, 10);
+                await saveSongHistory(fallbackHistory);
+              }
+              setSongHistory(fallbackHistory);
             }
-          } catch (error) {
-            console.error('Error checking authentication:', error);
-            // Reset to guest user on error
+          } else {
+            // No valid session cookie - user is a guest
             setUser(GUEST_USER);
             setIsAuthenticated(false);
-            setSongHistory(storedHistory);
+            
+            // For guest users, use local history (limit to 3 most recent items)
+            // Trim to 3 items if there are more (in case old dummy data exists)
+            const guestHistory = storedHistory.length > 3 ? storedHistory.slice(0, 3) : storedHistory;
+            setSongHistory(guestHistory);
+            // Save trimmed history back to storage if it was trimmed
+            if (storedHistory.length > 3) {
+              await saveSongHistory(guestHistory);
+            }
           }
-        } else {
-          // For guest users, use default guest user
+        } catch (error) {
+          console.error('Error checking authentication:', error);
+          // On error, assume guest user
           setUser(GUEST_USER);
+          setIsAuthenticated(false);
           
           // For guest users, use local history (limit to 3 most recent items)
-          // Trim to 3 items if there are more (in case old dummy data exists)
           const guestHistory = storedHistory.length > 3 ? storedHistory.slice(0, 3) : storedHistory;
           setSongHistory(guestHistory);
-          // Save trimmed history back to storage if it was trimmed
           if (storedHistory.length > 3) {
             await saveSongHistory(guestHistory);
           }
@@ -546,8 +545,18 @@ export function UserProvider({ children }: UserProviderProps) {
 
   // Sign out
   const signOut = useCallback(async () => {
-    // Clear auth token
-    await saveAuthToken(null);
+    // Call logout API to clear server session
+    try {
+      await logoutUserAPI();
+    } catch (error) {
+      console.error('Error during logout API call:', error);
+    }
+    
+    // Clear session cookie
+    await clearCookies();
+    
+    // Clear all local storage
+    await clearAllStorage();
     
     // Reset user to guest
     setUser(GUEST_USER);
