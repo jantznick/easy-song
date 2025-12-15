@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { View, Text, SafeAreaView, ScrollView, TouchableOpacity, Modal, TextInput, Alert, ActivityIndicator, Pressable } from 'react-native';
 import { useNavigation, CommonActions } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -70,16 +70,22 @@ function SettingsSection({ title, children }: { title: string; children: React.R
 
 export default function UserProfileSettingsScreen({ route }: Props) {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
-  const { profile, updateProfile, isAuthenticated, signIn, signOut, songHistory } = useUser();
+  const { user, updateProfile, isAuthenticated, signIn, signOut, songHistory } = useUser();
   const { colors, isDark } = useTheme();
   const theme = useThemeClasses();
   const { t } = useTranslation();
   const [showNameModal, setShowNameModal] = useState(false);
   const [showEmailModal, setShowEmailModal] = useState(false);
   const [showSignInModal, setShowSignInModal] = useState(false);
-  const [nameValue, setNameValue] = useState(profile.name);
-  const [emailValue, setEmailValue] = useState(profile.email);
+  const [nameValue, setNameValue] = useState(user.name);
+  const [emailValue, setEmailValue] = useState(user.email);
   const [isSaving, setIsSaving] = useState(false);
+
+  // Sync modal values when user changes
+  useEffect(() => {
+    setNameValue(user.name);
+    setEmailValue(user.email);
+  }, [user.name, user.email]);
 
   return (
     <SafeAreaView className={theme.bg('bg-background', 'bg-[#0F172A]')} style={{ flex: 1 }}>
@@ -110,10 +116,10 @@ export default function UserProfileSettingsScreen({ route }: Props) {
                 </View>
                 <View className="flex-1">
                   <Text className={theme.text('text-text-primary', 'text-[#F1F5F9]') + ' text-lg font-semibold mb-1'}>
-                    {profile.name}
+                    {user.name}
                   </Text>
                   <Text className={theme.text('text-text-secondary', 'text-[#94A3B8]') + ' text-sm'}>
-                    {isAuthenticated ? profile.email : t('settings.profile.notSignedIn')}
+                    {isAuthenticated ? user.email : t('settings.profile.notSignedIn')}
                   </Text>
                 </View>
               </View>
@@ -125,20 +131,20 @@ export default function UserProfileSettingsScreen({ route }: Props) {
             <SettingItem
               icon="person"
               title={t('settings.profile.name')}
-              subtitle={profile.name}
+              subtitle={user.name}
               showArrow
               onPress={() => {
-                setNameValue(profile.name);
+                setNameValue(user.name);
                 setShowNameModal(true);
               }}
             />
             <SettingItem
               icon="mail"
               title={t('settings.profile.email')}
-              subtitle={profile.email}
+              subtitle={user.email}
               showArrow
               onPress={() => {
-                setEmailValue(profile.email);
+                setEmailValue(user.email);
                 setShowEmailModal(true);
               }}
             />

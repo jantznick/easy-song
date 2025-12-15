@@ -10,7 +10,7 @@ interface UserProfileCardProps {
 }
 
 export default function UserProfileCard({ onPress }: UserProfileCardProps) {
-  const { profile, songHistory, isAuthenticated } = useUser();
+  const { user, songHistory, isAuthenticated } = useUser();
   const theme = useThemeClasses();
   const { isDark } = useTheme();
   const { t } = useTranslation();
@@ -37,15 +37,15 @@ export default function UserProfileCard({ onPress }: UserProfileCardProps) {
           <View className="flex-row items-center flex-1">
             {/* Avatar */}
             <View className={theme.bg('bg-primary', 'bg-indigo-500') + ' w-16 h-16 rounded-full items-center justify-center mr-4'}>
-              {profile.avatar ? (
+              {user.avatar ? (
                 <Image
-                  source={{ uri: profile.avatar }}
+                  source={{ uri: user.avatar }}
                   className="w-16 h-16 rounded-full"
                   resizeMode="cover"
                 />
               ) : (
                 <Text className="text-white text-2xl font-bold">
-                  {profile.name.charAt(0).toUpperCase()}
+                  {user.name.charAt(0).toUpperCase()}
                 </Text>
               )}
             </View>
@@ -53,10 +53,10 @@ export default function UserProfileCard({ onPress }: UserProfileCardProps) {
             {/* User Info */}
             <View className="flex-1">
               <Text className={theme.text('text-text-primary', 'text-[#F1F5F9]') + ' text-xl font-bold mb-1'}>
-                {profile.name}
+                {user.name}
               </Text>
               <Text className={theme.text('text-text-secondary', 'text-[#94A3B8]') + ' text-sm'}>
-                {isAuthenticated ? profile.email : t('common.guest') || 'Guest User'}
+                {isAuthenticated ? user.email : t('common.guest') || 'Guest User'}
               </Text>
             </View>
           </View>

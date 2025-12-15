@@ -3,17 +3,13 @@ import type { SongHistoryItem } from '../data/songHistory';
 import {
   loadPreferences,
   savePreferences,
-  loadUserProfile,
-  saveUserProfile,
   loadSongHistory,
   saveSongHistory,
   loadAuthToken,
   saveAuthToken,
   clearAllStorage,
   type StoredPreferences,
-  type StoredUserProfile,
   DEFAULT_PREFERENCES,
-  DEFAULT_USER_PROFILE,
 } from '../utils/storage';
 import { changeLanguage } from '../i18n/config';
 import { updateUserProfile as updateUserProfileAPI, fetchSongHistory as fetchSongHistoryAPI, loginUser, getCurrentUser, logoutUser as logoutUserAPI } from '../utils/api';
@@ -29,16 +25,20 @@ export interface User {
   avatar?: string;
 }
 
+// Guest user fallback (always available for non-authenticated users)
+const GUEST_USER: User = {
+  name: 'Guest User',
+  email: 'guest@easysong.com',
+  avatar: undefined,
+};
+
 export interface UserPreferences extends StoredPreferences {}
 
 export interface UserContextType {
-  // Authentication
-  user: User | null;
+  // Authentication & User (always available, defaults to guest)
+  user: User;
   isAuthenticated: boolean;
   isLoading: boolean;
-
-  // User Profile (always available, even for guests)
-  profile: StoredUserProfile;
 
   // Preferences
   preferences: UserPreferences;
@@ -64,10 +64,10 @@ export interface UserContextType {
   clearHistory: () => Promise<void>;
   fetchMoreHistory: () => Promise<void>;
 
-  // Auth methods (placeholders for now)
+  // Auth methods
   signIn: (email: string, password: string) => Promise<void>;
   signOut: () => Promise<void>;
-  updateProfile: (updates: Partial<StoredUserProfile>) => Promise<void>;
+  updateProfile: (updates: Partial<User>) => Promise<void>;
 }
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
@@ -140,13 +140,12 @@ function hasRecentHistoryEntry(
 }
 
 export function UserProvider({ children }: UserProviderProps) {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<User>(GUEST_USER);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [preferences, setPreferences] = useState<UserPreferences>(DEFAULT_PREFERENCES);
   const [songHistory, setSongHistory] = useState<SongHistoryItem[]>([]);
   const [totalHistoryCount, setTotalHistoryCount] = useState<number | null>(null);
-  const [profile, setProfile] = useState<StoredUserProfile>(DEFAULT_USER_PROFILE);
   const [isLoadingMoreHistory, setIsLoadingMoreHistory] = useState(false);
   const [historyPage, setHistoryPage] = useState(1);
 
@@ -154,15 +153,13 @@ export function UserProvider({ children }: UserProviderProps) {
   useEffect(() => {
     const loadInitialData = async () => {
       try {
-        const [storedPreferences, storedProfile, storedHistory, authToken] = await Promise.all([
+        const [storedPreferences, storedHistory, authToken] = await Promise.all([
           loadPreferences(),
-          loadUserProfile(),
           loadSongHistory(),
           loadAuthToken(),
         ]);
 
         setPreferences(storedPreferences);
-        setProfile(storedProfile);
 
         // Initialize i18n language based on stored preference
         if (storedPreferences.language.interface) {
@@ -174,21 +171,13 @@ export function UserProvider({ children }: UserProviderProps) {
           try {
             const currentUser = await getCurrentUser();
             if (currentUser) {
-              setUser({
-                name: currentUser.name,
-                email: currentUser.email,
-                avatar: currentUser.avatar,
-              });
-              setIsAuthenticated(true);
-              
-              // Update profile with server data
-              const userProfile: StoredUserProfile = {
+              const userData: User = {
                 name: currentUser.name,
                 email: currentUser.email,
                 avatar: currentUser.avatar,
               };
-              setProfile(userProfile);
-              await saveUserProfile(userProfile);
+              setUser(userData);
+              setIsAuthenticated(true);
               
               // Fetch history from server
               try {
@@ -205,13 +194,22 @@ export function UserProvider({ children }: UserProviderProps) {
             } else {
               // Token exists but session invalid, clear it
               await saveAuthToken(null);
+              // Reset to guest user
+              setUser(GUEST_USER);
+              setIsAuthenticated(false);
               setSongHistory(storedHistory);
             }
           } catch (error) {
             console.error('Error checking authentication:', error);
+            // Reset to guest user on error
+            setUser(GUEST_USER);
+            setIsAuthenticated(false);
             setSongHistory(storedHistory);
           }
         } else {
+          // For guest users, use default guest user
+          setUser(GUEST_USER);
+          
           // For guest users, use local history (limit to 3 most recent items)
           // Trim to 3 items if there are more (in case old dummy data exists)
           const guestHistory = storedHistory.length > 3 ? storedHistory.slice(0, 3) : storedHistory;
@@ -426,20 +424,13 @@ export function UserProvider({ children }: UserProviderProps) {
       // Check current user from session
       const currentUser = await getCurrentUser();
       if (currentUser) {
-        setUser({
-          name: currentUser.name,
-          email: currentUser.email,
-          avatar: currentUser.avatar,
-        });
-        setIsAuthenticated(true);
-        
-        const userProfile: StoredUserProfile = {
+        const userData: User = {
           name: currentUser.name,
           email: currentUser.email,
           avatar: currentUser.avatar,
         };
-        setProfile(userProfile);
-        await saveUserProfile(userProfile);
+        setUser(userData);
+        setIsAuthenticated(true);
         
         // Fetch history from API
         try {
@@ -459,21 +450,13 @@ export function UserProvider({ children }: UserProviderProps) {
     const result = await loginUser(email, password);
     
     // Update user state
-    setUser({
-      name: result.user.name,
-      email: result.user.email,
-      avatar: result.user.avatar,
-    });
-    setIsAuthenticated(true);
-    
-    // Update profile with user data
-    const userProfile: StoredUserProfile = {
+    const userData: User = {
       name: result.user.name,
       email: result.user.email,
       avatar: result.user.avatar,
     };
-    setProfile(userProfile);
-    await saveUserProfile(userProfile);
+    setUser(userData);
+    setIsAuthenticated(true);
     
     // Load song history from API (most recent 20)
     try {
@@ -492,51 +475,35 @@ export function UserProvider({ children }: UserProviderProps) {
     // Clear auth token
     await saveAuthToken(null);
     
-    // Clear user state
-    setUser(null);
+    // Reset user to guest
+    setUser(GUEST_USER);
     setIsAuthenticated(false);
     
     // Reset to default preferences
     setPreferences(DEFAULT_PREFERENCES);
     await savePreferences(DEFAULT_PREFERENCES);
     
-    // Reset profile to default
-    setProfile(DEFAULT_USER_PROFILE);
-    await saveUserProfile(DEFAULT_USER_PROFILE);
-    
     // Clear song history
     setSongHistory([]);
     await saveSongHistory([]);
     setTotalHistoryCount(null);
     setHistoryPage(1);
-    
-    // Clear preferences (optional - you might want to keep them)
-    // setPreferences(DEFAULT_PREFERENCES);
-    // await savePreferences(DEFAULT_PREFERENCES);
   }, []);
 
   // Update profile
-  const updateProfile = useCallback(async (updates: Partial<StoredUserProfile>) => {
-    // Call dummy API (always succeeds for now)
+  const updateProfile = useCallback(async (updates: Partial<User>) => {
+    // Call API to update profile
     await updateUserProfileAPI(updates);
     
-    // Update local state
-    const updatedProfile = { ...profile, ...updates };
-    setProfile(updatedProfile);
-    await saveUserProfile(updatedProfile);
-    
-    // If user is authenticated, also update user object
-    if (user) {
-      const updatedUser = { ...user, ...updates };
-      setUser(updatedUser);
-    }
-  }, [profile, user]);
+    // Update user state
+    const updatedUser = { ...user, ...updates };
+    setUser(updatedUser);
+  }, [user]);
 
   const value: UserContextType = {
     user,
     isAuthenticated,
     isLoading,
-    profile,
     preferences,
     updatePreferences,
     updatePlaybackPreference,

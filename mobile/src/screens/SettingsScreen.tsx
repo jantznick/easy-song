@@ -93,7 +93,7 @@ export default function SettingsScreen({ route }: Props) {
   const { colors, isDark } = useTheme();
   const { t, language } = useTranslation();
   const {
-    profile,
+    user,
     isAuthenticated,
     preferences,
     updatePlaybackPreference,
@@ -159,10 +159,10 @@ export default function SettingsScreen({ route }: Props) {
               </View>
               <View className="flex-1">
                 <Text className={theme.text('text-text-primary', 'text-[#F1F5F9]') + ' text-lg font-semibold mb-1'}>
-                  {profile.name}
+                  {user.name}
                 </Text>
                 <Text className={theme.text('text-text-secondary', 'text-[#94A3B8]') + ' text-sm'}>
-                  {isAuthenticated ? profile.email : t('settings.profile.notSignedIn')}
+                  {isAuthenticated ? user.email : t('settings.profile.notSignedIn')}
                 </Text>
               </View>
               <Ionicons name="chevron-forward" size={20} color={isDark ? '#94A3B8' : '#4B5563'} />
