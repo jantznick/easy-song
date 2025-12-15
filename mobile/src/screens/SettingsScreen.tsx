@@ -338,6 +338,12 @@ export default function SettingsScreen({ route }: Props) {
             onPress={() => navigation.navigate('Help')}
           />
           <SettingItem
+            icon="star"
+            title={t('settings.about.premiumBenefits')}
+            showArrow
+            onPress={() => navigation.navigate('PremiumBenefits')}
+          />
+          <SettingItem
             icon="play-circle-outline"
             title={t('settings.about.viewWalkthrough')}
             subtitle={t('settings.about.viewWalkthroughDescription')}

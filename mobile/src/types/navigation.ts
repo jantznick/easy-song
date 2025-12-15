@@ -11,6 +11,7 @@ export type RootStackParamList = {
   TermsOfService: undefined;
   PrivacyPolicy: undefined;
   About: undefined;
+  PremiumBenefits: undefined;
   SongHistory: undefined;
 };
 

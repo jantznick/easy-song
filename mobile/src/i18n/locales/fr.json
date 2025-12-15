@@ -181,7 +181,50 @@
       "viewWalkthrough": "Voir le Guide",
       "viewWalkthroughDescription": "Voir l'introduction de l'app à nouveau",
       "termsOfService": "Conditions d'Utilisation",
-      "privacyPolicy": "Politique de Confidentialité"
+      "privacyPolicy": "Politique de Confidentialité",
+      "premiumBenefits": "Avantages Premium"
+    }
+  },
+  "premium": {
+    "title": "Avantages Premium",
+    "heading": "Choisissez Votre Plan",
+    "description": "Passez à la version supérieure pour débloquer plus de fonctionnalités et améliorer votre expérience d'apprentissage des langues.",
+    "comingSoon": "bientôt disponible",
+    "monthly": "Mensuel",
+    "annual": "Annuel",
+    "premium": {
+      "title": "Niveau Premium",
+      "monthlyPrice": "$5",
+      "monthlyPeriod": "/mois",
+      "annualPrice": "$3",
+      "annualPeriod": "/mois",
+      "annualTotal": "$36",
+      "annualBilling": "facturé annuellement",
+      "purchase": "S'abonner",
+      "benefits": {
+        "history": "Voir les 10 derniers éléments d'historique",
+        "studyMode": "2 vidéos de mode étude par jour",
+        "games": "3 jeux par jour",
+        "requests": "Demandes de chansons/vidéos complétées en 1 semaine",
+        "noAds": "Pas de publicités"
+      }
+    },
+    "premiumPlus": {
+      "title": "Niveau Premium Plus",
+      "monthlyPrice": "$8",
+      "monthlyPeriod": "/mois",
+      "annualPrice": "$5",
+      "annualPeriod": "/mois",
+      "annualTotal": "$60",
+      "annualBilling": "facturé annuellement",
+      "purchase": "S'abonner",
+      "benefits": {
+        "history": "Voir des éléments d'historique illimités",
+        "studyMode": "Vidéos de mode étude illimitées par jour",
+        "games": "Jeux illimités par jour",
+        "requests": "Demandes de chansons/vidéos complétées en 1 jour",
+        "noAds": "Pas de publicités"
+      }
     }
   },
   "profile": {
@@ -218,7 +261,8 @@
     "studyMode": "Mode Étude",
     "upgradeTitle": "Passer à Premium",
     "upgradeMessage": "Inscrivez-vous pour sauvegarder tout votre historique d'écoute et synchroniser entre les appareils !",
-    "guestUpgradeMessage": "Inscrivez-vous pour sauvegarder plus d'historique, passez à premium pour sauvegarder tout l'historique"
+    "guestUpgradeMessage": "Inscrivez-vous pour sauvegarder plus d'historique, passez à premium pour sauvegarder tout l'historique",
+    "clickToUpgrade": "Cliquez ici pour passer à premium"
   },
   "tabs": {
     "play": "Lire",

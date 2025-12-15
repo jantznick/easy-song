@@ -181,7 +181,50 @@
       "viewWalkthrough": "View Walkthrough",
       "viewWalkthroughDescription": "See the app introduction again",
       "termsOfService": "Terms of Service",
-      "privacyPolicy": "Privacy Policy"
+      "privacyPolicy": "Privacy Policy",
+      "premiumBenefits": "Premium Benefits"
+    }
+  },
+  "premium": {
+    "title": "Premium Benefits",
+    "heading": "Choose Your Plan",
+    "description": "Upgrade to unlock more features and enhance your language learning experience.",
+    "comingSoon": "coming soon",
+    "monthly": "Monthly",
+    "annual": "Annual",
+    "premium": {
+      "title": "Premium Tier",
+      "monthlyPrice": "$5",
+      "monthlyPeriod": "/month",
+      "annualPrice": "$3",
+      "annualPeriod": "/month",
+      "annualTotal": "$36",
+      "annualBilling": "billed annually",
+      "purchase": "Subscribe",
+      "benefits": {
+        "history": "View last 10 history items",
+        "studyMode": "2 study mode videos per day",
+        "games": "3 games per day",
+        "requests": "Song/video requests completed in 1 week",
+        "noAds": "No ads"
+      }
+    },
+    "premiumPlus": {
+      "title": "Premium Plus Tier",
+      "monthlyPrice": "$8",
+      "monthlyPeriod": "/month",
+      "annualPrice": "$5",
+      "annualPeriod": "/month",
+      "annualTotal": "$60",
+      "annualBilling": "billed annually",
+      "purchase": "Subscribe",
+      "benefits": {
+        "history": "View unlimited history items",
+        "studyMode": "Unlimited study mode videos per day",
+        "games": "Unlimited games per day",
+        "requests": "Song/video requests completed in 1 day",
+        "noAds": "No ads"
+      }
     }
   },
   "profile": {
@@ -218,7 +261,8 @@
     "studyMode": "Study Mode",
     "upgradeTitle": "Upgrade to Premium",
     "upgradeMessage": "Sign up to save your entire listening history and sync across devices!",
-    "guestUpgradeMessage": "Sign up to save more history, upgrade to premium to save all history"
+    "guestUpgradeMessage": "Sign up to save more history, upgrade to premium to save all history",
+    "clickToUpgrade": "Click here to upgrade to premium"
   },
   "tabs": {
     "play": "Play",

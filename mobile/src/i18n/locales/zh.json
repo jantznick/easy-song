@@ -181,7 +181,50 @@
       "viewWalkthrough": "查看教程",
       "viewWalkthroughDescription": "再次查看应用介绍",
       "termsOfService": "服务条款",
-      "privacyPolicy": "隐私政策"
+      "privacyPolicy": "隐私政策",
+      "premiumBenefits": "高级版权益"
+    }
+  },
+  "premium": {
+    "title": "高级版权益",
+    "heading": "选择您的计划",
+    "description": "升级以解锁更多功能，提升您的语言学习体验。",
+    "comingSoon": "即将推出",
+    "monthly": "月度",
+    "annual": "年度",
+    "premium": {
+      "title": "高级版",
+      "monthlyPrice": "$5",
+      "monthlyPeriod": "/月",
+      "annualPrice": "$3",
+      "annualPeriod": "/月",
+      "annualTotal": "$36",
+      "annualBilling": "按年计费",
+      "purchase": "订阅",
+      "benefits": {
+        "history": "查看最近10条历史记录",
+        "studyMode": "每天2个学习模式视频",
+        "games": "每天3个游戏",
+        "requests": "歌曲/视频请求在1周内完成",
+        "noAds": "无广告"
+      }
+    },
+    "premiumPlus": {
+      "title": "高级版Plus",
+      "monthlyPrice": "$8",
+      "monthlyPeriod": "/月",
+      "annualPrice": "$5",
+      "annualPeriod": "/月",
+      "annualTotal": "$60",
+      "annualBilling": "按年计费",
+      "purchase": "订阅",
+      "benefits": {
+        "history": "查看无限历史记录",
+        "studyMode": "每天无限学习模式视频",
+        "games": "每天无限游戏",
+        "requests": "歌曲/视频请求在1天内完成",
+        "noAds": "无广告"
+      }
     }
   },
   "profile": {
@@ -218,7 +261,8 @@
     "studyMode": "学习模式",
     "upgradeTitle": "升级到高级版",
     "upgradeMessage": "注册以保存您的完整收听历史记录并在设备间同步！",
-    "guestUpgradeMessage": "注册以保存更多历史记录，升级到高级版以保存所有历史记录"
+    "guestUpgradeMessage": "注册以保存更多历史记录，升级到高级版以保存所有历史记录",
+    "clickToUpgrade": "点击此处升级到高级版"
   },
   "tabs": {
     "play": "播放",

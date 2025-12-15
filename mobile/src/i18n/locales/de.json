@@ -181,7 +181,50 @@
       "viewWalkthrough": "Einführung Anzeigen",
       "viewWalkthroughDescription": "App-Einführung erneut anzeigen",
       "termsOfService": "Nutzungsbedingungen",
-      "privacyPolicy": "Datenschutzrichtlinie"
+      "privacyPolicy": "Datenschutzrichtlinie",
+      "premiumBenefits": "Premium-Vorteile"
+    }
+  },
+  "premium": {
+    "title": "Premium-Vorteile",
+    "heading": "Wählen Sie Ihren Plan",
+    "description": "Upgraden Sie, um mehr Funktionen freizuschalten und Ihr Sprachenlernerlebnis zu verbessern.",
+    "comingSoon": "demnächst",
+    "monthly": "Monatlich",
+    "annual": "Jährlich",
+    "premium": {
+      "title": "Premium-Stufe",
+      "monthlyPrice": "$5",
+      "monthlyPeriod": "/Monat",
+      "annualPrice": "$3",
+      "annualPeriod": "/Monat",
+      "annualTotal": "$36",
+      "annualBilling": "jährlich abgerechnet",
+      "purchase": "Abonnieren",
+      "benefits": {
+        "history": "Letzte 10 Verlaufselemente anzeigen",
+        "studyMode": "2 Lernmodus-Videos pro Tag",
+        "games": "3 Spiele pro Tag",
+        "requests": "Lied-/Video-Anfragen in 1 Woche abgeschlossen",
+        "noAds": "Keine Werbung"
+      }
+    },
+    "premiumPlus": {
+      "title": "Premium Plus-Stufe",
+      "monthlyPrice": "$8",
+      "monthlyPeriod": "/Monat",
+      "annualPrice": "$5",
+      "annualPeriod": "/Monat",
+      "annualTotal": "$60",
+      "annualBilling": "jährlich abgerechnet",
+      "purchase": "Abonnieren",
+      "benefits": {
+        "history": "Unbegrenzte Verlaufselemente anzeigen",
+        "studyMode": "Unbegrenzte Lernmodus-Videos pro Tag",
+        "games": "Unbegrenzte Spiele pro Tag",
+        "requests": "Lied-/Video-Anfragen in 1 Tag abgeschlossen",
+        "noAds": "Keine Werbung"
+      }
     }
   },
   "profile": {
@@ -218,7 +261,8 @@
     "studyMode": "Lernmodus",
     "upgradeTitle": "Auf Premium upgraden",
     "upgradeMessage": "Registrieren Sie sich, um Ihren gesamten Wiedergabeverlauf zu speichern und zwischen Geräten zu synchronisieren!",
-    "guestUpgradeMessage": "Registrieren Sie sich, um mehr Verlauf zu speichern, upgraden Sie auf Premium, um den gesamten Verlauf zu speichern"
+    "guestUpgradeMessage": "Registrieren Sie sich, um mehr Verlauf zu speichern, upgraden Sie auf Premium, um den gesamten Verlauf zu speichern",
+    "clickToUpgrade": "Klicken Sie hier, um auf Premium zu upgraden"
   },
   "tabs": {
     "play": "Abspielen",

@@ -21,6 +21,7 @@ import HelpScreen from './src/screens/HelpScreen';
 import TermsOfServiceScreen from './src/screens/TermsOfServiceScreen';
 import PrivacyPolicyScreen from './src/screens/PrivacyPolicyScreen';
 import AboutScreen from './src/screens/AboutScreen';
+import PremiumBenefitsScreen from './src/screens/PremiumBenefitsScreen';
 import SongHistoryScreen from './src/screens/SongHistoryScreen';
 import type { RootStackParamList } from './src/types/navigation';
 import { hasCompletedOnboarding } from './src/utils/storage';
@@ -102,6 +103,10 @@ function AppContent() {
         <Stack.Screen
           name="About"
           component={AboutScreen}
+        />
+        <Stack.Screen
+          name="PremiumBenefits"
+          component={PremiumBenefitsScreen}
         />
         <Stack.Screen
           name="SongHistory"

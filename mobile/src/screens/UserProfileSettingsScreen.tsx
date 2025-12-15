@@ -255,19 +255,43 @@ export default function UserProfileSettingsScreen({ route }: Props) {
               
               {/* Upgrade Message for Free Users and Guests */}
               {((isFreeUser && hasMoreThanLimit) || isGuest) && (
-                <View className={theme.bg('bg-primary/10', 'bg-primary/20') + ' ' + theme.border('border-border', 'border-[#334155]') + ' border-t px-4 py-3'}>
-                  <Text className={theme.text('text-text-primary', 'text-[#F1F5F9]') + ' text-base font-medium mb-1'}>
-                    {t('history.upgradeTitle')}
-                  </Text>
-                  <Text className={theme.text('text-text-secondary', 'text-[#94A3B8]') + ' text-sm'}>
-                    {isGuest
-                      ? t('history.guestUpgradeMessage')
-                      : isFreeUser && hasMoreThanLimit 
-                        ? `${t('history.upgradeMessage')} You're viewing 10 of ${totalHistoryCount} songs.`
-                        : t('history.upgradeMessage')
-                    }
-                  </Text>
-                </View>
+                <TouchableOpacity
+                  onPress={() => navigation.navigate('PremiumBenefits')}
+                  activeOpacity={0.8}
+                >
+                  <View 
+                    className={theme.bg('bg-primary/10', 'bg-primary/20') + ' border-t px-4 py-4'}
+                    style={{
+                      borderTopWidth: 2,
+                      borderTopColor: '#6366F1',
+                      borderLeftWidth: 0,
+                      borderRightWidth: 0,
+                      borderBottomWidth: 0,
+                    }}
+                  >
+                    <View className="flex-row items-start">
+                      <View className="mr-3 mt-0.5">
+                        <Ionicons name="star" size={20} color="#6366F1" />
+                      </View>
+                      <View className="flex-1">
+                        <Text className={theme.text('text-text-primary', 'text-[#F1F5F9]') + ' text-base font-bold mb-1'}>
+                          {t('history.upgradeTitle')}
+                        </Text>
+                        <Text className={theme.text('text-text-secondary', 'text-[#94A3B8]') + ' text-sm mb-2'}>
+                          {isGuest
+                            ? t('history.guestUpgradeMessage')
+                            : isFreeUser && hasMoreThanLimit 
+                              ? `${t('history.upgradeMessage')} You're viewing 10 of ${totalHistoryCount} songs.`
+                              : t('history.upgradeMessage')
+                          }
+                        </Text>
+                        <Text className="text-primary text-sm font-semibold">
+                          {t('history.clickToUpgrade')} →
+                        </Text>
+                      </View>
+                    </View>
+                  </View>
+                </TouchableOpacity>
               )}
               
               {displayedHistory.length > 0 && (

@@ -181,7 +181,50 @@
       "viewWalkthrough": "Ver Tutorial",
       "viewWalkthroughDescription": "Ver la introducción de la app nuevamente",
       "termsOfService": "Términos de Servicio",
-      "privacyPolicy": "Política de Privacidad"
+      "privacyPolicy": "Política de Privacidad",
+      "premiumBenefits": "Beneficios Premium"
+    }
+  },
+  "premium": {
+    "title": "Beneficios Premium",
+    "heading": "Elige Tu Plan",
+    "description": "Actualiza para desbloquear más funciones y mejorar tu experiencia de aprendizaje de idiomas.",
+    "comingSoon": "próximamente",
+    "monthly": "Mensual",
+    "annual": "Anual",
+    "premium": {
+      "title": "Nivel Premium",
+      "monthlyPrice": "$5",
+      "monthlyPeriod": "/mes",
+      "annualPrice": "$3",
+      "annualPeriod": "/mes",
+      "annualTotal": "$36",
+      "annualBilling": "facturado anualmente",
+      "purchase": "Suscribirse",
+      "benefits": {
+        "history": "Ver las últimas 10 elementos de historial",
+        "studyMode": "2 videos de modo estudio por día",
+        "games": "3 juegos por día",
+        "requests": "Solicitudes de canciones/videos completadas en 1 semana",
+        "noAds": "Sin anuncios"
+      }
+    },
+    "premiumPlus": {
+      "title": "Nivel Premium Plus",
+      "monthlyPrice": "$8",
+      "monthlyPeriod": "/mes",
+      "annualPrice": "$5",
+      "annualPeriod": "/mes",
+      "annualTotal": "$60",
+      "annualBilling": "facturado anualmente",
+      "purchase": "Suscribirse",
+      "benefits": {
+        "history": "Ver elementos de historial ilimitados",
+        "studyMode": "Videos de modo estudio ilimitados por día",
+        "games": "Juegos ilimitados por día",
+        "requests": "Solicitudes de canciones/videos completadas en 1 día",
+        "noAds": "Sin anuncios"
+      }
     }
   },
   "profile": {
@@ -218,7 +261,8 @@
     "studyMode": "Modo Estudio",
     "upgradeTitle": "Actualiza a Premium",
     "upgradeMessage": "¡Regístrate para guardar todo tu historial de escucha y sincronizar entre dispositivos!",
-    "guestUpgradeMessage": "Regístrate para guardar más historial, actualiza a premium para guardar todo el historial"
+    "guestUpgradeMessage": "Regístrate para guardar más historial, actualiza a premium para guardar todo el historial",
+    "clickToUpgrade": "Haz clic aquí para actualizar a premium"
   },
   "tabs": {
     "play": "Reproducir",
