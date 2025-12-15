@@ -1,11 +1,12 @@
 import React, { useState, useRef } from 'react';
-import { View, Text, TouchableOpacity, Modal, TextInput, Pressable, ActivityIndicator, Alert } from 'react-native';
+import { View, Text, TouchableOpacity, Modal, TextInput, Pressable, ActivityIndicator } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useUser } from '../hooks/useUser';
 import { useTheme } from '../contexts/ThemeContext';
 import { useThemeClasses } from '../utils/themeClasses';
 import { useTranslation } from '../hooks/useTranslation';
 import { verifyEmail, resendVerificationCode } from '../utils/api';
+import ConfirmationModal from './ConfirmationModal';
 
 export default function EmailVerificationBanner() {
   const { user, isAuthenticated, refreshUser } = useUser();
@@ -16,6 +17,17 @@ export default function EmailVerificationBanner() {
   const [verificationCode, setVerificationCode] = useState(['', '', '', '', '', '']);
   const [isVerifying, setIsVerifying] = useState(false);
   const [isResending, setIsResending] = useState(false);
+  const [confirmationModal, setConfirmationModal] = useState<{
+    visible: boolean;
+    title: string;
+    message: string;
+    type: 'default' | 'success' | 'error' | 'warning';
+  }>({
+    visible: false,
+    title: '',
+    message: '',
+    type: 'default',
+  });
   const codeInputRefs = useRef<(TextInput | null)[]>([]);
 
   // Don't show banner if user is not authenticated or email is already verified
@@ -52,7 +64,12 @@ export default function EmailVerificationBanner() {
   const handleVerifyCode = async (code?: string) => {
     const codeString = code || verificationCode.join('');
     if (!codeString || codeString.length !== 6) {
-      Alert.alert(t('common.error'), t('auth.errors.invalidCode'));
+      setConfirmationModal({
+        visible: true,
+        title: t('common.error'),
+        message: t('auth.errors.invalidCode'),
+        type: 'error',
+      });
       return;
     }
 
@@ -62,9 +79,19 @@ export default function EmailVerificationBanner() {
       await refreshUser(); // Refresh to update emailVerified status
       setShowVerificationModal(false);
       setVerificationCode(['', '', '', '', '', '']);
-      Alert.alert(t('common.success'), t('auth.emailVerified'));
+      setConfirmationModal({
+        visible: true,
+        title: t('common.success'),
+        message: t('auth.emailVerification.emailVerified'),
+        type: 'success',
+      });
     } catch (error: any) {
-      Alert.alert(t('common.error'), error?.message || t('auth.errors.verificationFailed'));
+      setConfirmationModal({
+        visible: true,
+        title: t('common.error'),
+        message: error?.message || t('auth.errors.verificationFailed'),
+        type: 'error',
+      });
       setVerificationCode(['', '', '', '', '', '']);
       codeInputRefs.current[0]?.focus();
     } finally {
@@ -76,11 +103,21 @@ export default function EmailVerificationBanner() {
     setIsResending(true);
     try {
       await resendVerificationCode();
-      Alert.alert(t('common.success'), t('auth.verificationCodeResent'));
+      setConfirmationModal({
+        visible: true,
+        title: t('common.success'),
+        message: t('auth.emailVerification.verificationCodeResent'),
+        type: 'success',
+      });
       setVerificationCode(['', '', '', '', '', '']);
       codeInputRefs.current[0]?.focus();
     } catch (error: any) {
-      Alert.alert(t('common.error'), error?.message || t('auth.errors.resendFailed'));
+      setConfirmationModal({
+        visible: true,
+        title: t('common.error'),
+        message: error?.message || t('auth.errors.resendFailed'),
+        type: 'error',
+      });
     } finally {
       setIsResending(false);
     }
@@ -197,6 +234,16 @@ export default function EmailVerificationBanner() {
           </Pressable>
         </Pressable>
       </Modal>
+
+      {/* Confirmation Modal */}
+      <ConfirmationModal
+        visible={confirmationModal.visible}
+        title={confirmationModal.title}
+        message={confirmationModal.message}
+        type={confirmationModal.type}
+        confirmText={t('common.ok')}
+        onConfirm={() => setConfirmationModal({ ...confirmationModal, visible: false })}
+      />
     </>
   );
 }

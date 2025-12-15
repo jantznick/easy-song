@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { View, Text, SafeAreaView, ScrollView, TouchableOpacity, Modal, TextInput, Alert, ActivityIndicator, Pressable } from 'react-native';
+import { View, Text, SafeAreaView, ScrollView, TouchableOpacity, Modal, TextInput, ActivityIndicator, Pressable } from 'react-native';
 import { useNavigation, CommonActions } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { Ionicons } from '@expo/vector-icons';
@@ -12,6 +12,7 @@ import { useTranslation } from '../hooks/useTranslation';
 import AuthDrawer from '../components/AuthDrawer';
 import { changePassword, getCurrentUser } from '../utils/api';
 import { validatePassword, getPasswordRequirements, getPasswordRequirementsDescription, type PasswordRequirements, type PasswordValidationResult } from '../utils/passwordValidation';
+import ConfirmationModal from '../components/ConfirmationModal';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'UserProfileSettings'>;
 
@@ -100,6 +101,18 @@ export default function UserProfileSettingsScreen({ route }: Props) {
   const [showCurrentPassword, setShowCurrentPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [confirmationModal, setConfirmationModal] = useState<{
+    visible: boolean;
+    title: string;
+    message: string;
+    type: 'default' | 'success' | 'error' | 'warning';
+    onConfirm?: () => void;
+  }>({
+    visible: false,
+    title: '',
+    message: '',
+    type: 'default',
+  });
 
   // Sync modal values when user changes
   useEffect(() => {
@@ -170,14 +183,16 @@ export default function UserProfileSettingsScreen({ route }: Props) {
               showArrow={isAuthenticated}
               onPress={() => {
                 if (!isAuthenticated) {
-                  Alert.alert(
-                    t('settings.profile.signInRequired'),
-                    t('settings.profile.signInToUpdateProfile'),
-                    [
-                      { text: t('common.cancel'), style: 'cancel' },
-                      { text: t('settings.profile.signIn'), onPress: () => setShowSignInModal(true) }
-                    ]
-                  );
+                  setConfirmationModal({
+                    visible: true,
+                    title: t('settings.profile.signInRequired'),
+                    message: t('settings.profile.signInToUpdateProfile'),
+                    type: 'default',
+                    onConfirm: () => {
+                      setConfirmationModal({ ...confirmationModal, visible: false });
+                      setShowSignInModal(true);
+                    },
+                  });
                   return;
                 }
                 setNameValue(user.name);
@@ -191,14 +206,16 @@ export default function UserProfileSettingsScreen({ route }: Props) {
               showArrow={isAuthenticated}
               onPress={() => {
                 if (!isAuthenticated) {
-                  Alert.alert(
-                    t('settings.profile.signInRequired'),
-                    t('settings.profile.signInToUpdateProfile'),
-                    [
-                      { text: t('common.cancel'), style: 'cancel' },
-                      { text: t('settings.profile.signIn'), onPress: () => setShowSignInModal(true) }
-                    ]
-                  );
+                  setConfirmationModal({
+                    visible: true,
+                    title: t('settings.profile.signInRequired'),
+                    message: t('settings.profile.signInToUpdateProfile'),
+                    type: 'default',
+                    onConfirm: () => {
+                      setConfirmationModal({ ...confirmationModal, visible: false });
+                      setShowSignInModal(true);
+                    },
+                  });
                   return;
                 }
                 setEmailValue(user.email);
@@ -239,7 +256,12 @@ export default function UserProfileSettingsScreen({ route }: Props) {
                   try {
                     await signOut();
                   } catch (error) {
-                    Alert.alert(t('common.error'), t('profile.failedToSignOut'));
+                    setConfirmationModal({
+                      visible: true,
+                      title: t('common.error'),
+                      message: t('profile.failedToSignOut'),
+                      type: 'error',
+                    });
                   }
                 }}
               />
@@ -412,19 +434,32 @@ export default function UserProfileSettingsScreen({ route }: Props) {
             <TouchableOpacity
               onPress={async () => {
                 if (!nameValue.trim()) {
-                  Alert.alert(t('common.error'), t('profile.nameCannotBeEmpty'));
+                  setConfirmationModal({
+                    visible: true,
+                    title: t('common.error'),
+                    message: t('profile.nameCannotBeEmpty'),
+                    type: 'error',
+                  });
                   return;
                 }
                 setIsSaving(true);
                 try {
                   await updateProfile({ name: nameValue.trim() });
                   setShowNameModal(false);
-                  // Show success message (optional, but good UX)
-                  Alert.alert(t('common.success'), t('profile.nameUpdated'));
+                  setConfirmationModal({
+                    visible: true,
+                    title: t('common.success'),
+                    message: t('profile.nameUpdated'),
+                    type: 'success',
+                  });
                 } catch (error: any) {
-                  // Show more specific error message
                   const errorMessage = error?.message || t('profile.failedToUpdateName');
-                  Alert.alert(t('common.error'), errorMessage);
+                  setConfirmationModal({
+                    visible: true,
+                    title: t('common.error'),
+                    message: errorMessage,
+                    type: 'error',
+                  });
                 } finally {
                   setIsSaving(false);
                 }
@@ -494,28 +529,43 @@ export default function UserProfileSettingsScreen({ route }: Props) {
             <TouchableOpacity
               onPress={async () => {
                 if (!emailValue.trim()) {
-                  Alert.alert(t('common.error'), t('profile.emailCannotBeEmpty'));
+                  setConfirmationModal({
+                    visible: true,
+                    title: t('common.error'),
+                    message: t('profile.emailCannotBeEmpty'),
+                    type: 'error',
+                  });
                   return;
                 }
                 // Basic email validation
                 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
                 if (!emailRegex.test(emailValue.trim())) {
-                  Alert.alert(t('common.error'), t('profile.invalidEmail'));
+                  setConfirmationModal({
+                    visible: true,
+                    title: t('common.error'),
+                    message: t('profile.invalidEmail'),
+                    type: 'error',
+                  });
                   return;
                 }
                 setIsSaving(true);
                 try {
                   await updateProfile({ email: emailValue.trim() });
                   setShowEmailModal(false);
-                  // Show success message with note about email verification
-                  Alert.alert(
-                    t('common.success'), 
-                    t('profile.emailUpdated')
-                  );
+                  setConfirmationModal({
+                    visible: true,
+                    title: t('common.success'),
+                    message: t('profile.emailUpdated'),
+                    type: 'success',
+                  });
                 } catch (error: any) {
-                  // Show more specific error message
                   const errorMessage = error?.message || t('profile.failedToUpdateEmail');
-                  Alert.alert(t('common.error'), errorMessage);
+                  setConfirmationModal({
+                    visible: true,
+                    title: t('common.error'),
+                    message: errorMessage,
+                    type: 'error',
+                  });
                 } finally {
                   setIsSaving(false);
                 }
@@ -848,7 +898,12 @@ export default function UserProfileSettingsScreen({ route }: Props) {
                   // Refresh user data to update hasPassword status
                   await refreshUser();
                   
-                  Alert.alert(t('common.success'), result.message || t('settings.profile.passwordUpdated'));
+                  setConfirmationModal({
+                    visible: true,
+                    title: t('common.success'),
+                    message: result.message || t('settings.profile.passwordUpdated'),
+                    type: 'success',
+                  });
                 } catch (error: any) {
                   // Handle backend validation errors
                   if (error?.message) {
@@ -897,6 +952,23 @@ export default function UserProfileSettingsScreen({ route }: Props) {
         onSuccess={() => {
           setShowSignInModal(false);
         }}
+      />
+
+      {/* Confirmation Modal */}
+      <ConfirmationModal
+        visible={confirmationModal.visible}
+        title={confirmationModal.title}
+        message={confirmationModal.message}
+        type={confirmationModal.type}
+        confirmText={t('common.ok')}
+        cancelText={confirmationModal.onConfirm ? t('common.cancel') : undefined}
+        onConfirm={() => {
+          if (confirmationModal.onConfirm) {
+            confirmationModal.onConfirm();
+          }
+          setConfirmationModal({ ...confirmationModal, visible: false });
+        }}
+        onCancel={() => setConfirmationModal({ ...confirmationModal, visible: false })}
       />
     </SafeAreaView>
   );

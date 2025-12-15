@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { View, Text, SafeAreaView, ScrollView, TouchableOpacity, Alert } from 'react-native';
+import { View, Text, SafeAreaView, ScrollView, TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
@@ -7,6 +7,7 @@ import type { RootStackParamList } from '../types/navigation';
 import { useThemeClasses } from '../utils/themeClasses';
 import { useTheme } from '../contexts/ThemeContext';
 import { useTranslation } from '../hooks/useTranslation';
+import ConfirmationModal from '../components/ConfirmationModal';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'PremiumBenefits'>;
 
@@ -165,6 +166,18 @@ export default function PremiumBenefitsScreen({ route }: Props) {
   const theme = useThemeClasses();
   const { isDark } = useTheme();
   const { t } = useTranslation();
+  const [confirmationModal, setConfirmationModal] = useState<{
+    visible: boolean;
+    title: string;
+    message: string;
+    type: 'default' | 'success' | 'error' | 'warning';
+    onConfirm?: () => void;
+  }>({
+    visible: false,
+    title: '',
+    message: '',
+    type: 'default',
+  });
 
   const premiumBenefits = [
     { text: t('premium.premium.benefits.history') },
@@ -184,21 +197,18 @@ export default function PremiumBenefitsScreen({ route }: Props) {
 
   const handlePurchase = (tier: 'premium' | 'premiumPlus') => {
     // TODO: Implement app store purchase flow
-    Alert.alert(
-      'Purchase',
-      `This will open the app store to purchase ${tier === 'premium' ? 'Premium' : 'Premium Plus'}.`,
-      [
-        { text: 'Cancel', style: 'cancel' },
-        { 
-          text: 'Continue', 
-          onPress: () => {
-            // Placeholder for app store purchase
-            // Linking.openURL('app-store-url-here');
-            console.log(`Purchase ${tier}`);
-          }
-        }
-      ]
-    );
+    setConfirmationModal({
+      visible: true,
+      title: t('premium.purchase'),
+      message: t('premium.purchaseMessage').replace('{tier}', tier === 'premium' ? t('premium.premium.title') : t('premium.premiumPlus.title')),
+      type: 'default',
+      onConfirm: () => {
+        // Placeholder for app store purchase
+        // Linking.openURL('app-store-url-here');
+        console.log(`Purchase ${tier}`);
+        setConfirmationModal({ ...confirmationModal, visible: false });
+      },
+    });
   };
 
   return (
@@ -258,6 +268,23 @@ export default function PremiumBenefitsScreen({ route }: Props) {
           onPurchase={() => handlePurchase('premiumPlus')}
         />
       </ScrollView>
+
+      {/* Confirmation Modal */}
+      <ConfirmationModal
+        visible={confirmationModal.visible}
+        title={confirmationModal.title}
+        message={confirmationModal.message}
+        type={confirmationModal.type}
+        confirmText={t('common.confirm')}
+        cancelText={t('common.cancel')}
+        onConfirm={() => {
+          if (confirmationModal.onConfirm) {
+            confirmationModal.onConfirm();
+          }
+          setConfirmationModal({ ...confirmationModal, visible: false });
+        }}
+        onCancel={() => setConfirmationModal({ ...confirmationModal, visible: false })}
+      />
     </SafeAreaView>
   );
 }
