@@ -24,6 +24,7 @@ export interface User {
   email: string;
   avatar?: string;
   subscriptionTier?: 'FREE' | 'PREMIUM' | 'PREMIUM_PLUS';
+  hasPassword?: boolean; // Whether user has a password set (vs magic code only)
 }
 
 // Guest user fallback (always available for non-authenticated users)
@@ -70,6 +71,7 @@ export interface UserContextType {
   signIn: (email: string, password: string) => Promise<void>;
   signOut: () => Promise<void>;
   updateProfile: (updates: Partial<User>) => Promise<void>;
+  refreshUser: () => Promise<void>;
 }
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
@@ -178,6 +180,7 @@ export function UserProvider({ children }: UserProviderProps) {
                 email: currentUser.email,
                 avatar: currentUser.avatar,
                 subscriptionTier: currentUser.subscriptionTier,
+                hasPassword: currentUser.hasPassword,
               };
               setUser(userData);
               setIsAuthenticated(true);
@@ -479,6 +482,7 @@ export function UserProvider({ children }: UserProviderProps) {
           email: currentUser.email,
           avatar: currentUser.avatar,
           subscriptionTier: currentUser.subscriptionTier,
+          hasPassword: currentUser.hasPassword,
         };
         setUser(userData);
         setIsAuthenticated(true);
@@ -505,12 +509,16 @@ export function UserProvider({ children }: UserProviderProps) {
     // Login with email and password
     const result = await loginUser(email, password);
     
+    // Fetch full user data including hasPassword
+    const currentUser = await getCurrentUser();
+    
     // Update user state
     const userData: User = {
       name: result.user.name,
       email: result.user.email,
       avatar: result.user.avatar,
       subscriptionTier: result.user.subscriptionTier,
+      hasPassword: currentUser?.hasPassword ?? true, // If login worked with password, they have one
     };
     setUser(userData);
     setIsAuthenticated(true);
@@ -557,15 +565,40 @@ export function UserProvider({ children }: UserProviderProps) {
     // Call API to update profile
     const updatedUserData = await updateUserProfileAPI(updates);
     
+    // Fetch full user data to get hasPassword status
+    const currentUser = await getCurrentUser();
+    
     // Update user state with server response (ensures we have correct emailVerified status, etc.)
     const updatedUser: User = {
       name: updatedUserData.name,
       email: updatedUserData.email,
       avatar: updatedUserData.avatar || undefined,
       subscriptionTier: user.subscriptionTier, // Keep existing subscription tier (not returned by profile endpoint)
+      hasPassword: currentUser?.hasPassword ?? user.hasPassword, // Update hasPassword if available
     };
     setUser(updatedUser);
   }, [user]);
+
+  // Refresh user data from server
+  const refreshUser = useCallback(async () => {
+    if (!isAuthenticated) return;
+    
+    try {
+      const currentUser = await getCurrentUser();
+      if (currentUser) {
+        const userData: User = {
+          name: currentUser.name,
+          email: currentUser.email,
+          avatar: currentUser.avatar,
+          subscriptionTier: currentUser.subscriptionTier,
+          hasPassword: currentUser.hasPassword,
+        };
+        setUser(userData);
+      }
+    } catch (error) {
+      console.error('Error refreshing user:', error);
+    }
+  }, [isAuthenticated]);
 
   const value: UserContextType = {
     user,
@@ -586,6 +619,7 @@ export function UserProvider({ children }: UserProviderProps) {
     signIn,
     signOut,
     updateProfile,
+    refreshUser,
   };
 
   return <UserContext.Provider value={value}>{children}</UserContext.Provider>;

@@ -2,10 +2,28 @@ import { Router, Request, Response } from 'express';
 import bcrypt from 'bcrypt';
 import { prisma } from '../lib/prisma';
 import { requireAuth } from '../middleware/auth';
-import { validatePassword } from '../config/password';
+import { validatePassword, PASSWORD_REQUIREMENTS } from '../config/password';
 import { t } from '../middleware/i18n';
 
 const router = Router();
+
+/**
+ * GET /api/user/password-requirements
+ * Get password requirements (public endpoint)
+ */
+router.get('/password-requirements', (req: Request, res: Response) => {
+  res.json({
+    requirements: PASSWORD_REQUIREMENTS,
+    description: {
+      minLength: `At least ${PASSWORD_REQUIREMENTS.minLength} characters`,
+      maxLength: `No more than ${PASSWORD_REQUIREMENTS.maxLength} characters`,
+      uppercase: PASSWORD_REQUIREMENTS.requireUppercase ? 'One uppercase letter' : null,
+      lowercase: PASSWORD_REQUIREMENTS.requireLowercase ? 'One lowercase letter' : null,
+      numbers: PASSWORD_REQUIREMENTS.requireNumbers ? 'One number' : null,
+      specialChars: PASSWORD_REQUIREMENTS.requireSpecialChars ? `One special character (${PASSWORD_REQUIREMENTS.specialChars})` : null,
+    },
+  });
+});
 
 /**
  * PUT /api/user/profile

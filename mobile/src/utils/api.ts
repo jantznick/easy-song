@@ -432,6 +432,7 @@ export async function getCurrentUser(): Promise<{
   avatar?: string;
   emailVerified: boolean;
   subscriptionTier: 'FREE' | 'PREMIUM' | 'PREMIUM_PLUS';
+  hasPassword: boolean;
 } | null> {
   try {
     const response = await fetch(`${getAuthUrl()}/me`, {
@@ -546,6 +547,46 @@ export async function updatePreferences(updates: {
 
   if (!response.ok) {
     throw new Error(data.error || 'Failed to update preferences');
+  }
+
+  return data;
+}
+
+/**
+ * Change user password (or set password if none exists)
+ * @param newPassword New password to set
+ * @param currentPassword Current password (required only if user has existing password)
+ * @returns Promise that resolves to success response
+ */
+export async function changePassword(
+  newPassword: string,
+  currentPassword?: string
+): Promise<{
+  success: boolean;
+  message: string;
+}> {
+  const baseUrl = getApiUrl().replace('/api', '');
+  const body: { newPassword: string; currentPassword?: string } = { newPassword };
+  if (currentPassword) {
+    body.currentPassword = currentPassword;
+  }
+
+  const response = await fetch(`${baseUrl}/api/user/change-password`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
+    body: JSON.stringify(body),
+  });
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    const error = new Error(data.error || 'Failed to change password');
+    // Attach validation errors if they exist
+    if (data.errors && Array.isArray(data.errors)) {
+      (error as any).errors = data.errors;
+    }
+    throw error;
   }
 
   return data;

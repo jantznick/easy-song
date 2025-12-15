@@ -10,6 +10,8 @@ import { useTheme } from '../contexts/ThemeContext';
 import { useThemeClasses } from '../utils/themeClasses';
 import { useTranslation } from '../hooks/useTranslation';
 import AuthDrawer from '../components/AuthDrawer';
+import { changePassword, getCurrentUser } from '../utils/api';
+import { validatePassword, getPasswordRequirements, getPasswordRequirementsDescription, type PasswordRequirements, type PasswordValidationResult } from '../utils/passwordValidation';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'UserProfileSettings'>;
 
@@ -70,7 +72,7 @@ function SettingsSection({ title, children }: { title: string; children: React.R
 
 export default function UserProfileSettingsScreen({ route }: Props) {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
-  const { user, updateProfile, isAuthenticated, signIn, signOut, songHistory, displayedHistory, totalHistoryCount } = useUser();
+  const { user, updateProfile, isAuthenticated, signIn, signOut, songHistory, displayedHistory, totalHistoryCount, refreshUser } = useUser();
   
   // Check if user should see upgrade message
   const isFreeUser = isAuthenticated && user.subscriptionTier === 'FREE';
@@ -81,16 +83,44 @@ export default function UserProfileSettingsScreen({ route }: Props) {
   const { t } = useTranslation();
   const [showNameModal, setShowNameModal] = useState(false);
   const [showEmailModal, setShowEmailModal] = useState(false);
+  const [showPasswordModal, setShowPasswordModal] = useState(false);
   const [showSignInModal, setShowSignInModal] = useState(false);
   const [nameValue, setNameValue] = useState(user.name);
   const [emailValue, setEmailValue] = useState(user.email);
+  const [currentPasswordValue, setCurrentPasswordValue] = useState('');
+  const [newPasswordValue, setNewPasswordValue] = useState('');
+  const [confirmPasswordValue, setConfirmPasswordValue] = useState('');
   const [isSaving, setIsSaving] = useState(false);
+  const [passwordValidation, setPasswordValidation] = useState<PasswordValidationResult | null>(null);
+  const [passwordErrors, setPasswordErrors] = useState<string[]>([]);
+  const [currentPasswordError, setCurrentPasswordError] = useState<string>('');
+  const [confirmPasswordError, setConfirmPasswordError] = useState<string>('');
+  const [passwordRequirements, setPasswordRequirements] = useState<PasswordRequirements | null>(null);
+  const [passwordRequirementsList, setPasswordRequirementsList] = useState<string[]>([]);
+  const [showCurrentPassword, setShowCurrentPassword] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   // Sync modal values when user changes
   useEffect(() => {
     setNameValue(user.name);
     setEmailValue(user.email);
   }, [user.name, user.email]);
+
+  // Load password requirements when modal opens
+  useEffect(() => {
+    if (showPasswordModal) {
+      const loadRequirements = async () => {
+        const [reqs, reqsList] = await Promise.all([
+          getPasswordRequirements(),
+          getPasswordRequirementsDescription(),
+        ]);
+        setPasswordRequirements(reqs);
+        setPasswordRequirementsList(reqsList);
+      };
+      loadRequirements();
+    }
+  }, [showPasswordModal]);
 
   return (
     <SafeAreaView className={theme.bg('bg-background', 'bg-[#0F172A]')} style={{ flex: 1 }}>
@@ -137,8 +167,19 @@ export default function UserProfileSettingsScreen({ route }: Props) {
               icon="person"
               title={t('settings.profile.name')}
               subtitle={user.name}
-              showArrow
+              showArrow={isAuthenticated}
               onPress={() => {
+                if (!isAuthenticated) {
+                  Alert.alert(
+                    t('settings.profile.signInRequired'),
+                    t('settings.profile.signInToUpdateProfile'),
+                    [
+                      { text: t('common.cancel'), style: 'cancel' },
+                      { text: t('settings.profile.signIn'), onPress: () => setShowSignInModal(true) }
+                    ]
+                  );
+                  return;
+                }
                 setNameValue(user.name);
                 setShowNameModal(true);
               }}
@@ -147,8 +188,19 @@ export default function UserProfileSettingsScreen({ route }: Props) {
               icon="mail"
               title={t('settings.profile.email')}
               subtitle={user.email}
-              showArrow
+              showArrow={isAuthenticated}
               onPress={() => {
+                if (!isAuthenticated) {
+                  Alert.alert(
+                    t('settings.profile.signInRequired'),
+                    t('settings.profile.signInToUpdateProfile'),
+                    [
+                      { text: t('common.cancel'), style: 'cancel' },
+                      { text: t('settings.profile.signIn'), onPress: () => setShowSignInModal(true) }
+                    ]
+                  );
+                  return;
+                }
                 setEmailValue(user.email);
                 setShowEmailModal(true);
               }}
@@ -157,8 +209,14 @@ export default function UserProfileSettingsScreen({ route }: Props) {
               <SettingItem
                 icon="lock-closed"
                 title={t('settings.profile.changePassword')}
+                subtitle={user.hasPassword === false ? t('settings.profile.setPassword') : undefined}
                 showArrow
-                onPress={() => {}}
+                onPress={() => {
+                  setCurrentPasswordValue('');
+                  setNewPasswordValue('');
+                  setConfirmPasswordValue('');
+                  setShowPasswordModal(true);
+                }}
               />
             )}
             {!isAuthenticated ? (
@@ -361,8 +419,12 @@ export default function UserProfileSettingsScreen({ route }: Props) {
                 try {
                   await updateProfile({ name: nameValue.trim() });
                   setShowNameModal(false);
-                } catch (error) {
-                  Alert.alert(t('common.error'), t('profile.failedToUpdateName'));
+                  // Show success message (optional, but good UX)
+                  Alert.alert(t('common.success'), t('profile.nameUpdated'));
+                } catch (error: any) {
+                  // Show more specific error message
+                  const errorMessage = error?.message || t('profile.failedToUpdateName');
+                  Alert.alert(t('common.error'), errorMessage);
                 } finally {
                   setIsSaving(false);
                 }
@@ -445,8 +507,15 @@ export default function UserProfileSettingsScreen({ route }: Props) {
                 try {
                   await updateProfile({ email: emailValue.trim() });
                   setShowEmailModal(false);
-                } catch (error) {
-                  Alert.alert(t('common.error'), t('profile.failedToUpdateEmail'));
+                  // Show success message with note about email verification
+                  Alert.alert(
+                    t('common.success'), 
+                    t('profile.emailUpdated')
+                  );
+                } catch (error: any) {
+                  // Show more specific error message
+                  const errorMessage = error?.message || t('profile.failedToUpdateEmail');
+                  Alert.alert(t('common.error'), errorMessage);
                 } finally {
                   setIsSaving(false);
                 }
@@ -463,6 +532,357 @@ export default function UserProfileSettingsScreen({ route }: Props) {
                 <ActivityIndicator color="#fff" />
               ) : (
                 <Text style={{ color: '#fff', fontSize: 16, fontWeight: '600' }}>{t('common.save')}</Text>
+              )}
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+
+      {/* Change Password Modal */}
+      <Modal
+        visible={showPasswordModal}
+        transparent={true}
+        animationType="fade"
+        onRequestClose={() => setShowPasswordModal(false)}
+      >
+        <View style={{ flex: 1, backgroundColor: 'rgba(0, 0, 0, 0.5)' }}>
+          <Pressable 
+            style={{ flex: 1 }}
+            onPress={() => setShowPasswordModal(false)}
+          />
+          <View style={{ 
+            backgroundColor: colors.surface, 
+            borderTopLeftRadius: 20,
+            borderTopRightRadius: 20,
+            padding: 20,
+            paddingBottom: 40,
+          }}>
+            <View className="flex-row items-center justify-between mb-4">
+              <Text style={{ fontSize: 20, fontWeight: 'bold', color: colors['text-primary'] }}>
+                {user.hasPassword === false ? t('settings.profile.setPassword') : t('settings.profile.changePassword')}
+              </Text>
+              <TouchableOpacity onPress={() => setShowPasswordModal(false)}>
+                <Ionicons name="close" size={24} color={colors['text-primary']} />
+              </TouchableOpacity>
+            </View>
+
+            {user.hasPassword === false && (
+              <Text style={{ 
+                color: colors['text-secondary'], 
+                fontSize: 14, 
+                marginBottom: 16
+              }}>
+                {t('settings.profile.setPasswordDescription')}
+              </Text>
+            )}
+
+            {/* Password Requirements */}
+            {passwordRequirementsList.length > 0 && (
+              <View style={{ marginBottom: 16 }}>
+                <Text style={{ 
+                  color: colors['text-secondary'], 
+                  fontSize: 12, 
+                  fontWeight: '600',
+                  marginBottom: 8
+                }}>
+                  {t('settings.profile.passwordRequirements')}:
+                </Text>
+                {passwordRequirementsList.map((req, index) => {
+                  const isValid = passwordValidation?.checks ? (
+                    req.includes('characters') ? passwordValidation.checks.minLength :
+                    req.includes('uppercase') ? passwordValidation.checks.uppercase :
+                    req.includes('lowercase') ? passwordValidation.checks.lowercase :
+                    req.includes('number') ? passwordValidation.checks.numbers :
+                    req.includes('special') ? passwordValidation.checks.specialChars :
+                    true
+                  ) : null;
+                  
+                  return (
+                    <View key={index} style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 4 }}>
+                      <Ionicons 
+                        name={isValid === true ? "checkmark-circle" : isValid === false ? "close-circle" : "ellipse-outline"} 
+                        size={14} 
+                        color={isValid === true ? "#10B981" : isValid === false ? "#EF4444" : colors['text-muted']} 
+                        style={{ marginRight: 6 }}
+                      />
+                      <Text style={{ 
+                        color: isValid === true ? "#10B981" : isValid === false ? "#EF4444" : colors['text-secondary'], 
+                        fontSize: 12 
+                      }}>
+                        {req}
+                      </Text>
+                    </View>
+                  );
+                })}
+              </View>
+            )}
+
+            {/* Current Password (only shown if user has password) */}
+            {user.hasPassword === true && (
+              <>
+                {/* Current Password Error */}
+                {currentPasswordError ? (
+                  <View style={{ 
+                    backgroundColor: '#FEE2E2', 
+                    padding: 8, 
+                    borderRadius: 6, 
+                    marginTop: 16,
+                    marginBottom: 12,
+                    flexDirection: 'row',
+                    alignItems: 'center'
+                  }}>
+                    <Ionicons name="alert-circle" size={16} color="#EF4444" style={{ marginRight: 6 }} />
+                    <Text style={{ color: '#EF4444', fontSize: 12, flex: 1 }}>{currentPasswordError}</Text>
+                  </View>
+                ) : null}
+
+                <View style={{ position: 'relative', marginBottom: 16 }}>
+                  <TextInput
+                    value={currentPasswordValue}
+                    onChangeText={(text) => {
+                      setCurrentPasswordValue(text);
+                      setCurrentPasswordError(''); // Clear error when user types
+                    }}
+                    placeholder={t('settings.profile.currentPassword')}
+                    placeholderTextColor={colors['text-muted']}
+                    secureTextEntry={!showCurrentPassword}
+                    style={{
+                      borderWidth: 1,
+                      borderColor: currentPasswordError ? '#EF4444' : colors.border,
+                      borderRadius: 8,
+                      padding: 12,
+                      paddingRight: 45,
+                      fontSize: 16,
+                      color: colors['text-primary'],
+                      backgroundColor: colors.background,
+                    }}
+                    autoFocus
+                  />
+                  <TouchableOpacity
+                    onPress={() => setShowCurrentPassword(!showCurrentPassword)}
+                    style={{
+                      position: 'absolute',
+                      right: 12,
+                      top: 12,
+                      padding: 4,
+                    }}
+                  >
+                    <Ionicons
+                      name={showCurrentPassword ? "eye-off" : "eye"}
+                      size={20}
+                      color={colors['text-muted']}
+                    />
+                  </TouchableOpacity>
+                </View>
+              </>
+            )}
+
+            {/* New Password Error */}
+            {passwordErrors.length > 0 && (
+              <View style={{ 
+                backgroundColor: '#FEE2E2', 
+                padding: 8, 
+                borderRadius: 6, 
+                marginTop: user.hasPassword === true ? 0 : 16,
+                marginBottom: 12
+              }}>
+                {passwordErrors.map((error, index) => (
+                  <View key={index} style={{ flexDirection: 'row', alignItems: 'center', marginBottom: index < passwordErrors.length - 1 ? 4 : 0 }}>
+                    <Ionicons name="alert-circle" size={14} color="#EF4444" style={{ marginRight: 6 }} />
+                    <Text style={{ color: '#EF4444', fontSize: 12, flex: 1 }}>{error}</Text>
+                  </View>
+                ))}
+              </View>
+            )}
+
+            <View style={{ position: 'relative', marginBottom: 16 }}>
+              <TextInput
+                value={newPasswordValue}
+                onChangeText={(text) => {
+                  setNewPasswordValue(text);
+                  setPasswordErrors([]); // Clear errors when user types
+                  if (passwordRequirements) {
+                    const validation = validatePassword(text, passwordRequirements);
+                    setPasswordValidation(validation);
+                  }
+                }}
+                placeholder={t('settings.profile.newPassword')}
+                placeholderTextColor={colors['text-muted']}
+                secureTextEntry={!showNewPassword}
+                style={{
+                  borderWidth: 1,
+                  borderColor: passwordErrors.length > 0 ? '#EF4444' : colors.border,
+                  borderRadius: 8,
+                  padding: 12,
+                  paddingRight: 45,
+                  fontSize: 16,
+                  color: colors['text-primary'],
+                  backgroundColor: colors.background,
+                }}
+                autoFocus={user.hasPassword === false}
+              />
+              <TouchableOpacity
+                onPress={() => setShowNewPassword(!showNewPassword)}
+                style={{
+                  position: 'absolute',
+                  right: 12,
+                  top: 12,
+                  padding: 4,
+                }}
+              >
+                <Ionicons
+                  name={showNewPassword ? "eye-off" : "eye"}
+                  size={20}
+                  color={colors['text-muted']}
+                />
+              </TouchableOpacity>
+            </View>
+
+            {/* Confirm Password Error */}
+            {confirmPasswordError && (
+              <View style={{ 
+                backgroundColor: '#FEE2E2', 
+                padding: 8, 
+                borderRadius: 6, 
+                marginBottom: 12,
+                flexDirection: 'row',
+                alignItems: 'center'
+              }}>
+                <Ionicons name="alert-circle" size={16} color="#EF4444" style={{ marginRight: 6 }} />
+                <Text style={{ color: '#EF4444', fontSize: 12, flex: 1 }}>{confirmPasswordError}</Text>
+              </View>
+            )}
+
+            <View style={{ position: 'relative', marginBottom: 20 }}>
+              <TextInput
+                value={confirmPasswordValue}
+                onChangeText={(text) => {
+                  setConfirmPasswordValue(text);
+                  setConfirmPasswordError(''); // Clear error when user types
+                }}
+                placeholder={t('settings.profile.confirmPassword')}
+                placeholderTextColor={colors['text-muted']}
+                secureTextEntry={!showConfirmPassword}
+                style={{
+                  borderWidth: 1,
+                  borderColor: confirmPasswordError ? '#EF4444' : colors.border,
+                  borderRadius: 8,
+                  padding: 12,
+                  paddingRight: 45,
+                  fontSize: 16,
+                  color: colors['text-primary'],
+                  backgroundColor: colors.background,
+                }}
+              />
+              <TouchableOpacity
+                onPress={() => setShowConfirmPassword(!showConfirmPassword)}
+                style={{
+                  position: 'absolute',
+                  right: 12,
+                  top: 12,
+                  padding: 4,
+                }}
+              >
+                <Ionicons
+                  name={showConfirmPassword ? "eye-off" : "eye"}
+                  size={20}
+                  color={colors['text-muted']}
+                />
+              </TouchableOpacity>
+            </View>
+
+            <TouchableOpacity
+              onPress={async () => {
+                // Clear previous errors
+                setCurrentPasswordError('');
+                setPasswordErrors([]);
+                setConfirmPasswordError('');
+
+                // Validation
+                let hasErrors = false;
+
+                if (user.hasPassword === true && !currentPasswordValue.trim()) {
+                  setCurrentPasswordError(t('settings.profile.currentPasswordRequired'));
+                  hasErrors = true;
+                }
+
+                if (!newPasswordValue.trim()) {
+                  setPasswordErrors([t('settings.profile.newPasswordRequired')]);
+                  hasErrors = true;
+                } else if (passwordRequirements) {
+                  const validation = validatePassword(newPasswordValue, passwordRequirements);
+                  if (!validation.valid) {
+                    setPasswordErrors(validation.errors);
+                    hasErrors = true;
+                  }
+                }
+
+                if (newPasswordValue !== confirmPasswordValue) {
+                  setConfirmPasswordError(t('settings.profile.passwordsDoNotMatch'));
+                  hasErrors = true;
+                }
+
+                if (hasErrors) {
+                  return;
+                }
+
+                setIsSaving(true);
+                try {
+                  const result = await changePassword(
+                    newPasswordValue,
+                    user.hasPassword === true ? currentPasswordValue : undefined
+                  );
+                  
+                  setShowPasswordModal(false);
+                  setCurrentPasswordValue('');
+                  setNewPasswordValue('');
+                  setConfirmPasswordValue('');
+                  setPasswordValidation(null);
+                  setPasswordErrors([]);
+                  setCurrentPasswordError('');
+                  setConfirmPasswordError('');
+                  setShowCurrentPassword(false);
+                  setShowNewPassword(false);
+                  setShowConfirmPassword(false);
+                  
+                  // Refresh user data to update hasPassword status
+                  await refreshUser();
+                  
+                  Alert.alert(t('common.success'), result.message || t('settings.profile.passwordUpdated'));
+                } catch (error: any) {
+                  // Handle backend validation errors
+                  if (error?.message) {
+                    // Check if it's a validation error with multiple requirements
+                    if (error.message.includes('Password must')) {
+                      // Try to parse backend errors if they're in the response
+                      const backendErrors = error.errors || [error.message];
+                      setPasswordErrors(backendErrors);
+                    } else if (error.message.includes('current password')) {
+                      setCurrentPasswordError(error.message);
+                    } else {
+                      setPasswordErrors([error.message]);
+                    }
+                  } else {
+                    setPasswordErrors([t('settings.profile.failedToUpdatePassword')]);
+                  }
+                } finally {
+                  setIsSaving(false);
+                }
+              }}
+              disabled={isSaving}
+              style={{
+                backgroundColor: colors.primary,
+                padding: 14,
+                borderRadius: 8,
+                alignItems: 'center',
+              }}
+            >
+              {isSaving ? (
+                <ActivityIndicator color="#fff" />
+              ) : (
+                <Text style={{ color: '#fff', fontSize: 16, fontWeight: '600' }}>
+                  {user.hasPassword === false ? t('settings.profile.setPassword') : t('common.save')}
+                </Text>
               )}
             </TouchableOpacity>
           </View>

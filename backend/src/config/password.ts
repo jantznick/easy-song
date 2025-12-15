@@ -16,9 +16,9 @@ export interface PasswordRequirements {
 export const PASSWORD_REQUIREMENTS: PasswordRequirements = {
   minLength: 8,
   maxLength: 128,
-  requireUppercase: false,
-  requireLowercase: false,
-  requireNumbers: false,
+  requireUppercase: true,
+  requireLowercase: true,
+  requireNumbers: true,
   requireSpecialChars: false,
   specialChars: '!@#$%^&*()_+-=[]{}|;:,.<>?',
 };

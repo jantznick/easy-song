@@ -2,6 +2,7 @@
   "common": {
     "loading": "Loading...",
     "error": "Error",
+    "success": "Success",
     "settings": "Settings",
     "back": "Back",
     "save": "Save",
@@ -24,6 +25,7 @@
       "subtitle": "Sign in to continue your language learning journey",
       "button": "Sign In"
     },
+    "passwordRequirements": "Current password requirements",
     "magicCode": {
       "title": "Magic Code Login",
       "subtitle": "We'll send a code to your email",
@@ -141,13 +143,28 @@
       "editProfile": "Edit Profile",
       "email": "Email",
       "changePassword": "Change Password",
+      "setPassword": "Set Password",
+      "currentPassword": "Current Password",
+      "newPassword": "New Password",
+      "confirmPassword": "Confirm Password",
+      "passwordDetecting": "Detecting if you have an existing password...",
+      "setPasswordDescription": "You're currently using magic code login. Set a password to enable email/password login.",
+      "currentPasswordRequired": "Current password is required",
+      "newPasswordRequired": "New password is required",
+      "passwordsDoNotMatch": "Passwords do not match",
+      "passwordTooShort": "Password must be at least 8 characters long",
+      "passwordUpdated": "Password updated successfully",
+      "failedToUpdatePassword": "Failed to update password",
+      "passwordRequirements": "Password Requirements",
       "signIn": "Sign In",
       "signOut": "Sign Out",
       "notSignedIn": "Not signed in",
       "account": "Account",
       "name": "Name",
       "signInToSync": "Sign in to sync your progress",
-      "signOutOfAccount": "Sign out of your account"
+      "signOutOfAccount": "Sign out of your account",
+      "signInRequired": "Sign In Required",
+      "signInToUpdateProfile": "Please sign in to update your profile"
     },
     "onboarding": {
       "language": {
@@ -237,6 +254,8 @@
     "invalidEmail": "Please enter a valid email address",
     "failedToUpdateName": "Failed to update name",
     "failedToUpdateEmail": "Failed to update email",
+    "nameUpdated": "Name updated successfully",
+    "emailUpdated": "Email updated successfully. Please verify your new email address.",
     "failedToSignOut": "Failed to sign out",
     "password": "Password",
     "emailAndPasswordRequired": "Email and password are required",

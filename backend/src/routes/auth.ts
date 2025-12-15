@@ -417,7 +417,15 @@ router.get('/me', requireAuth, async (req: Request, res: Response) => {
   try {
     const user = await prisma.user.findUnique({
       where: { id: req.userId! },
-      include: { preferences: true },
+      select: {
+        id: true,
+        email: true,
+        name: true,
+        avatar: true,
+        emailVerified: true,
+        subscriptionTier: true,
+        passwordHash: true, // Include to check if user has password
+      },
     });
 
     if (!user) {
@@ -431,6 +439,7 @@ router.get('/me', requireAuth, async (req: Request, res: Response) => {
       avatar: user.avatar,
       emailVerified: user.emailVerified,
       subscriptionTier: user.subscriptionTier,
+      hasPassword: !!user.passwordHash, // Return boolean indicating if user has password
     });
   } catch (error) {
     console.error('Error fetching user:', error);
