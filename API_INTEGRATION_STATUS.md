@@ -64,13 +64,13 @@
    - ✅ Preferences sync to backend when updated (for authenticated users)
    - ✅ Guest users continue using local storage only
 
-### ❌ NOT Integrated (Still Using Dummy/Local Storage Only)
-1. **User Profile**
-   - ❌ `updateUserProfile()` - Currently a dummy function that always returns success
-     - **Backend endpoint exists:** `PUT /api/user/profile`
-     - **Status:** Needs to be connected to backend
+5. **User Profile**
+   - ✅ `updateUserProfile()` → `PUT /api/user/profile`
+   - ✅ Profile updates sync to backend and update local state
+   - ✅ Supports updating name, email, and avatar
 
-2. **Change Password**
+### ❌ NOT Integrated (Still Using Dummy/Local Storage Only)
+1. **Change Password**
    - ❌ No API function exists for change password
      - **Backend endpoint exists:** `POST /api/user/change-password`
      - **Status:** Needs to be implemented
@@ -81,14 +81,7 @@
 
 ### High Priority
 
-1. **Connect User Profile Updates to Backend**
-   - Update `updateUserProfile()` in `mobile/src/utils/api.ts` to call `PUT /api/user/profile`
-   - Currently it's a dummy function that always returns success
-   - **Files to modify:**
-     - `mobile/src/utils/api.ts` - Implement actual API call
-     - `mobile/src/contexts/UserContext.tsx` - Already calls it, should work once API is connected
-
-2. **Implement Change Password**
+1. **Implement Change Password**
    - Create `changePassword()` function in `mobile/src/utils/api.ts`
    - Connect to `UserProfileSettingsScreen.tsx` (currently has a placeholder button)
    - **Files to modify:**
@@ -122,13 +115,13 @@
 - ✅ Song data fetching
 - ✅ Song history (add, fetch)
 - ✅ User preferences (fetch on login, sync on update)
+- ✅ User profile updates (name, email, avatar sync to backend)
 
 **Needs Integration:**
-- ❌ User profile updates (dummy function exists)
 - ❌ Change password (no function exists)
 
 **Backend Ready, Mobile Not:**
 - ❌ Email verification UI
 - ❌ Guest history migration on signup
 
-The mobile app is mostly functional. User preferences now sync to the backend and persist across devices and login sessions. User profile updates still need to be connected to the backend.
+The mobile app is mostly functional. User preferences and profile updates now sync to the backend and persist across devices and login sessions.

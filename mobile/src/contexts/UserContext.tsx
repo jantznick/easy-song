@@ -555,10 +555,15 @@ export function UserProvider({ children }: UserProviderProps) {
   // Update profile
   const updateProfile = useCallback(async (updates: Partial<User>) => {
     // Call API to update profile
-    await updateUserProfileAPI(updates);
+    const updatedUserData = await updateUserProfileAPI(updates);
     
-    // Update user state
-    const updatedUser = { ...user, ...updates };
+    // Update user state with server response (ensures we have correct emailVerified status, etc.)
+    const updatedUser: User = {
+      name: updatedUserData.name,
+      email: updatedUserData.email,
+      avatar: updatedUserData.avatar || undefined,
+      subscriptionTier: user.subscriptionTier, // Keep existing subscription tier (not returned by profile endpoint)
+    };
     setUser(updatedUser);
   }, [user]);
 

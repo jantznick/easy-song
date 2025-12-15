@@ -136,17 +136,37 @@ export function computeAdditionalContent(song: Song | null, studyData: StudyData
 }
 
 /**
- * Updates user profile (dummy API call - always returns success for now)
- * @param updates Partial profile updates (name, email, etc.)
- * @returns Promise that resolves to success response
+ * Updates user profile on backend
+ * @param updates Partial profile updates (name, email, avatar)
+ * @returns Promise that resolves to updated user object
  */
-export async function updateUserProfile(updates: { name?: string; email?: string }): Promise<{ success: boolean }> {
-  // TODO: Replace with actual API call when backend is ready
-  // Simulate API delay
-  await new Promise(resolve => setTimeout(resolve, 300));
-  
-  // Always return success for now
-  return { success: true };
+export async function updateUserProfile(updates: { 
+  name?: string; 
+  email?: string; 
+  avatar?: string | null;
+}): Promise<{
+  id: string;
+  email: string;
+  name: string;
+  avatar?: string | null;
+  emailVerified: boolean;
+  updatedAt: string;
+}> {
+  const baseUrl = getApiUrl().replace('/api', '');
+  const response = await fetch(`${baseUrl}/api/user/profile`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
+    body: JSON.stringify(updates),
+  });
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.error || 'Failed to update profile');
+  }
+
+  return data;
 }
 
 /**
