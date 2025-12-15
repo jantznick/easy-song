@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { View, Text, TouchableOpacity, Modal, TextInput, Pressable, ActivityIndicator } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useUser } from '../hooks/useUser';
@@ -14,9 +14,11 @@ export default function EmailVerificationBanner() {
   const theme = useThemeClasses();
   const { t } = useTranslation();
   const [showVerificationModal, setShowVerificationModal] = useState(false);
+  const [isBannerDismissed, setIsBannerDismissed] = useState(false);
   const [verificationCode, setVerificationCode] = useState(['', '', '', '', '', '']);
   const [isVerifying, setIsVerifying] = useState(false);
   const [isResending, setIsResending] = useState(false);
+  const [resendMessage, setResendMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
   const [confirmationModal, setConfirmationModal] = useState<{
     visible: boolean;
     title: string;
@@ -30,8 +32,19 @@ export default function EmailVerificationBanner() {
   });
   const codeInputRefs = useRef<(TextInput | null)[]>([]);
 
-  // Don't show banner if user is not authenticated or email is already verified
-  if (!isAuthenticated || user.emailVerified) {
+  // Auto-dismiss resend message after 10 seconds
+  useEffect(() => {
+    if (resendMessage) {
+      const timer = setTimeout(() => {
+        setResendMessage(null);
+      }, 10000); // 10 seconds
+
+      return () => clearTimeout(timer);
+    }
+  }, [resendMessage]);
+
+  // Don't show banner if user is not authenticated, email is already verified, or banner is dismissed
+  if (!isAuthenticated || user.emailVerified || isBannerDismissed) {
     return null;
   }
 
@@ -40,6 +53,11 @@ export default function EmailVerificationBanner() {
     const newCode = [...verificationCode];
     newCode[index] = digit;
     setVerificationCode(newCode);
+    
+    // Clear resend message when user starts typing
+    if (resendMessage) {
+      setResendMessage(null);
+    }
 
     // Auto-advance to next input
     if (digit && index < 5) {
@@ -101,22 +119,19 @@ export default function EmailVerificationBanner() {
 
   const handleResendCode = async () => {
     setIsResending(true);
+    setResendMessage(null); // Clear any previous message
     try {
       await resendVerificationCode();
-      setConfirmationModal({
-        visible: true,
-        title: t('common.success'),
-        message: t('auth.emailVerification.verificationCodeResent'),
+      setResendMessage({
         type: 'success',
+        text: t('auth.emailVerification.verificationCodeResent'),
       });
       setVerificationCode(['', '', '', '', '', '']);
       codeInputRefs.current[0]?.focus();
     } catch (error: any) {
-      setConfirmationModal({
-        visible: true,
-        title: t('common.error'),
-        message: error?.message || t('auth.errors.resendFailed'),
+      setResendMessage({
         type: 'error',
+        text: error?.message || t('auth.errors.resendFailed'),
       });
     } finally {
       setIsResending(false);
@@ -135,14 +150,27 @@ export default function EmailVerificationBanner() {
               {t('auth.emailVerification.pleaseVerify')}
             </Text>
           </View>
-          <TouchableOpacity
-            onPress={() => setShowVerificationModal(true)}
-            className="bg-yellow-600 px-4 py-2 rounded-lg"
-          >
-            <Text className="text-white text-sm font-semibold">
-              {t('auth.emailVerification.verify')}
-            </Text>
-          </TouchableOpacity>
+          <View className="flex-row items-center gap-2">
+            <TouchableOpacity
+              onPress={() => setShowVerificationModal(true)}
+              className="bg-yellow-600 px-4 py-2 rounded-lg"
+            >
+              <Text className="text-white text-sm font-semibold">
+                {t('auth.emailVerification.verify')}
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => setIsBannerDismissed(true)}
+              hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+              className="p-1"
+            >
+              <Ionicons
+                name="close"
+                size={20}
+                color={isDark ? '#FCD34D' : '#D97706'}
+              />
+            </TouchableOpacity>
+          </View>
         </View>
       </View>
 
@@ -151,12 +179,18 @@ export default function EmailVerificationBanner() {
         visible={showVerificationModal}
         transparent={true}
         animationType="fade"
-        onRequestClose={() => setShowVerificationModal(false)}
+        onRequestClose={() => {
+          setShowVerificationModal(false);
+          setResendMessage(null); // Clear message when modal closes
+        }}
       >
         <Pressable
           className="flex-1 justify-center items-center"
           style={{ backgroundColor: 'rgba(0, 0, 0, 0.5)' }}
-          onPress={() => setShowVerificationModal(false)}
+          onPress={() => {
+            setShowVerificationModal(false);
+            setResendMessage(null); // Clear message when modal closes
+          }}
         >
           <Pressable
             className={theme.bg('bg-white', 'bg-gray-800') + ' rounded-2xl p-6 mx-8 max-w-sm w-full'}
@@ -166,7 +200,10 @@ export default function EmailVerificationBanner() {
               <Text className={theme.text('text-gray-900', 'text-white') + ' text-xl font-bold'}>
                 {t('auth.emailVerification.title')}
               </Text>
-              <TouchableOpacity onPress={() => setShowVerificationModal(false)}>
+              <TouchableOpacity onPress={() => {
+                setShowVerificationModal(false);
+                setResendMessage(null); // Clear message when modal closes
+              }}>
                 <Ionicons
                   name="close"
                   size={24}
@@ -203,6 +240,29 @@ export default function EmailVerificationBanner() {
                 ))}
               </View>
             </View>
+
+            {/* Inline resend message */}
+            {resendMessage && (
+              <View className={`mb-3 p-3 rounded-lg flex-row items-center ${
+                resendMessage.type === 'success' 
+                  ? (isDark ? 'bg-green-900/30' : 'bg-green-50') 
+                  : (isDark ? 'bg-red-900/30' : 'bg-red-50')
+              }`}>
+                <Ionicons
+                  name={resendMessage.type === 'success' ? 'checkmark-circle' : 'alert-circle'}
+                  size={20}
+                  color={resendMessage.type === 'success' ? '#10B981' : '#EF4444'}
+                  style={{ marginRight: 8 }}
+                />
+                <Text className={`text-sm flex-1 ${
+                  resendMessage.type === 'success'
+                    ? (isDark ? 'text-green-300' : 'text-green-800')
+                    : (isDark ? 'text-red-300' : 'text-red-800')
+                }`}>
+                  {resendMessage.text}
+                </Text>
+              </View>
+            )}
 
             <TouchableOpacity
               className="bg-indigo-600 py-3 rounded-xl items-center mb-3"
