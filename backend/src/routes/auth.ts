@@ -99,6 +99,7 @@ router.post('/register', async (req: Request, res: Response) => {
         name: user.name,
         avatar: user.avatar,
         emailVerified: user.emailVerified,
+        subscriptionTier: user.subscriptionTier,
       },
     });
   } catch (error) {
@@ -164,6 +165,7 @@ router.post('/login', async (req: Request, res: Response) => {
         name: user.name,
         avatar: user.avatar,
         emailVerified: user.emailVerified,
+        subscriptionTier: user.subscriptionTier,
       },
     });
   } catch (error) {
@@ -295,6 +297,7 @@ router.post('/verify-login-code', async (req: Request, res: Response) => {
         name: user.name,
         avatar: user.avatar,
         emailVerified: user.emailVerified,
+        subscriptionTier: user.subscriptionTier,
       },
     });
   } catch (error) {
@@ -427,6 +430,7 @@ router.get('/me', requireAuth, async (req: Request, res: Response) => {
       name: user.name,
       avatar: user.avatar,
       emailVerified: user.emailVerified,
+      subscriptionTier: user.subscriptionTier,
     });
   } catch (error) {
     console.error('Error fetching user:', error);

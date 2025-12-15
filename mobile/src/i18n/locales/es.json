@@ -215,7 +215,10 @@
     "of": "de",
     "noHistoryShort": "Sin historial",
     "playMode": "Modo Reproducción",
-    "studyMode": "Modo Estudio"
+    "studyMode": "Modo Estudio",
+    "upgradeTitle": "Actualiza a Premium",
+    "upgradeMessage": "¡Regístrate para guardar todo tu historial de escucha y sincronizar entre dispositivos!",
+    "guestUpgradeMessage": "Regístrate para guardar más historial, actualiza a premium para guardar todo el historial"
   },
   "tabs": {
     "play": "Reproducir",

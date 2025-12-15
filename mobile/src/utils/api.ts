@@ -300,6 +300,7 @@ export async function registerUser(email: string, password: string, name: string
     name: string;
     avatar?: string;
     emailVerified: boolean;
+    subscriptionTier: 'FREE' | 'PREMIUM' | 'PREMIUM_PLUS';
   };
 }> {
   const response = await fetch(`${getAuthUrl()}/register`, {
@@ -327,6 +328,7 @@ export async function loginUser(email: string, password: string): Promise<{
     id: string;
     email: string;
     name: string;
+    subscriptionTier: 'FREE' | 'PREMIUM' | 'PREMIUM_PLUS';
     avatar?: string;
     emailVerified: boolean;
   };
@@ -381,6 +383,7 @@ export async function verifyMagicCode(email: string, code: string, isSignup: boo
     name: string;
     avatar?: string;
     emailVerified: boolean;
+    subscriptionTier: 'FREE' | 'PREMIUM' | 'PREMIUM_PLUS';
   };
 }> {
   const response = await fetch(`${getAuthUrl()}/verify-login-code`, {
@@ -408,6 +411,7 @@ export async function getCurrentUser(): Promise<{
   name: string;
   avatar?: string;
   emailVerified: boolean;
+  subscriptionTier: 'FREE' | 'PREMIUM' | 'PREMIUM_PLUS';
 } | null> {
   try {
     const response = await fetch(`${getAuthUrl()}/me`, {

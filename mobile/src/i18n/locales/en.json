@@ -215,7 +215,10 @@
     "of": "of",
     "noHistoryShort": "No history",
     "playMode": "Play Mode",
-    "studyMode": "Study Mode"
+    "studyMode": "Study Mode",
+    "upgradeTitle": "Upgrade to Premium",
+    "upgradeMessage": "Sign up to save your entire listening history and sync across devices!",
+    "guestUpgradeMessage": "Sign up to save more history, upgrade to premium to save all history"
   },
   "tabs": {
     "play": "Play",

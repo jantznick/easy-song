@@ -215,7 +215,10 @@
     "of": "de",
     "noHistoryShort": "Aucun historique",
     "playMode": "Mode Lecture",
-    "studyMode": "Mode Étude"
+    "studyMode": "Mode Étude",
+    "upgradeTitle": "Passer à Premium",
+    "upgradeMessage": "Inscrivez-vous pour sauvegarder tout votre historique d'écoute et synchroniser entre les appareils !",
+    "guestUpgradeMessage": "Inscrivez-vous pour sauvegarder plus d'historique, passez à premium pour sauvegarder tout l'historique"
   },
   "tabs": {
     "play": "Lire",

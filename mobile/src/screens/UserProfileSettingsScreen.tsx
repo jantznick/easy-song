@@ -70,7 +70,12 @@ function SettingsSection({ title, children }: { title: string; children: React.R
 
 export default function UserProfileSettingsScreen({ route }: Props) {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
-  const { user, updateProfile, isAuthenticated, signIn, signOut, songHistory } = useUser();
+  const { user, updateProfile, isAuthenticated, signIn, signOut, songHistory, displayedHistory, totalHistoryCount } = useUser();
+  
+  // Check if user should see upgrade message
+  const isFreeUser = isAuthenticated && user.subscriptionTier === 'FREE';
+  const hasMoreThanLimit = totalHistoryCount !== null && totalHistoryCount > 10;
+  const isGuest = !isAuthenticated;
   const { colors, isDark } = useTheme();
   const theme = useThemeClasses();
   const { t } = useTranslation();
@@ -191,14 +196,14 @@ export default function UserProfileSettingsScreen({ route }: Props) {
               </Text>
             </View>
             <View className={theme.bg('bg-surface', 'bg-[#1E293B]') + ' ' + theme.border('border-border', 'border-[#334155]') + ' rounded-xl border overflow-hidden'}>
-              {songHistory.length === 0 ? (
+              {displayedHistory.length === 0 ? (
                 <View className="py-8 px-5 items-center">
                   <Text className={theme.text('text-text-muted', 'text-[#64748B]') + ' text-sm'}>
                     {t('history.noHistory')}
                   </Text>
                 </View>
               ) : (
-                songHistory.slice(0, 3).map((item, index, array) => (
+                displayedHistory.slice(0, 3).map((item, index, array) => (
                 <TouchableOpacity
                   key={`${item.videoId}-${item.date}-${item.time}-${index}`}
                   activeOpacity={0.7}
@@ -247,7 +252,25 @@ export default function UserProfileSettingsScreen({ route }: Props) {
                 </TouchableOpacity>
                 ))
               )}
-              {songHistory.length > 0 && (
+              
+              {/* Upgrade Message for Free Users and Guests */}
+              {((isFreeUser && hasMoreThanLimit) || isGuest) && (
+                <View className={theme.bg('bg-primary/10', 'bg-primary/20') + ' ' + theme.border('border-border', 'border-[#334155]') + ' border-t px-4 py-3'}>
+                  <Text className={theme.text('text-text-primary', 'text-[#F1F5F9]') + ' text-base font-medium mb-1'}>
+                    {t('history.upgradeTitle')}
+                  </Text>
+                  <Text className={theme.text('text-text-secondary', 'text-[#94A3B8]') + ' text-sm'}>
+                    {isGuest
+                      ? t('history.guestUpgradeMessage')
+                      : isFreeUser && hasMoreThanLimit 
+                        ? `${t('history.upgradeMessage')} You're viewing 10 of ${totalHistoryCount} songs.`
+                        : t('history.upgradeMessage')
+                    }
+                  </Text>
+                </View>
+              )}
+              
+              {displayedHistory.length > 0 && (
                 <TouchableOpacity
                   onPress={() => navigation.navigate('SongHistory')}
                   activeOpacity={0.7}

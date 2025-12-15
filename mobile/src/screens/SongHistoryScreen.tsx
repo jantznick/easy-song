@@ -19,17 +19,24 @@ export default function SongHistoryScreen({ route }: Props) {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const theme = useThemeClasses();
   const { isDark } = useTheme();
-  const { songHistory, totalHistoryCount, isLoadingMoreHistory, fetchMoreHistory, isAuthenticated } = useUser();
+  const { songHistory, displayedHistory, totalHistoryCount, isLoadingMoreHistory, fetchMoreHistory, isAuthenticated, user } = useUser();
   const { t } = useTranslation();
   const [currentPage, setCurrentPage] = useState(1);
 
   // Calculate pagination for displayed items
-  // Use totalHistoryCount if available (for authenticated users), otherwise use songHistory.length (for guests)
-  const totalItems = totalHistoryCount !== null ? totalHistoryCount : songHistory.length;
-  const totalPages = Math.ceil(totalItems / ITEMS_PER_PAGE);
+  // For authenticated users: use totalHistoryCount for total, displayedHistory.length for what's shown
+  // For guests: use displayedHistory.length for both
+  const totalItems = totalHistoryCount !== null ? totalHistoryCount : displayedHistory.length;
+  const displayedItemsCount = displayedHistory.length;
+  const totalPages = Math.ceil(displayedItemsCount / ITEMS_PER_PAGE);
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
   const endIndex = startIndex + ITEMS_PER_PAGE;
-  const currentItems = songHistory.slice(startIndex, endIndex);
+  const currentItems = displayedHistory.slice(startIndex, endIndex);
+
+  // Check if user should see upgrade message
+  const isFreeUser = isAuthenticated && user.subscriptionTier === 'FREE';
+  const hasMoreThanLimit = totalHistoryCount !== null && totalHistoryCount > 10;
+  const isGuest = !isAuthenticated;
 
   const handlePrevious = () => {
     if (currentPage > 1) {
@@ -69,9 +76,26 @@ export default function SongHistoryScreen({ route }: Props) {
         contentContainerStyle={{ paddingBottom: 20, paddingHorizontal: 20, paddingTop: 24 }}
         showsVerticalScrollIndicator={false}
       >
+        {/* Upgrade Message for Free Users and Guests */}
+        {((isFreeUser && hasMoreThanLimit) || isGuest) && (
+          <View className={theme.bg('bg-primary/10', 'bg-primary/20') + ' ' + theme.border('border-primary/30', 'border-primary/40') + ' rounded-xl border px-4 py-3 mb-4'}>
+            <Text className={theme.text('text-text-primary', 'text-[#F1F5F9]') + ' text-base font-medium mb-1'}>
+              {t('history.upgradeTitle')}
+            </Text>
+            <Text className={theme.text('text-text-secondary', 'text-[#94A3B8]') + ' text-sm'}>
+              {isGuest
+                ? t('history.guestUpgradeMessage')
+                : isFreeUser && hasMoreThanLimit 
+                  ? `${t('history.upgradeMessage')} You're viewing 10 of ${totalHistoryCount} songs.`
+                  : t('history.upgradeMessage')
+              }
+            </Text>
+          </View>
+        )}
+
         {/* Song History List */}
         <View className={theme.bg('bg-surface', 'bg-[#1E293B]') + ' ' + theme.border('border-border', 'border-[#334155]') + ' rounded-xl border overflow-hidden'}>
-          {songHistory.length === 0 ? (
+          {displayedHistory.length === 0 ? (
             <View className="py-12 px-5 items-center">
               <Text className={theme.text('text-text-muted', 'text-[#64748B]') + ' text-base'}>
                 {t('history.noHistory')}
@@ -161,7 +185,17 @@ export default function SongHistoryScreen({ route }: Props) {
           </TouchableOpacity>
 
           <Text className={theme.text('text-text-secondary', 'text-[#94A3B8]') + ' text-sm'}>
-            {songHistory.length > 0 ? `${t('history.page')} ${currentPage} ${t('history.of')} ${totalPages}` : t('history.noHistoryShort')}
+            {displayedHistory.length > 0 ? (
+              isFreeUser && totalHistoryCount !== null && totalHistoryCount > displayedItemsCount ? (
+                // Show "Showing 10 of 176" for free users with more than displayed
+                `Showing ${displayedItemsCount} of ${totalHistoryCount}`
+              ) : (
+                // Show normal pagination for others
+                `${t('history.page')} ${currentPage} ${t('history.of')} ${totalPages}`
+              )
+            ) : (
+              t('history.noHistoryShort')
+            )}
           </Text>
 
           <TouchableOpacity

@@ -215,7 +215,10 @@
     "of": "共",
     "noHistoryShort": "无历史记录",
     "playMode": "播放模式",
-    "studyMode": "学习模式"
+    "studyMode": "学习模式",
+    "upgradeTitle": "升级到高级版",
+    "upgradeMessage": "注册以保存您的完整收听历史记录并在设备间同步！",
+    "guestUpgradeMessage": "注册以保存更多历史记录，升级到高级版以保存所有历史记录"
   },
   "tabs": {
     "play": "播放",
