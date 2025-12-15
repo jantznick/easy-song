@@ -35,8 +35,15 @@ export default function SongHistoryScreen({ route }: Props) {
 
   // Check if user should see upgrade message
   const isFreeUser = isAuthenticated && user.subscriptionTier === 'FREE';
-  const hasMoreThanLimit = totalHistoryCount !== null && totalHistoryCount > 10;
+  const isPremiumUser = isAuthenticated && user.subscriptionTier === 'PREMIUM';
   const isGuest = !isAuthenticated;
+  
+  // Determine if user is at their viewing limit
+  const freeLimit = 5;
+  const premiumLimit = 10;
+  const isAtFreeLimit = isFreeUser && totalHistoryCount !== null && totalHistoryCount >= freeLimit;
+  const isAtPremiumLimit = isPremiumUser && totalHistoryCount !== null && totalHistoryCount >= premiumLimit;
+  const shouldShowUpgradeMessage = (isFreeUser && isAtFreeLimit) || (isPremiumUser && isAtPremiumLimit) || isGuest;
 
   const handlePrevious = () => {
     if (currentPage > 1) {
@@ -76,8 +83,8 @@ export default function SongHistoryScreen({ route }: Props) {
         contentContainerStyle={{ paddingBottom: 20, paddingHorizontal: 20, paddingTop: 24 }}
         showsVerticalScrollIndicator={false}
       >
-        {/* Upgrade Message for Free Users and Guests */}
-        {((isFreeUser && hasMoreThanLimit) || isGuest) && (
+        {/* Upgrade Message for Free Users, Premium Users at Limit, and Guests */}
+        {shouldShowUpgradeMessage && (
           <TouchableOpacity
             onPress={() => navigation.navigate('PremiumBenefits')}
             activeOpacity={0.8}
@@ -106,9 +113,11 @@ export default function SongHistoryScreen({ route }: Props) {
                   <Text className={theme.text('text-text-secondary', 'text-[#94A3B8]') + ' text-sm mb-2'}>
                     {isGuest
                       ? t('history.guestUpgradeMessage')
-                      : isFreeUser && hasMoreThanLimit 
-                        ? `${t('history.upgradeMessage')} You're viewing 10 of ${totalHistoryCount} songs.`
-                        : t('history.upgradeMessage')
+                      : isFreeUser && isAtFreeLimit
+                        ? `Want to see more? You're viewing ${displayedItemsCount} of ${totalHistoryCount} songs. Sign up for Premium to see up to 10 songs, or Premium Plus for unlimited access!`
+                      : isPremiumUser && isAtPremiumLimit
+                        ? `Want to see more? You're viewing ${displayedItemsCount} of ${totalHistoryCount} songs. Upgrade to Premium Plus for unlimited access!`
+                      : t('history.upgradeMessage')
                     }
                   </Text>
                   <Text className="text-primary text-sm font-semibold">
@@ -213,8 +222,9 @@ export default function SongHistoryScreen({ route }: Props) {
 
           <Text className={theme.text('text-text-secondary', 'text-[#94A3B8]') + ' text-sm'}>
             {displayedHistory.length > 0 ? (
-              isFreeUser && totalHistoryCount !== null && totalHistoryCount > displayedItemsCount ? (
-                // Show "Showing 10 of 176" for free users with more than displayed
+              (isFreeUser && totalHistoryCount !== null && totalHistoryCount > displayedItemsCount) ||
+              (isPremiumUser && totalHistoryCount !== null && totalHistoryCount > displayedItemsCount) ? (
+                // Show "Showing X of Y" for users at their limit
                 `Showing ${displayedItemsCount} of ${totalHistoryCount}`
               ) : (
                 // Show normal pagination for others

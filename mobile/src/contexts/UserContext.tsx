@@ -10,7 +10,7 @@ import {
   DEFAULT_PREFERENCES,
 } from '../utils/storage';
 import { changeLanguage } from '../i18n/config';
-import { updateUserProfile as updateUserProfileAPI, fetchSongHistory as fetchSongHistoryAPI, loginUser, getCurrentUser, logoutUser as logoutUserAPI } from '../utils/api';
+import { updateUserProfile as updateUserProfileAPI, fetchSongHistory as fetchSongHistoryAPI, addToHistory as addToHistoryAPI, loginUser, getCurrentUser, logoutUser as logoutUserAPI } from '../utils/api';
 import { clearCookies } from '../utils/cookieStorage';
 
 // Get API base URL
@@ -62,6 +62,8 @@ export interface UserContextType {
   songHistory: SongHistoryItem[];
   displayedHistory: SongHistoryItem[]; // Limited view based on subscription tier
   totalHistoryCount: number | null; // null means we don't know the total yet (for guest users)
+  totalPlayModeCount: number | null; // Total count of Play Mode entries (null for guest users)
+  totalStudyModeCount: number | null; // Total count of Study Mode entries (null for guest users)
   isLoadingMoreHistory: boolean;
   addToHistory: (song: string, artist: string, mode: 'Play Mode' | 'Study Mode', videoId: string) => Promise<void>;
   clearHistory: () => Promise<void>;
@@ -150,8 +152,12 @@ export function UserProvider({ children }: UserProviderProps) {
   const [preferences, setPreferences] = useState<UserPreferences>(DEFAULT_PREFERENCES);
   const [songHistory, setSongHistory] = useState<SongHistoryItem[]>([]);
   const [totalHistoryCount, setTotalHistoryCount] = useState<number | null>(null);
+  const [totalPlayModeCount, setTotalPlayModeCount] = useState<number | null>(null);
+  const [totalStudyModeCount, setTotalStudyModeCount] = useState<number | null>(null);
   const [isLoadingMoreHistory, setIsLoadingMoreHistory] = useState(false);
   const [historyPage, setHistoryPage] = useState(1);
+  // Ref to track current history for duplicate checks (avoids dependency on songHistory in callbacks)
+  const songHistoryRef = React.useRef<SongHistoryItem[]>([]);
 
   // Load initial data from storage
   useEffect(() => {
@@ -163,6 +169,9 @@ export function UserProvider({ children }: UserProviderProps) {
         ]);
 
         setPreferences(storedPreferences);
+        
+        // Update ref when history is loaded
+        songHistoryRef.current = storedHistory;
 
         // Initialize i18n language based on stored preference
         if (storedPreferences.language.interface) {
@@ -189,26 +198,35 @@ export function UserProvider({ children }: UserProviderProps) {
             
             // Fetch history from server
             try {
-              const { items, totalCount } = await fetchSongHistoryAPI(1, 20);
-              setSongHistory(items);
-              setTotalHistoryCount(totalCount);
-              setHistoryPage(1);
-              // Limit local storage based on subscription tier
-              let historyToSave = items;
-              if (currentUser.subscriptionTier === 'FREE' && items.length > 10) {
-                historyToSave = items.slice(0, 10);
-              }
-              await saveSongHistory(historyToSave);
+              const { items, totalCount, playModeCount, studyModeCount } = await fetchSongHistoryAPI(1, 20);
+            setSongHistory(items);
+            songHistoryRef.current = items;
+            setTotalHistoryCount(totalCount);
+            setTotalPlayModeCount(playModeCount);
+            setTotalStudyModeCount(studyModeCount);
+            setHistoryPage(1);
+            // Limit local storage based on subscription tier
+            let historyToSave = items;
+            if (currentUser.subscriptionTier === 'FREE' && items.length > 5) {
+              historyToSave = items.slice(0, 5);
+            } else if (currentUser.subscriptionTier === 'PREMIUM' && items.length > 10) {
+              historyToSave = items.slice(0, 10);
+            }
+            await saveSongHistory(historyToSave);
             } catch (error) {
               console.error('Error fetching history from server:', error);
               // Fallback to local history if server fetch fails
               // Limit based on subscription tier
               let fallbackHistory = storedHistory;
-              if (currentUser.subscriptionTier === 'FREE' && storedHistory.length > 10) {
+              if (currentUser.subscriptionTier === 'FREE' && storedHistory.length > 5) {
+                fallbackHistory = storedHistory.slice(0, 5);
+                await saveSongHistory(fallbackHistory);
+              } else if (currentUser.subscriptionTier === 'PREMIUM' && storedHistory.length > 10) {
                 fallbackHistory = storedHistory.slice(0, 10);
                 await saveSongHistory(fallbackHistory);
               }
               setSongHistory(fallbackHistory);
+              songHistoryRef.current = fallbackHistory;
             }
           } else {
             // No valid session cookie - user is a guest
@@ -219,6 +237,7 @@ export function UserProvider({ children }: UserProviderProps) {
             // Trim to 3 items if there are more (in case old dummy data exists)
             const guestHistory = storedHistory.length > 3 ? storedHistory.slice(0, 3) : storedHistory;
             setSongHistory(guestHistory);
+            songHistoryRef.current = guestHistory;
             // Save trimmed history back to storage if it was trimmed
             if (storedHistory.length > 3) {
               await saveSongHistory(guestHistory);
@@ -233,6 +252,7 @@ export function UserProvider({ children }: UserProviderProps) {
           // For guest users, use local history (limit to 3 most recent items)
           const guestHistory = storedHistory.length > 3 ? storedHistory.slice(0, 3) : storedHistory;
           setSongHistory(guestHistory);
+          songHistoryRef.current = guestHistory;
           if (storedHistory.length > 3) {
             await saveSongHistory(guestHistory);
           }
@@ -258,11 +278,14 @@ export function UserProvider({ children }: UserProviderProps) {
     // For authenticated users, enforce display limits based on subscription tier
     const tier = user.subscriptionTier;
     if (tier === 'FREE') {
-      // Free users: limit to 10 items (safety net in case songHistory temporarily has more)
+      // Free users: limit to 5 items (safety net in case songHistory temporarily has more)
+      return songHistory.slice(0, 5);
+    } else if (tier === 'PREMIUM') {
+      // Premium users: limit to 10 items
       return songHistory.slice(0, 10);
     }
     
-    // Premium users: show all items
+    // Premium Plus users: show all items (unlimited)
     return songHistory;
   }, [songHistory, isAuthenticated, user.subscriptionTier]);
 
@@ -333,11 +356,14 @@ export function UserProvider({ children }: UserProviderProps) {
     mode: 'Play Mode' | 'Study Mode',
     videoId: string
   ) => {
-    // Client-side deduplication check: Check if recent entry exists
-    const hasRecent = hasRecentHistoryEntry(songHistory, videoId, mode, 10);
+    // Debug: Log the mode being saved
+    console.log(`[History] Adding to history: ${song} - Mode: "${mode}" - VideoId: ${videoId}`);
+    
+    // Check for duplicates using ref (synchronous, avoids state dependency)
+    const hasRecent = hasRecentHistoryEntry(songHistoryRef.current, videoId, mode, 10);
     if (hasRecent) {
       // Recent entry found within 10 minutes, skip adding (no duplicate)
-      console.log(`Skipping duplicate history entry: ${song} (${mode}) - recent entry found`);
+      console.log(`[History] Skipping duplicate history entry: ${song} (${mode}) - recent entry found`);
       return;
     }
 
@@ -353,40 +379,58 @@ export function UserProvider({ children }: UserProviderProps) {
     // If authenticated, add to backend
     if (isAuthenticated) {
       try {
-        const apiBase = getApiBaseUrl().replace('/api', '');
-        const response = await fetch(`${apiBase}/api/history`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          credentials: 'include',
-          body: JSON.stringify({
-            song,
-            artist,
-            mode,
-            videoId,
-          }),
-        });
+        const data = await addToHistoryAPI(song, artist, mode, videoId);
+        // Debug: Log the mode received from server
+        console.log(`[History] Server response - Mode received: "${data.mode}"`);
         
-        if (response.ok) {
-          const data = await response.json();
-          // Update local history with the new entry from server
-          const serverEntry: SongHistoryItem = {
-            id: data.id,
-            song: data.song,
-            artist: data.artist,
-            mode: data.mode === 'PLAY_MODE' ? 'Play Mode' : 'Study Mode',
-            date: data.date,
-            time: data.time,
-            videoId: data.videoId,
-          };
-          let newHistory = [serverEntry, ...songHistory];
-          // Limit local storage for free users
-          if (user.subscriptionTier === 'FREE' && newHistory.length > 10) {
-            newHistory = newHistory.slice(0, 10);
-          }
-          setSongHistory(newHistory);
-          await saveSongHistory(newHistory);
+        // Update local history with the new entry from server
+        const serverEntry: SongHistoryItem = {
+          id: data.id,
+          song: data.song,
+          artist: data.artist,
+          mode: data.mode,
+          date: data.date,
+          time: data.time,
+          videoId: data.videoId,
+        };
+          
+          setSongHistory(prevHistory => {
+            // Double-check for duplicates (race condition protection)
+            // Check both by ID (if entry already exists) and by 10-minute window
+            const existingById = prevHistory.find(entry => entry.id === serverEntry.id);
+            if (existingById) {
+              // Entry already exists in local history, don't add again
+              return prevHistory;
+            }
+            
+            const hasRecentInCurrent = hasRecentHistoryEntry(prevHistory, videoId, mode, 10);
+            if (hasRecentInCurrent) {
+              // Recent entry found (within 10 minutes), don't add duplicate
+              return prevHistory;
+            }
+            
+            // New entry or existing entry from server (backend deduplication returned it)
+            // Add to local history
+            let updatedHistory = [serverEntry, ...prevHistory];
+            // Limit local storage based on subscription tier
+            if (user.subscriptionTier === 'FREE' && updatedHistory.length > 5) {
+              updatedHistory = updatedHistory.slice(0, 5);
+            } else if (user.subscriptionTier === 'PREMIUM' && updatedHistory.length > 10) {
+              updatedHistory = updatedHistory.slice(0, 10);
+            }
+            songHistoryRef.current = updatedHistory;
+            saveSongHistory(updatedHistory).catch(err => {
+              console.error('Failed to save song history:', err);
+            });
+            setTotalHistoryCount(prev => (prev || 0) + 1);
+            if (mode === 'Play Mode') {
+              setTotalPlayModeCount(prev => (prev || 0) + 1);
+            } else if (mode === 'Study Mode') {
+              setTotalStudyModeCount(prev => (prev || 0) + 1);
+            }
+            return updatedHistory;
+          });
           return;
-        }
       } catch (error) {
         console.error('Failed to add to history on server:', error);
         // Fall through to local storage
@@ -394,31 +438,50 @@ export function UserProvider({ children }: UserProviderProps) {
     }
 
     // Add to beginning of history (most recent first) - for guest users or if API fails
-    let newHistory = [newEntry, ...songHistory];
-    
-    // Enforce storage limits based on user type
-    if (!isAuthenticated) {
-      // Guest users: 3-item limit
-      if (newHistory.length > 3) {
-        newHistory = newHistory.slice(0, 3);
+    setSongHistory(prevHistory => {
+      // Double-check for duplicates (race condition protection)
+      const hasRecentInCurrent = hasRecentHistoryEntry(prevHistory, videoId, mode, 10);
+      if (hasRecentInCurrent) {
+        return prevHistory;
       }
-    } else if (user.subscriptionTier === 'FREE') {
-      // Free users: 10-item limit
-      if (newHistory.length > 10) {
-        newHistory = newHistory.slice(0, 10);
+      
+      let newHistory = [newEntry, ...prevHistory];
+      
+      // Enforce storage limits based on user type
+      if (!isAuthenticated) {
+        // Guest users: 3-item limit
+        if (newHistory.length > 3) {
+          newHistory = newHistory.slice(0, 3);
+        }
+      } else if (user.subscriptionTier === 'FREE') {
+        // Free users: 5-item limit
+        if (newHistory.length > 5) {
+          newHistory = newHistory.slice(0, 5);
+        }
+      } else if (user.subscriptionTier === 'PREMIUM') {
+        // Premium users: 10-item limit
+        if (newHistory.length > 10) {
+          newHistory = newHistory.slice(0, 10);
+        }
       }
-    }
-    // Premium users: no limit (all items saved)
-    
-    setSongHistory(newHistory);
-    await saveSongHistory(newHistory);
-  }, [songHistory, isAuthenticated]);
+      // Premium Plus users: no limit (all items saved)
+      
+      songHistoryRef.current = newHistory;
+      saveSongHistory(newHistory).catch(err => {
+        console.error('Failed to save song history:', err);
+      });
+      return newHistory;
+    });
+  }, [isAuthenticated, user.subscriptionTier]);
 
   // Clear history
   const clearHistory = useCallback(async () => {
     setSongHistory([]);
+    songHistoryRef.current = [];
     await saveSongHistory([]);
     setTotalHistoryCount(null);
+    setTotalPlayModeCount(null);
+    setTotalStudyModeCount(null);
     setHistoryPage(1);
   }, []);
 
@@ -434,11 +497,17 @@ export function UserProvider({ children }: UserProviderProps) {
     setIsLoadingMoreHistory(true);
     try {
       const nextPage = historyPage + 1;
-      const { items, totalCount } = await fetchSongHistoryAPI(nextPage, 20);
+      const { items, totalCount, playModeCount, studyModeCount } = await fetchSongHistoryAPI(nextPage, 20);
       
-      // Update total count if we got it from the API
+      // Update total count and mode counts if we got them from the API
       if (totalCount !== null && totalCount !== undefined) {
         setTotalHistoryCount(totalCount);
+      }
+      if (playModeCount !== null && playModeCount !== undefined) {
+        setTotalPlayModeCount(playModeCount);
+      }
+      if (studyModeCount !== null && studyModeCount !== undefined) {
+        setTotalStudyModeCount(studyModeCount);
       }
       
       if (items.length > 0) {
@@ -452,10 +521,13 @@ export function UserProvider({ children }: UserProviderProps) {
           );
           
           let updated = [...prev, ...newItems];
-          // Limit local storage for free users
-          if (user.subscriptionTier === 'FREE' && updated.length > 10) {
+          // Limit local storage based on subscription tier
+          if (user.subscriptionTier === 'FREE' && updated.length > 5) {
+            updated = updated.slice(0, 5);
+          } else if (user.subscriptionTier === 'PREMIUM' && updated.length > 10) {
             updated = updated.slice(0, 10);
           }
+          songHistoryRef.current = updated;
           saveSongHistory(updated).catch(err => {
             console.error('Failed to save song history:', err);
           });
@@ -491,12 +563,17 @@ export function UserProvider({ children }: UserProviderProps) {
         
         // Fetch history from API
         try {
-          const { items, totalCount } = await fetchSongHistoryAPI(1, 20);
+          const { items, totalCount, playModeCount, studyModeCount } = await fetchSongHistoryAPI(1, 20);
           setSongHistory(items);
+          songHistoryRef.current = items;
           setTotalHistoryCount(totalCount);
-          // Limit local storage for free users
+          setTotalPlayModeCount(playModeCount);
+          setTotalStudyModeCount(studyModeCount);
+          // Limit local storage based on subscription tier
           let historyToSave = items;
-          if (currentUser.subscriptionTier === 'FREE' && items.length > 10) {
+          if (currentUser.subscriptionTier === 'FREE' && items.length > 5) {
+            historyToSave = items.slice(0, 5);
+          } else if (currentUser.subscriptionTier === 'PREMIUM' && items.length > 10) {
             historyToSave = items.slice(0, 10);
           }
           await saveSongHistory(historyToSave);
@@ -528,13 +605,18 @@ export function UserProvider({ children }: UserProviderProps) {
     
     // Load song history from API (most recent 20)
     try {
-      const { items, totalCount } = await fetchSongHistoryAPI(1, 20);
+      const { items, totalCount, playModeCount, studyModeCount } = await fetchSongHistoryAPI(1, 20);
       setSongHistory(items);
+      songHistoryRef.current = items;
       setTotalHistoryCount(totalCount);
+      setTotalPlayModeCount(playModeCount);
+      setTotalStudyModeCount(studyModeCount);
       setHistoryPage(1);
-      // Limit local storage for free users
+      // Limit local storage based on subscription tier
       let historyToSave = items;
-      if (result.user.subscriptionTier === 'FREE' && items.length > 10) {
+      if (result.user.subscriptionTier === 'FREE' && items.length > 5) {
+        historyToSave = items.slice(0, 5);
+      } else if (result.user.subscriptionTier === 'PREMIUM' && items.length > 10) {
         historyToSave = items.slice(0, 10);
       }
       await saveSongHistory(historyToSave);
@@ -568,6 +650,7 @@ export function UserProvider({ children }: UserProviderProps) {
     
     // Clear song history
     setSongHistory([]);
+    songHistoryRef.current = [];
     await saveSongHistory([]);
     setTotalHistoryCount(null);
     setHistoryPage(1);
@@ -626,6 +709,8 @@ export function UserProvider({ children }: UserProviderProps) {
     songHistory,
     displayedHistory,
     totalHistoryCount,
+    totalPlayModeCount,
+    totalStudyModeCount,
     isLoadingMoreHistory,
     addToHistory,
     clearHistory,

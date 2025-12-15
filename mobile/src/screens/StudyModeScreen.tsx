@@ -67,6 +67,7 @@ export default function StudyModeScreen({ route }: Props) {
   const stopVideoIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const progressIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const lineRefs = useRef<{ [key: string]: View | null }>({});
+  const historySavedRef = useRef<boolean>(false); // Track if history has been saved for this videoId
 
   useEffect(() => {
     const loadData = async () => {
@@ -80,8 +81,8 @@ export default function StudyModeScreen({ route }: Props) {
         setStudyData(studyDataResult);
         setAdditionalContent(computeAdditionalContent(songData, studyDataResult));
         
-        // Track history when page loads
-        addToHistory(songData.title, songData.artist, 'Study Mode', videoId);
+        // Reset history saved flag when videoId changes
+        historySavedRef.current = false;
         
         // Auto-expand first section if study data exists
         if (studyDataResult && studyDataResult.structuredSections.length > 0) {
@@ -109,8 +110,11 @@ export default function StudyModeScreen({ route }: Props) {
       if (progressIntervalRef.current) {
         clearInterval(progressIntervalRef.current);
       }
+      // Reset history saved flag when component unmounts or videoId changes
+      historySavedRef.current = false;
     };
-  }, [videoId, addToHistory]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [videoId]); // Only depend on videoId, not addToHistory
 
   // Get all lines from current section for active line tracking
   const getCurrentSectionLines = (): (StructuredLine | LyricLine)[] => {
@@ -159,6 +163,12 @@ export default function StudyModeScreen({ route }: Props) {
   // Handle player state change - start/stop interval for tracking progress
   const onPlayerStateChange = (event: string) => {
     if (event === 'playing') {
+      // Save history when video starts playing (only once per videoId)
+      if (!historySavedRef.current && song) {
+        historySavedRef.current = true;
+        addToHistory(song.title, song.artist, 'Study Mode', videoId);
+      }
+      
       // Start interval to check current time
       progressIntervalRef.current = setInterval(async () => {
         if (!videoPlayerRef.current) return;

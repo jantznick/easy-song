@@ -33,6 +33,7 @@ export default function PlayModeScreen({ route }: Props) {
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const lyricsContainerRef = useRef<ScrollView>(null);
   const lineRefs = useRef<{ [key: number]: View | null }>({});
+  const historySavedRef = useRef<boolean>(false); // Track if history has been saved for this videoId
 
   // Flatten all lines from all sections
   const allLines = useMemo(() => {
@@ -48,8 +49,8 @@ export default function PlayModeScreen({ route }: Props) {
       try {
         const data = await fetchSongById(videoId);
         setSong(data);
-        // Track history when page loads
-        addToHistory(data.title, data.artist, 'Play Mode', videoId);
+        // Reset history saved flag when videoId changes
+        historySavedRef.current = false;
       } catch (e) {
         if (e instanceof Error) {
           setError(`Failed to fetch song: ${e.message}`);
@@ -68,8 +69,11 @@ export default function PlayModeScreen({ route }: Props) {
       if (intervalRef.current) {
         clearInterval(intervalRef.current);
       }
+      // Reset history saved flag when component unmounts or videoId changes
+      historySavedRef.current = false;
     };
-  }, [videoId, addToHistory]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [videoId]); // Only depend on videoId, not addToHistory
 
   // Sync showTranslations with preference when preferences load from storage
   useEffect(() => {
@@ -116,6 +120,12 @@ export default function PlayModeScreen({ route }: Props) {
   // Handle player state change - start/stop interval for tracking progress
   const onPlayerStateChange = (event: string) => {
     if (event === 'playing') {
+      // Save history when video starts playing (only once per videoId)
+      if (!historySavedRef.current && song) {
+        historySavedRef.current = true;
+        addToHistory(song.title, song.artist, 'Play Mode', videoId);
+      }
+      
       // Start interval to check current time
       intervalRef.current = setInterval(async () => {
         if (!playerRef.current || !allLines.length) return;

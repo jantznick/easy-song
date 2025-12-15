@@ -1,5 +1,8 @@
 import { View, Text, TouchableOpacity, Image } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useNavigation } from '@react-navigation/native';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import type { RootStackParamList } from '../types/navigation';
 import { useUser } from '../hooks/useUser';
 import { useThemeClasses } from '../utils/themeClasses';
 import { useTheme } from '../contexts/ThemeContext';
@@ -10,15 +13,20 @@ interface UserProfileCardProps {
 }
 
 export default function UserProfileCard({ onPress }: UserProfileCardProps) {
-  const { user, songHistory, isAuthenticated } = useUser();
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+  const { user, songHistory, totalHistoryCount, totalPlayModeCount, totalStudyModeCount, isAuthenticated } = useUser();
   const theme = useThemeClasses();
   const { isDark } = useTheme();
   const { t } = useTranslation();
 
-  // Calculate stats
-  const songsLearned = songHistory.length;
-  const playModeCount = songHistory.filter(item => item.mode === 'Play Mode').length;
-  const studyModeCount = songHistory.filter(item => item.mode === 'Study Mode').length;
+  // Use total counts from API if available (for authenticated users), otherwise count from local history
+  const songsLearned = isAuthenticated && totalHistoryCount !== null ? totalHistoryCount : songHistory.length;
+  const playModeCount = isAuthenticated && totalPlayModeCount !== null ? totalPlayModeCount : songHistory.filter(item => item.mode === 'Play Mode').length;
+  const studyModeCount = isAuthenticated && totalStudyModeCount !== null ? totalStudyModeCount : songHistory.filter(item => item.mode === 'Study Mode').length;
+
+  const handleStatPress = () => {
+    navigation.navigate('SongHistory');
+  };
 
   return (
     <View
@@ -80,40 +88,52 @@ export default function UserProfileCard({ onPress }: UserProfileCardProps) {
       <View className="px-6 py-4">
         <View className="flex-row justify-around">
           {/* Songs Learned */}
-          <View className="items-center flex-1">
+          <TouchableOpacity 
+            onPress={handleStatPress}
+            activeOpacity={0.7}
+            className="items-center flex-1"
+          >
             <Text className={theme.text('text-text-primary', 'text-[#F1F5F9]') + ' text-2xl font-bold mb-1'}>
               {songsLearned}
             </Text>
             <Text className={theme.text('text-text-secondary', 'text-[#94A3B8]') + ' text-xs text-center'}>
               {t('profile.songsLearned') || 'Songs Learned'}
             </Text>
-          </View>
+          </TouchableOpacity>
 
           {/* Divider */}
           <View className={theme.bg('bg-border', 'bg-[#334155]') + ' w-px mx-2'} />
 
           {/* Play Mode */}
-          <View className="items-center flex-1">
+          <TouchableOpacity 
+            onPress={handleStatPress}
+            activeOpacity={0.7}
+            className="items-center flex-1"
+          >
             <Text className={theme.text('text-text-primary', 'text-[#F1F5F9]') + ' text-2xl font-bold mb-1'}>
               {playModeCount}
             </Text>
             <Text className={theme.text('text-text-secondary', 'text-[#94A3B8]') + ' text-xs text-center'}>
               {t('profile.playMode') || 'Play Mode'}
             </Text>
-          </View>
+          </TouchableOpacity>
 
           {/* Divider */}
           <View className={theme.bg('bg-border', 'bg-[#334155]') + ' w-px mx-2'} />
 
           {/* Study Mode */}
-          <View className="items-center flex-1">
+          <TouchableOpacity 
+            onPress={handleStatPress}
+            activeOpacity={0.7}
+            className="items-center flex-1"
+          >
             <Text className={theme.text('text-text-primary', 'text-[#F1F5F9]') + ' text-2xl font-bold mb-1'}>
               {studyModeCount}
             </Text>
             <Text className={theme.text('text-text-secondary', 'text-[#94A3B8]') + ' text-xs text-center'}>
               {t('profile.studyMode') || 'Study Mode'}
             </Text>
-          </View>
+          </TouchableOpacity>
         </View>
       </View>
     </View>

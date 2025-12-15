@@ -229,6 +229,73 @@ export async function signInUser(email: string, password: string): Promise<{
 }
 
 /**
+ * Adds a song to history
+ * @param song Song title
+ * @param artist Artist name
+ * @param mode 'Play Mode' or 'Study Mode'
+ * @param videoId YouTube video ID
+ * @returns Promise that resolves to the created history entry
+ */
+export async function addToHistory(
+  song: string,
+  artist: string,
+  mode: 'Play Mode' | 'Study Mode',
+  videoId: string
+): Promise<{
+  id: string;
+  song: string;
+  artist: string;
+  mode: 'Play Mode' | 'Study Mode';
+  videoId: string;
+  date: string;
+  time: string;
+}> {
+  const cookieHeader = await getCookiesForRequest();
+  const headers: HeadersInit = { 'Content-Type': 'application/json' };
+  if (cookieHeader) {
+    headers['Cookie'] = cookieHeader;
+  }
+
+  const baseUrl = getApiUrl().replace('/api', '');
+  const response = await fetch(`${baseUrl}/api/history`, {
+    method: 'POST',
+    headers,
+    credentials: 'include',
+    body: JSON.stringify({
+      song,
+      artist,
+      mode,
+      videoId,
+    }),
+  });
+
+  // Save cookies from response
+  await saveCookiesFromResponse(response);
+
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({ error: 'Failed to add to history' }));
+    throw new Error(errorData.error || 'Failed to add to history');
+  }
+
+  const data = await response.json();
+  
+  // Convert mode format if needed
+  const modeString = (data.mode === 'Play Mode' || data.mode === 'Study Mode') 
+    ? data.mode 
+    : (data.mode === 'PLAY_MODE' ? 'Play Mode' : 'Study Mode');
+
+  return {
+    id: data.id,
+    song: data.song,
+    artist: data.artist,
+    mode: modeString as 'Play Mode' | 'Study Mode',
+    videoId: data.videoId,
+    date: data.date,
+    time: data.time,
+  };
+}
+
+/**
  * Fetches more song history (for pagination)
  * @param page Page number (1-indexed)
  * @param pageSize Number of items per page
@@ -245,6 +312,8 @@ export async function fetchSongHistory(page: number = 1, pageSize: number = 20):
     videoId: string;
   }>;
   totalCount: number;
+  playModeCount: number;
+  studyModeCount: number;
 }> {
   const cookieHeader = await getCookiesForRequest();
   const headers: HeadersInit = {};
@@ -269,11 +338,14 @@ export async function fetchSongHistory(page: number = 1, pageSize: number = 20):
   const data = await response.json();
   
   // Transform backend format to frontend format
+  // Backend returns "Play Mode" or "Study Mode" as strings, use directly
   const items = data.items.map((item: any) => ({
     id: item.id,
     song: item.song,
     artist: item.artist,
-    mode: item.mode === 'PLAY_MODE' ? 'Play Mode' : 'Study Mode',
+    mode: (item.mode === 'Play Mode' || item.mode === 'Study Mode') 
+      ? item.mode 
+      : (item.mode === 'PLAY_MODE' ? 'Play Mode' : 'Study Mode'), // Fallback for enum format
     date: item.date,
     time: item.time,
     videoId: item.videoId,
@@ -282,52 +354,13 @@ export async function fetchSongHistory(page: number = 1, pageSize: number = 20):
   return {
     items,
     totalCount: data.totalCount,
+    playModeCount: data.playModeCount || 0,
+    studyModeCount: data.studyModeCount || 0,
   };
 }
 
-/**
- * Helper function to generate dummy song history
- */
-function generateDummyHistory(count: number): Array<{ 
-  song: string; 
-  artist: string; 
-  mode: 'Play Mode' | 'Study Mode'; 
-  date: string; 
-  time: string; 
-  videoId: string;
-}> {
-  const songs = [
-    { song: 'Despacito', artist: 'Luis Fonsi' },
-    { song: 'Bailando', artist: 'Enrique Iglesias' },
-    { song: 'La Bicicleta', artist: 'Carlos Vives & Shakira' },
-    { song: 'Mi Gente', artist: 'J Balvin' },
-    { song: 'Sofia', artist: 'Alvaro Soler' },
-  ];
-  const modes: ('Play Mode' | 'Study Mode')[] = ['Play Mode', 'Study Mode'];
-  const videoId = 'KU5V5WZVcVE';
-  
-  const history = [];
-  const now = new Date();
-  
-  for (let i = 0; i < count; i++) {
-    const date = new Date(now);
-    date.setDate(date.getDate() - i);
-    
-    const songData = songs[i % songs.length];
-    const mode = modes[i % modes.length];
-    
-    history.push({
-      song: songData.song,
-      artist: songData.artist,
-      mode,
-      date: date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
-      time: date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true }),
-      videoId,
-    });
-  }
-  
-  return history;
-}
+
+
 
 /**
  * Register a new user

@@ -135,8 +135,9 @@ router.post('/', requireAuth, async (req: Request, res: Response) => {
  * GET /api/history
  * Get paginated song history
  * View limits based on subscription tier:
- * - FREE: 10 songs max
- * - PREMIUM/PREMIUM_PLUS: all songs
+ * - FREE: 5 songs max
+ * - PREMIUM: 10 songs max
+ * - PREMIUM_PLUS: all songs (unlimited)
  */
 router.get('/', requireAuth, async (req: Request, res: Response) => {
   try {
@@ -157,9 +158,29 @@ router.get('/', requireAuth, async (req: Request, res: Response) => {
       where: { userId: req.userId! },
     });
 
+    // Get mode-specific counts (all history entries, regardless of tier)
+    const playModeCount = await prisma.songHistory.count({
+      where: { 
+        userId: req.userId!,
+        mode: SongMode.PLAY_MODE,
+      },
+    });
+
+    const studyModeCount = await prisma.songHistory.count({
+      where: { 
+        userId: req.userId!,
+        mode: SongMode.STUDY_MODE,
+      },
+    });
+
     // Determine view limit based on subscription tier
-    const isPremium = req.user.subscriptionTier !== SubscriptionTier.FREE;
-    const viewLimit = isPremium ? null : 10; // null means no limit
+    let viewLimit: number | null = null; // null means no limit
+    if (req.user.subscriptionTier === SubscriptionTier.FREE) {
+      viewLimit = 5;
+    } else if (req.user.subscriptionTier === SubscriptionTier.PREMIUM) {
+      viewLimit = 10;
+    }
+    // PREMIUM_PLUS: viewLimit remains null (unlimited)
 
     // Calculate effective total count (what user can actually see)
     const effectiveTotalCount = viewLimit !== null ? Math.min(totalCount, viewLimit) : totalCount;
@@ -176,7 +197,7 @@ router.get('/', requireAuth, async (req: Request, res: Response) => {
     const skip = (page - 1) * pageSize;
 
     // Fetch items for the validated page (include song relation)
-    // For free users, limit to viewLimit (10), for premium users, no limit
+    // Apply view limit based on subscription tier
     const queryLimit = viewLimit !== null ? Math.min(pageSize, viewLimit - skip) : pageSize;
     
     const items = await prisma.songHistory.findMany({
@@ -202,6 +223,8 @@ router.get('/', requireAuth, async (req: Request, res: Response) => {
     res.json({
       items: formattedItems,
       totalCount, // Always return full count (so UI can show "Viewing 10 of 50 songs")
+      playModeCount, // Total count of Play Mode entries
+      studyModeCount, // Total count of Study Mode entries
       page,
       pageSize,
       hasMore: skip + items.length < effectiveTotalCount,
