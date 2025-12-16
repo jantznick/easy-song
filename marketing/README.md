@@ -15,6 +15,7 @@ A modern, static marketing website for the Easy Song mobile app.
 ```
 marketing/
 ├── index.html          # Main landing page
+├── about.html          # About page (personal story)
 ├── components/         # Web components
 │   ├── header.js      # Header component
 │   └── footer.js      # Footer component
@@ -93,6 +94,5 @@ Edit `index.html` directly - it's all in one file for easy customization.
 
 - **Images**: Copy `mobile-play-along.png` and `mobile-study-mode.png` from `frontend/public/` to `marketing/images/` before deploying
 - **Download links**: Update iOS and Android download buttons with actual App Store/Play Store URLs
-- **Social media links**: Update footer links with your actual social media URLs
-- **Email/Contact**: Add your contact information to the footer if needed
+- **About page**: The about page has a personal, indie developer tone. Feel free to customize it with your own story
 
