@@ -50,3 +50,4 @@ export function t(key: string, options?: any): string {
   return typeof result === 'string' ? result : String(result);
 }
 
+

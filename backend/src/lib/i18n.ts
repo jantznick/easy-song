@@ -26,3 +26,4 @@ export default i18next;
 // Re-export t function for convenience
 export const t = (key: string, options?: any) => i18next.t(key, options);
 
+

@@ -11,6 +11,7 @@ import './global.css';
 import './src/i18n/config';
 import { UserProvider } from './src/contexts/UserContext';
 import { ThemeProvider, useTheme } from './src/contexts/ThemeContext';
+import { initializeAds } from './src/utils/ads';
 import OnboardingScreen from './src/screens/OnboardingScreen';
 import AuthScreen from './src/screens/AuthScreen';
 import SongListScreen from './src/screens/SongListScreen';
@@ -123,6 +124,11 @@ function AppContent() {
 }
 
 export default function App() {
+  // Initialize AdMob when app starts
+  useEffect(() => {
+    initializeAds();
+  }, []);
+
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <SafeAreaProvider>

@@ -59,3 +59,4 @@ return res.status(400).json({ error: t('errors.auth.emailRequired') });
 
 The error message will automatically be translated based on the user's language preference!
 
+

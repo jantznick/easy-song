@@ -55,3 +55,4 @@ export function getFontSizes(fontSize: FontSizePreference): FontSizes {
   return FONT_SIZE_MAP[fontSize];
 }
 
+

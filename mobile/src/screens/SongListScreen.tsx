@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { View, Text, ScrollView, SafeAreaView, TouchableOpacity, FlatList, Dimensions } from 'react-native';
+import { View, Text, ScrollView, SafeAreaView, TouchableOpacity, FlatList, Dimensions, Button } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { SongsResponse, SongSummary } from '../types/song';
@@ -11,6 +11,7 @@ import type { RootStackParamList } from '../types/navigation';
 import { useUser } from '../hooks/useUser';
 import { useTranslation } from '../hooks/useTranslation';
 import { useThemeClasses } from '../utils/themeClasses';
+import { useInterstitialAd } from '../hooks/useInterstitialAd';
 
 // TODO: Future implementation - Filter songs by learning language preference
 // When backend supports language filtering, use preferences.language.learning
@@ -30,6 +31,9 @@ export default function SongListScreen({ navigation }: Props) {
   const [sections, setSections] = useState<SongsResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  
+  // Initialize interstitial ad
+  const { loaded: adLoaded, showAd } = useInterstitialAd();
 
   useEffect(() => {
     const getSongs = async () => {
@@ -128,6 +132,20 @@ export default function SongListScreen({ navigation }: Props) {
             {/* Header */}
             <View className={theme.border('border-border', 'border-[#334155]') + ' px-5 pt-2 pb-4 border-b flex-row items-center justify-between mb-2'}>
               <Text className={theme.text('text-text-primary', 'text-[#F1F5F9]') + ' text-3xl font-bold'}>{t('songs.title')}</Text>
+            </View>
+
+            {/* Test Ad Button - TODO: Remove after testing */}
+            <View className="px-5 py-3 bg-yellow-100 border-2 border-yellow-500 rounded-lg mx-4 mb-4">
+              <Text className="text-yellow-900 font-bold mb-2">🧪 Ad Test (Remove Later)</Text>
+              <TouchableOpacity
+                onPress={showAd}
+                className="bg-blue-600 py-3 px-4 rounded-lg"
+                disabled={!adLoaded}
+              >
+                <Text className="text-white text-center font-semibold">
+                  {adLoaded ? 'Show Test Ad' : 'Loading Ad...'}
+                </Text>
+              </TouchableOpacity>
             </View>
 
             {/* Sections */}

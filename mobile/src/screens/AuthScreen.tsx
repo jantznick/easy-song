@@ -29,3 +29,4 @@ export default function AuthScreen({ navigation }: Props) {
     </View>
   );
 }
+
