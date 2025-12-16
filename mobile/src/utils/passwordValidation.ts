@@ -18,14 +18,20 @@ export interface PasswordRequirements {
   specialChars: string;
 }
 
-let cachedRequirements: PasswordRequirements | null = null;
+// Cache for the full response (both requirements and description)
+interface CachedPasswordData {
+  requirements: PasswordRequirements;
+  description: string[];
+}
+
+let cachedPasswordData: CachedPasswordData | null = null;
 
 /**
- * Fetches password requirements from backend
+ * Fetches password requirements and description from backend (single fetch, cached)
  */
-export async function getPasswordRequirements(): Promise<PasswordRequirements> {
-  if (cachedRequirements !== null) {
-    return cachedRequirements;
+async function fetchPasswordData(): Promise<CachedPasswordData> {
+  if (cachedPasswordData !== null) {
+    return cachedPasswordData;
   }
 
   try {
@@ -37,57 +43,60 @@ export async function getPasswordRequirements(): Promise<PasswordRequirements> {
     }
     
     const data = await response.json();
-    const requirements: PasswordRequirements = data.requirements;
-    cachedRequirements = requirements;
-    return requirements;
+    
+    // Extract description into array
+    const descriptionArray: string[] = [];
+    if (data.description.minLength) descriptionArray.push(data.description.minLength);
+    if (data.description.uppercase) descriptionArray.push(data.description.uppercase);
+    if (data.description.lowercase) descriptionArray.push(data.description.lowercase);
+    if (data.description.numbers) descriptionArray.push(data.description.numbers);
+    if (data.description.specialChars) descriptionArray.push(data.description.specialChars);
+    
+    cachedPasswordData = {
+      requirements: data.requirements,
+      description: descriptionArray,
+    };
+    
+    return cachedPasswordData;
   } catch (error) {
     console.error('Error fetching password requirements, using defaults:', error);
     // Fallback to defaults if API fails
-    const fallback: PasswordRequirements = {
-      minLength: 8,
-      maxLength: 128,
-      requireUppercase: true,
-      requireLowercase: true,
-      requireNumbers: true,
-      requireSpecialChars: false,
-      specialChars: '!@#$%^&*()_+-=[]{}|;:,.<>?',
+    const fallback: CachedPasswordData = {
+      requirements: {
+        minLength: 8,
+        maxLength: 128,
+        requireUppercase: true,
+        requireLowercase: true,
+        requireNumbers: true,
+        requireSpecialChars: false,
+        specialChars: '!@#$%^&*()_+-=[]{}|;:,.<>?',
+      },
+      description: [
+        'At least 8 characters',
+        'One uppercase letter',
+        'One lowercase letter',
+        'One number',
+      ],
     };
+    cachedPasswordData = fallback;
     return fallback;
   }
 }
 
 /**
- * Gets password requirements description from backend
+ * Gets password requirements from backend (cached)
+ */
+export async function getPasswordRequirements(): Promise<PasswordRequirements> {
+  const data = await fetchPasswordData();
+  return data.requirements;
+}
+
+/**
+ * Gets password requirements description from backend (cached)
  */
 export async function getPasswordRequirementsDescription(): Promise<string[]> {
-  try {
-    const baseUrl = getApiUrl().replace('/api', '');
-    const response = await fetch(`${baseUrl}/api/user/password-requirements`);
-    
-    if (!response.ok) {
-      throw new Error('Failed to fetch password requirements');
-    }
-    
-    const data = await response.json();
-    const requirements: string[] = [];
-    
-    if (data.description.minLength) requirements.push(data.description.minLength);
-    if (data.description.uppercase) requirements.push(data.description.uppercase);
-    if (data.description.lowercase) requirements.push(data.description.lowercase);
-    if (data.description.numbers) requirements.push(data.description.numbers);
-    if (data.description.specialChars) requirements.push(data.description.specialChars);
-    
-    return requirements;
-  } catch (error) {
-    console.error('Error fetching password requirements description:', error);
-    // Fallback
-    return [
-      'At least 8 characters',
-      'One uppercase letter',
-      'One lowercase letter',
-      'One number',
-    ];
-  }
+  const data = await fetchPasswordData();
+  return data.description;
 }
 
 export interface PasswordValidationResult {

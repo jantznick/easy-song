@@ -11,6 +11,8 @@ import {
 } from '../utils/storage';
 import { changeLanguage } from '../i18n/config';
 import { updateUserProfile as updateUserProfileAPI, fetchSongHistory as fetchSongHistoryAPI, addToHistory as addToHistoryAPI, loginUser, getCurrentUser, logoutUser as logoutUserAPI } from '../utils/api';
+// Note: clearCookies is imported but React Native manages cookies automatically via credentials: 'include'
+// We only use clearCookies for logout to clear AsyncStorage (though RN native cookies persist)
 import { clearCookies } from '../utils/cookieStorage';
 
 // Get API base URL
@@ -545,6 +547,10 @@ export function UserProvider({ children }: UserProviderProps) {
 
   // Sign in
   const signIn = useCallback(async (email: string, password: string) => {
+    // Capture current guest history before authentication (use ref to avoid stale closure)
+    // We capture ALL history here - if user is already authenticated, this won't be used anyway
+    const guestHistoryToMigrate = [...songHistoryRef.current];
+    
     // If password is 'magic-code-login', user is already logged in via magic code
     if (password === 'magic-code-login') {
       // Check current user from session
@@ -559,9 +565,24 @@ export function UserProvider({ children }: UserProviderProps) {
           emailVerified: currentUser.emailVerified,
         };
         setUser(userData);
-        setIsAuthenticated(true);
         
-        // Fetch history from API
+        // Migrate guest history to backend BEFORE setting authenticated
+        // (only migrate if there's actually guest history to migrate)
+        if (guestHistoryToMigrate.length > 0) {
+          // Call addToHistoryAPI for each guest item
+          for (const item of guestHistoryToMigrate) {
+            try {
+              await addToHistoryAPI(item.song, item.artist, item.mode, item.videoId);
+            } catch (error) {
+              console.log('Failed to migrate item, continuing...', error);
+            }
+          }
+        }
+        
+    // Set authenticated AFTER migration completes
+    setIsAuthenticated(true);
+    
+    // Fetch history from API (includes migrated items)
         try {
           const { items, totalCount, playModeCount, studyModeCount } = await fetchSongHistoryAPI(1, 20);
           setSongHistory(items);
@@ -601,9 +622,23 @@ export function UserProvider({ children }: UserProviderProps) {
       emailVerified: currentUser?.emailVerified ?? result.user.emailVerified ?? false,
     };
     setUser(userData);
+    
+    // Migrate guest history to backend BEFORE setting authenticated
+    if (guestHistoryToMigrate.length > 0) {
+      // Call addToHistoryAPI for each guest item
+      for (const item of guestHistoryToMigrate) {
+        try {
+          await addToHistoryAPI(item.song, item.artist, item.mode, item.videoId);
+        } catch (error) {
+          console.log('Failed to migrate item, continuing...', error);
+        }
+      }
+    }
+    
+    // Set authenticated AFTER migration completes
     setIsAuthenticated(true);
     
-    // Load song history from API (most recent 20)
+    // Load song history from API (most recent 20, includes migrated items)
     try {
       const { items, totalCount, playModeCount, studyModeCount } = await fetchSongHistoryAPI(1, 20);
       setSongHistory(items);
@@ -665,15 +700,14 @@ export function UserProvider({ children }: UserProviderProps) {
     const currentUser = await getCurrentUser();
     
     // Update user state with server response (ensures we have correct emailVerified status, etc.)
-    const updatedUser: User = {
+    setUser(prevUser => ({
       name: updatedUserData.name,
       email: updatedUserData.email,
       avatar: updatedUserData.avatar || undefined,
-      subscriptionTier: user.subscriptionTier, // Keep existing subscription tier (not returned by profile endpoint)
-      hasPassword: currentUser?.hasPassword ?? user.hasPassword, // Update hasPassword if available
-    };
-    setUser(updatedUser);
-  }, [user]);
+      subscriptionTier: prevUser.subscriptionTier, // Keep existing subscription tier
+      hasPassword: currentUser?.hasPassword ?? prevUser.hasPassword,
+    }));
+  }, []); // No dependencies - use functional setState
 
   // Refresh user data from server
   const refreshUser = useCallback(async () => {

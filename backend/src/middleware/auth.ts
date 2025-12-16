@@ -30,6 +30,10 @@ declare global {
 export async function requireAuth(req: Request, res: Response, next: NextFunction): Promise<void> {
   const session = req.session as Session & { userId?: string };
   if (!session.userId) {
+    console.log('[Auth Failed] No userId in session');
+    console.log('[Auth Failed] Cookie header:', req.headers.cookie);
+    console.log('[Auth Failed] Session ID:', req.sessionID);
+    console.log('[Auth Failed] Session data:', JSON.stringify(req.session));
     res.status(401).json({ error: 'Authentication required' });
     return;
   }

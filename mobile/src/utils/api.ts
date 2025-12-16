@@ -1,5 +1,7 @@
 import type { Song, SongSummary, StudyData, LyricLine, SongsResponse } from '../types/song';
-import { saveCookiesFromResponse, getCookiesForRequest, clearCookies } from './cookieStorage';
+// Cookie management: React Native handles cookies automatically via credentials: 'include'
+// We only import clearCookies for logout functionality
+import { clearCookies } from './cookieStorage';
 
 // Configuration: Set to 'api' for Express backend, or 'static' for S3/static file hosting
 // For mobile, we'll default to API mode but can be configured via environment variables
@@ -153,22 +155,13 @@ export async function updateUserProfile(updates: {
   emailVerified: boolean;
   updatedAt: string;
 }> {
-  const cookieHeader = await getCookiesForRequest();
-  const headers: HeadersInit = { 'Content-Type': 'application/json' };
-  if (cookieHeader) {
-    headers['Cookie'] = cookieHeader;
-  }
-
   const baseUrl = getApiUrl().replace('/api', '');
   const response = await fetch(`${baseUrl}/api/user/profile`, {
     method: 'PUT',
-    headers,
+    headers: { 'Content-Type': 'application/json' },
     credentials: 'include',
     body: JSON.stringify(updates),
   });
-
-  // Save cookies from response
-  await saveCookiesFromResponse(response);
 
   const data = await response.json();
 
@@ -177,55 +170,6 @@ export async function updateUserProfile(updates: {
   }
 
   return data;
-}
-
-/**
- * Signs in a user (dummy API call - always returns success for now)
- * @param email User email
- * @param password User password
- * @returns Promise that resolves to auth token, user profile, song history, and total count
- */
-export async function signInUser(email: string, password: string): Promise<{ 
-  token: string; 
-  user: { name: string; email: string; avatar?: string };
-  songHistory: Array<{ song: string; artist: string; mode: 'Play Mode' | 'Study Mode'; date: string; time: string; videoId: string }>;
-  totalHistoryCount: number;
-}> {
-  // TODO: Replace with actual API call when backend is ready
-  // Simulate API delay
-  await new Promise(resolve => setTimeout(resolve, 500));
-  
-  // Basic validation
-  if (!email || !password) {
-    throw new Error('Email and password are required');
-  }
-  
-  // Simulate validation - accept any email/password for now
-  // In real implementation, this would call: POST /api/auth/login
-  // const response = await fetch(`${BASE_URL}/auth/login`, {
-  //   method: 'POST',
-  //   headers: { 'Content-Type': 'application/json' },
-  //   body: JSON.stringify({ email, password }),
-  // });
-  // if (!response.ok) throw new Error('Invalid credentials');
-  // const data = await response.json();
-  // return { token: data.token, user: data.user, songHistory: data.songHistory, totalHistoryCount: data.totalHistoryCount };
-  
-  // Return dummy data with most recent 20 songs
-  // In real implementation, this would come from the backend
-  const TOTAL_HISTORY_COUNT = 103; // Total songs in user's history
-  const dummyHistory = generateDummyHistory(20);
-  
-  return {
-    token: `dummy_token_${Date.now()}`,
-    user: {
-      name: email.split('@')[0] || 'User', // Use email prefix as name
-      email: email,
-      avatar: undefined,
-    },
-    songHistory: dummyHistory,
-    totalHistoryCount: TOTAL_HISTORY_COUNT,
-  };
 }
 
 /**
@@ -250,17 +194,11 @@ export async function addToHistory(
   date: string;
   time: string;
 }> {
-  const cookieHeader = await getCookiesForRequest();
-  const headers: HeadersInit = { 'Content-Type': 'application/json' };
-  if (cookieHeader) {
-    headers['Cookie'] = cookieHeader;
-  }
-
   const baseUrl = getApiUrl().replace('/api', '');
   const response = await fetch(`${baseUrl}/api/history`, {
     method: 'POST',
-    headers,
-    credentials: 'include',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include', // React Native manages cookies automatically
     body: JSON.stringify({
       song,
       artist,
@@ -268,9 +206,6 @@ export async function addToHistory(
       videoId,
     }),
   });
-
-  // Save cookies from response
-  await saveCookiesFromResponse(response);
 
   if (!response.ok) {
     const errorData = await response.json().catch(() => ({ error: 'Failed to add to history' }));
@@ -315,21 +250,12 @@ export async function fetchSongHistory(page: number = 1, pageSize: number = 20):
   playModeCount: number;
   studyModeCount: number;
 }> {
-  const cookieHeader = await getCookiesForRequest();
-  const headers: HeadersInit = {};
-  if (cookieHeader) {
-    headers['Cookie'] = cookieHeader;
-  }
-
   const url = `${BASE_URL.replace('/api', '')}/api/history?page=${page}&pageSize=${pageSize}`;
+  
   const response = await fetch(url, {
     method: 'GET',
-    headers,
-    credentials: 'include', // Include cookies for session
+    credentials: 'include',
   });
-
-  // Save cookies from response
-  await saveCookiesFromResponse(response);
 
   if (!response.ok) {
     throw new Error('Failed to fetch history');
@@ -376,21 +302,12 @@ export async function registerUser(email: string, password: string, name: string
     subscriptionTier: 'FREE' | 'PREMIUM' | 'PREMIUM_PLUS';
   };
 }> {
-  const cookieHeader = await getCookiesForRequest();
-  const headers: HeadersInit = { 'Content-Type': 'application/json' };
-  if (cookieHeader) {
-    headers['Cookie'] = cookieHeader;
-  }
-
   const response = await fetch(`${getAuthUrl()}/register`, {
     method: 'POST',
-    headers,
-    credentials: 'include', // Include cookies for session
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
     body: JSON.stringify({ email, password, name }),
   });
-
-  // Save cookies from response
-  await saveCookiesFromResponse(response);
 
   const data = await response.json();
 
@@ -415,21 +332,12 @@ export async function loginUser(email: string, password: string): Promise<{
     emailVerified: boolean;
   };
 }> {
-  const cookieHeader = await getCookiesForRequest();
-  const headers: HeadersInit = { 'Content-Type': 'application/json' };
-  if (cookieHeader) {
-    headers['Cookie'] = cookieHeader;
-  }
-
   const response = await fetch(`${getAuthUrl()}/login`, {
     method: 'POST',
-    headers,
-    credentials: 'include', // Include cookies for session
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
     body: JSON.stringify({ email, password }),
   });
-
-  // Save cookies from response
-  await saveCookiesFromResponse(response);
 
   const data = await response.json();
 
@@ -447,21 +355,12 @@ export async function requestMagicCode(email: string, isSignup: boolean = false)
   success: boolean;
   message: string;
 }> {
-  const cookieHeader = await getCookiesForRequest();
-  const headers: HeadersInit = { 'Content-Type': 'application/json' };
-  if (cookieHeader) {
-    headers['Cookie'] = cookieHeader;
-  }
-
   const response = await fetch(`${getAuthUrl()}/request-login-code`, {
     method: 'POST',
-    headers,
+    headers: { 'Content-Type': 'application/json' },
     credentials: 'include',
     body: JSON.stringify({ email, isSignup }),
   });
-
-  // Save cookies from response
-  await saveCookiesFromResponse(response);
 
   const data = await response.json();
 
@@ -486,21 +385,12 @@ export async function verifyMagicCode(email: string, code: string, isSignup: boo
     subscriptionTier: 'FREE' | 'PREMIUM' | 'PREMIUM_PLUS';
   };
 }> {
-  const cookieHeader = await getCookiesForRequest();
-  const headers: HeadersInit = { 'Content-Type': 'application/json' };
-  if (cookieHeader) {
-    headers['Cookie'] = cookieHeader;
-  }
-
   const response = await fetch(`${getAuthUrl()}/verify-login-code`, {
     method: 'POST',
-    headers,
+    headers: { 'Content-Type': 'application/json' },
     credentials: 'include',
     body: JSON.stringify({ email, code, isSignup }),
   });
-
-  // Save cookies from response
-  await saveCookiesFromResponse(response);
 
   const data = await response.json();
 
@@ -526,7 +416,6 @@ export async function getCurrentUser(): Promise<{
   try {
     const response = await fetch(`${getAuthUrl()}/me`, {
       method: 'GET',
-      credentials: 'include',
     });
 
     if (response.status === 401 || response.status === 403) {
@@ -549,15 +438,8 @@ export async function getCurrentUser(): Promise<{
  */
 export async function logoutUser(): Promise<void> {
   try {
-    const cookieHeader = await getCookiesForRequest();
-    const headers: HeadersInit = {};
-    if (cookieHeader) {
-      headers['Cookie'] = cookieHeader;
-    }
-
     await fetch(`${getAuthUrl()}/logout`, {
       method: 'POST',
-      headers,
       credentials: 'include',
     });
     
@@ -589,21 +471,11 @@ export async function fetchPreferences(): Promise<{
     interface: string;
   };
 }> {
-  const cookieHeader = await getCookiesForRequest();
-  const headers: HeadersInit = {};
-  if (cookieHeader) {
-    headers['Cookie'] = cookieHeader;
-  }
-
   const baseUrl = getApiUrl().replace('/api', '');
   const response = await fetch(`${baseUrl}/api/user/preferences`, {
     method: 'GET',
-    headers,
     credentials: 'include',
   });
-
-  // Save cookies from response
-  await saveCookiesFromResponse(response);
 
   if (!response.ok) {
     throw new Error('Failed to fetch preferences');
@@ -646,22 +518,13 @@ export async function updatePreferences(updates: {
     interface: string;
   };
 }> {
-  const cookieHeader = await getCookiesForRequest();
-  const headers: HeadersInit = { 'Content-Type': 'application/json' };
-  if (cookieHeader) {
-    headers['Cookie'] = cookieHeader;
-  }
-
   const baseUrl = getApiUrl().replace('/api', '');
   const response = await fetch(`${baseUrl}/api/user/preferences`, {
     method: 'PUT',
-    headers,
+    headers: { 'Content-Type': 'application/json' },
     credentials: 'include',
     body: JSON.stringify(updates),
   });
-
-  // Save cookies from response
-  await saveCookiesFromResponse(response);
 
   const data = await response.json();
 
@@ -691,21 +554,12 @@ export async function changePassword(
     body.currentPassword = currentPassword;
   }
 
-  const cookieHeader = await getCookiesForRequest();
-  const headers: HeadersInit = { 'Content-Type': 'application/json' };
-  if (cookieHeader) {
-    headers['Cookie'] = cookieHeader;
-  }
-
   const response = await fetch(`${baseUrl}/api/user/change-password`, {
     method: 'POST',
-    headers,
+    headers: { 'Content-Type': 'application/json' },
     credentials: 'include',
     body: JSON.stringify(body),
   });
-
-  // Save cookies from response
-  await saveCookiesFromResponse(response);
 
   const data = await response.json();
 
@@ -728,22 +582,13 @@ export async function verifyEmail(code: string): Promise<{
   success: boolean;
   message: string;
 }> {
-  const cookieHeader = await getCookiesForRequest();
-  const headers: HeadersInit = { 'Content-Type': 'application/json' };
-  if (cookieHeader) {
-    headers['Cookie'] = cookieHeader;
-  }
-
   const baseUrl = getApiUrl().replace('/api', '');
   const response = await fetch(`${baseUrl}/api/auth/verify-email`, {
     method: 'POST',
-    headers,
+    headers: { 'Content-Type': 'application/json' },
     credentials: 'include',
     body: JSON.stringify({ code }),
   });
-
-  // Save cookies from response
-  await saveCookiesFromResponse(response);
 
   const data = await response.json();
 
@@ -761,21 +606,12 @@ export async function resendVerificationCode(): Promise<{
   success: boolean;
   message: string;
 }> {
-  const cookieHeader = await getCookiesForRequest();
-  const headers: HeadersInit = { 'Content-Type': 'application/json' };
-  if (cookieHeader) {
-    headers['Cookie'] = cookieHeader;
-  }
-
   const baseUrl = getApiUrl().replace('/api', '');
   const response = await fetch(`${baseUrl}/api/auth/resend-verification`, {
     method: 'POST',
-    headers,
+    headers: { 'Content-Type': 'application/json' },
     credentials: 'include',
   });
-
-  // Save cookies from response
-  await saveCookiesFromResponse(response);
 
   const data = await response.json();
 
