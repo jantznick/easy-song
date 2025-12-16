@@ -1,7 +1,7 @@
 import type { Song, SongSummary, StudyData, LyricLine, SongsResponse } from '../types/song';
-// Cookie management: React Native handles cookies automatically via credentials: 'include'
-// We only import clearCookies for logout functionality
-import { clearCookies } from './cookieStorage';
+
+// Note: Cookie management is handled automatically by React Native's HTTP client via credentials: 'include'
+// No manual cookie storage needed!
 
 // Configuration: Set to 'api' for Express backend, or 'static' for S3/static file hosting
 // For mobile, we'll default to API mode but can be configured via environment variables
@@ -442,13 +442,9 @@ export async function logoutUser(): Promise<void> {
       method: 'POST',
       credentials: 'include',
     });
-    
-    // Clear cookies on logout
-    await clearCookies();
+    // Backend sends Set-Cookie with Max-Age=0, React Native clears cookies automatically
   } catch (error) {
     console.error('Error logging out:', error);
-    // Still clear cookies even if logout fails
-    await clearCookies();
   }
 }
 

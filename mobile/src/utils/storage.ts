@@ -157,7 +157,7 @@ export async function clearAllStorage(): Promise<void> {
       STORAGE_KEYS.USER_PROFILE,
       STORAGE_KEYS.SONG_HISTORY,
       // Note: We don't clear ONBOARDING_COMPLETE on sign out
-      // Note: Session cookies are cleared via cookieStorage.clearCookies() in the logout flow
+      // Note: Session cookies are cleared automatically by React Native when backend sends Set-Cookie with Max-Age=0
     ]);
   } catch (error) {
     console.error('Error clearing storage:', error);

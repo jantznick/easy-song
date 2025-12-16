@@ -11,9 +11,6 @@ import {
 } from '../utils/storage';
 import { changeLanguage } from '../i18n/config';
 import { updateUserProfile as updateUserProfileAPI, fetchSongHistory as fetchSongHistoryAPI, addToHistory as addToHistoryAPI, loginUser, getCurrentUser, logoutUser as logoutUserAPI } from '../utils/api';
-// Note: clearCookies is imported but React Native manages cookies automatically via credentials: 'include'
-// We only use clearCookies for logout to clear AsyncStorage (though RN native cookies persist)
-import { clearCookies } from '../utils/cookieStorage';
 
 // Get API base URL
 const getApiBaseUrl = () => {
@@ -663,14 +660,12 @@ export function UserProvider({ children }: UserProviderProps) {
   // Sign out
   const signOut = useCallback(async () => {
     // Call logout API to clear server session
+    // Backend will send Set-Cookie with Max-Age=0, React Native clears cookies automatically
     try {
       await logoutUserAPI();
     } catch (error) {
       console.error('Error during logout API call:', error);
     }
-    
-    // Clear session cookie
-    await clearCookies();
     
     // Clear all local storage
     await clearAllStorage();
