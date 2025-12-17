@@ -173,6 +173,16 @@ router.get('/', requireAuth, async (req: Request, res: Response) => {
       },
     });
 
+    const todayStudyModeCount = await prisma.songHistory.count({
+      where: { 
+        userId: req.userId!,
+        mode: SongMode.STUDY_MODE,
+        playedAt: {
+          gte: new Date(new Date().setHours(0, 0, 0, 0)),
+        },
+      },
+    });
+
     // Determine view limit based on subscription tier
     let viewLimit: number | null = null; // null means no limit
     if (req.user.subscriptionTier === SubscriptionTier.FREE) {
@@ -225,6 +235,7 @@ router.get('/', requireAuth, async (req: Request, res: Response) => {
       totalCount, // Always return full count (so UI can show "Viewing 10 of 50 songs")
       playModeCount, // Total count of Play Mode entries
       studyModeCount, // Total count of Study Mode entries
+      todayStudyModeCount, // Total count of Study Mode entries today
       page,
       pageSize,
       hasMore: skip + items.length < effectiveTotalCount,

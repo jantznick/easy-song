@@ -112,7 +112,14 @@
     "selectSection": "Select a section above to view its content",
     "studyDataNotAvailable": "Study data is not available",
     "studyDataNotAvailableDescription": "The structured study format will be available once the data is generated.",
-    "additionalContentNote": "These lines weren't included in the structured sections above."
+    "additionalContentNote": "These lines weren't included in the structured sections above.",
+    "limitReached": "Daily Limit Reached",
+    "limitReachedMessage": "You've reached your limit of 2 Study Mode sessions for today.",
+    "limitReachedUpgrade": "Upgrade to Premium Plus for unlimited Study Mode access!",
+    "limitReachedAd": "Or watch an ad to get one more Study Mode session today",
+    "watchAdButton": "Watch Ad",
+    "upgradeToPremium": "Upgrade to Premium Plus",
+    "comeBackTomorrow": "Come back tomorrow to continue learning!"
   },
   "settings": {
     "title": "Settings",

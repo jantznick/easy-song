@@ -96,7 +96,14 @@
     "selectSection": "Wählen Sie oben einen Abschnitt aus, um dessen Inhalt anzuzeigen",
     "studyDataNotAvailable": "Lerndaten sind nicht verfügbar",
     "studyDataNotAvailableDescription": "Das strukturierte Lernformat wird verfügbar sein, sobald die Daten generiert wurden.",
-    "additionalContentNote": "Diese Zeilen wurden nicht in die strukturierten Abschnitte oben aufgenommen."
+    "additionalContentNote": "Diese Zeilen wurden nicht in die strukturierten Abschnitte oben aufgenommen.",
+    "limitReached": "Tageslimit Erreicht",
+    "limitReachedMessage": "Sie haben Ihr Limit von 2 Lernmodus-Sitzungen für heute erreicht.",
+    "limitReachedUpgrade": "Upgraden Sie auf Premium Plus für unbegrenzten Zugriff auf den Lernmodus!",
+    "limitReachedAd": "Oder schauen Sie sich eine Werbung an, um heute eine weitere Lernmodus-Sitzung zu erhalten",
+    "watchAdButton": "Werbung Ansehen",
+    "upgradeToPremium": "Auf Premium Plus Upgraden",
+    "comeBackTomorrow": "Kommen Sie morgen zurück, um weiter zu lernen!"
   },
   "settings": {
     "title": "Einstellungen",

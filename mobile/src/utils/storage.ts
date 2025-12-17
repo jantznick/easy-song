@@ -5,6 +5,7 @@ const STORAGE_KEYS = {
   USER_PROFILE: '@easysong:user_profile',
   SONG_HISTORY: '@easysong:song_history',
   ONBOARDING_COMPLETE: '@easysong:onboarding_complete',
+  TODAY_STUDY_COUNT: '@easysong:today_study_count',
 } as const;
 
 export interface StoredPreferences {
@@ -149,6 +150,46 @@ export async function resetOnboarding(): Promise<void> {
   }
 }
 
+// Today Study Count Storage (for guest users)
+interface TodayStudyCount {
+  count: number;
+  date: string; // YYYY-MM-DD format
+}
+
+export async function loadTodayStudyCount(): Promise<number> {
+  try {
+    const data = await AsyncStorage.getItem(STORAGE_KEYS.TODAY_STUDY_COUNT);
+    if (data) {
+      const parsed: TodayStudyCount = JSON.parse(data);
+      const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
+      
+      // If the stored date is today, return the count
+      if (parsed.date === today) {
+        return parsed.count;
+      }
+      // If it's a different day, reset to 0
+      return 0;
+    }
+    return 0;
+  } catch (error) {
+    console.error('Error loading today study count:', error);
+    return 0;
+  }
+}
+
+export async function saveTodayStudyCount(count: number): Promise<void> {
+  try {
+    const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
+    const data: TodayStudyCount = {
+      count,
+      date: today,
+    };
+    await AsyncStorage.setItem(STORAGE_KEYS.TODAY_STUDY_COUNT, JSON.stringify(data));
+  } catch (error) {
+    console.error('Error saving today study count:', error);
+  }
+}
+
 // Clear all storage (for sign out)
 export async function clearAllStorage(): Promise<void> {
   try {
@@ -156,6 +197,7 @@ export async function clearAllStorage(): Promise<void> {
       STORAGE_KEYS.USER_PREFERENCES,
       STORAGE_KEYS.USER_PROFILE,
       STORAGE_KEYS.SONG_HISTORY,
+      STORAGE_KEYS.TODAY_STUDY_COUNT,
       // Note: We don't clear ONBOARDING_COMPLETE on sign out
       // Note: Session cookies are cleared automatically by React Native when backend sends Set-Cookie with Max-Age=0
     ]);

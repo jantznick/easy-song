@@ -96,7 +96,14 @@
     "selectSection": "Selecciona una sección arriba para ver su contenido",
     "studyDataNotAvailable": "Los datos de estudio no están disponibles",
     "studyDataNotAvailableDescription": "El formato de estudio estructurado estará disponible una vez que se generen los datos.",
-    "additionalContentNote": "Estas líneas no se incluyeron en las secciones estructuradas anteriores."
+    "additionalContentNote": "Estas líneas no se incluyeron en las secciones estructuradas anteriores.",
+    "limitReached": "Límite Diario Alcanzado",
+    "limitReachedMessage": "Has alcanzado tu límite de 2 sesiones de Modo de Estudio por hoy.",
+    "limitReachedUpgrade": "¡Actualiza a Premium Plus para acceso ilimitado al Modo de Estudio!",
+    "limitReachedAd": "O mira un anuncio para obtener una sesión más de Modo de Estudio hoy",
+    "watchAdButton": "Ver Anuncio",
+    "upgradeToPremium": "Actualizar a Premium Plus",
+    "comeBackTomorrow": "¡Vuelve mañana para continuar aprendiendo!"
   },
   "settings": {
     "title": "Configuración",

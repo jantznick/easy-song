@@ -96,7 +96,14 @@
     "selectSection": "请在上方选择一个章节查看其内容",
     "studyDataNotAvailable": "学习数据不可用",
     "studyDataNotAvailableDescription": "结构化学习格式将在数据生成后可用。",
-    "additionalContentNote": "这些行未包含在上面的结构化章节中。"
+    "additionalContentNote": "这些行未包含在上面的结构化章节中。",
+    "limitReached": "已达每日限制",
+    "limitReachedMessage": "您今天已达到 2 次学习模式的限制。",
+    "limitReachedUpgrade": "升级到高级增强版，无限制使用学习模式！",
+    "limitReachedAd": "或观看广告以获得今天额外的一次学习模式",
+    "watchAdButton": "观看广告",
+    "upgradeToPremium": "升级到高级增强版",
+    "comeBackTomorrow": "明天再回来继续学习！"
   },
   "settings": {
     "title": "设置",

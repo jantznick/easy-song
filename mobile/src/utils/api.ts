@@ -257,6 +257,7 @@ export async function fetchSongHistory(page: number = 1, pageSize: number = 20):
   totalCount: number;
   playModeCount: number;
   studyModeCount: number;
+  todayStudyModeCount: number;
 }> {
   const url = `${BASE_URL.replace('/api', '')}/api/history?page=${page}&pageSize=${pageSize}`;
   
@@ -290,6 +291,7 @@ export async function fetchSongHistory(page: number = 1, pageSize: number = 20):
     totalCount: data.totalCount,
     playModeCount: data.playModeCount || 0,
     studyModeCount: data.studyModeCount || 0,
+    todayStudyModeCount: data.todayStudyModeCount || 0,
   };
 }
 

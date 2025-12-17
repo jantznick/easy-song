@@ -6,6 +6,8 @@ import type { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
 import { fetchSongById, fetchStudyData, computeAdditionalContent } from '../utils/api';
 import StatusDisplay from '../components/StatusDisplay';
 import VideoPlayer from '../components/VideoPlayer';
+import StudyModeLimitReached from '../components/StudyModeLimitReached';
+import AdModal from '../components/AdModal';
 import type { Song, StudyData, StructuredSection, StructuredLine, LyricLine } from '../types/song';
 import type { SongDetailTabParamList } from '../types/navigation';
 import { useUser } from '../hooks/useUser';
@@ -46,7 +48,7 @@ const stopVideo = (player: any, endTime: number, setPlaying: (playing: boolean) 
 export default function StudyModeScreen({ route }: Props) {
   const { videoId } = route.params;
   const navigation = useNavigation();
-  const { preferences, addToHistory } = useUser();
+  const { preferences, addToHistory, todayStudyModeCount, isLoading: isUserLoading } = useUser();
   const { isDark } = useTheme();
   const theme = useThemeClasses();
   const { t } = useTranslation();
@@ -61,6 +63,7 @@ export default function StudyModeScreen({ route }: Props) {
   const [expandedExplanations, setExpandedExplanations] = useState<Set<number>>(new Set());
   const [activeLineIndex, setActiveLineIndex] = useState<number | null>(null);
   const [completedSections, setCompletedSections] = useState<Set<number>>(new Set());
+  const [showAdModal, setShowAdModal] = useState<boolean>(false);
 
   const contentScrollRef = useRef<ScrollView>(null);
   const videoPlayerRef = useRef<any>(null);
@@ -68,6 +71,36 @@ export default function StudyModeScreen({ route }: Props) {
   const progressIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const lineRefs = useRef<{ [key: string]: View | null }>({});
   const historySavedRef = useRef<boolean>(false); // Track if history has been saved for this videoId
+  
+  // Capture the count at mount time - this prevents blocking the user mid-session
+  const [initialCount, setInitialCount] = useState<number | null>(null);
+  
+  // Capture initial count once user data has loaded AND todayStudyModeCount is available
+  useEffect(() => {
+    if (!isUserLoading && initialCount === null && todayStudyModeCount !== null) {
+      setInitialCount(todayStudyModeCount);
+      console.log('[StudyMode] Captured initial count:', todayStudyModeCount);
+    }
+  }, [isUserLoading, todayStudyModeCount, initialCount]);
+  
+  // Check if user has reached the limit BEFORE entering (at mount time)
+  const hasReachedLimit = initialCount !== null && initialCount >= 2;
+
+  console.log('todayStudyModeCount:', todayStudyModeCount, 'initialCount:', initialCount, 'hasReachedLimit:', hasReachedLimit, 'isUserLoading:', isUserLoading);
+
+  // Handler for when user wants to watch an ad
+  const handleWatchAd = () => {
+    setShowAdModal(true);
+  };
+
+  // Handler for when ad modal closes
+  const handleAdModalClose = () => {
+    setShowAdModal(false);
+    // TODO: When rewarded ads are implemented, this is where we'd:
+    // 1. Check if the ad was watched successfully
+    // 2. Grant an extra study session if successful
+    // 3. Update the todayStudyModeCount or grant a temporary bypass
+  };
 
   useEffect(() => {
     const loadData = async () => {
@@ -323,11 +356,13 @@ export default function StudyModeScreen({ route }: Props) {
         </View>
       </View>
 
-      {/* Show loading or error state */}
-      {(isLoading || error || !song) && (
+      {/* Show loading, error state, or limit reached */}
+      {(isLoading || isUserLoading || error || !song || hasReachedLimit) && (
         <View className="flex-1 justify-center items-center px-8">
-          {isLoading ? (
+          {isLoading || isUserLoading ? (
             <StatusDisplay loading={true} loadingText={t('studyMode.loadingData')} />
+          ) : hasReachedLimit ? (
+            <StudyModeLimitReached onWatchAd={handleWatchAd} />
           ) : (
             <View className="items-center">
               <View className="bg-red-100 dark:bg-red-900/20 rounded-full p-4 mb-4">
@@ -357,8 +392,8 @@ export default function StudyModeScreen({ route }: Props) {
         </View>
       )}
 
-      {/* Main Content - only show if loaded successfully */}
-      {!isLoading && !error && song && (
+      {/* Main Content - only show if loaded successfully and limit not reached */}
+      {!isLoading && !isUserLoading && !error && song && !hasReachedLimit && (
         <>
 
       {/* Fixed Video Player */}
@@ -665,6 +700,9 @@ export default function StudyModeScreen({ route }: Props) {
       )}
       </>
       )}
+      
+      {/* Ad Modal for earning extra study session */}
+      <AdModal visible={showAdModal} onClose={handleAdModalClose} />
     </SafeAreaView>
   );
 }
