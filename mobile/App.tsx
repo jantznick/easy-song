@@ -132,7 +132,15 @@ export default function App() {
 
   // Initialize RevenueCat when app starts
   useEffect(() => {
-    initializeSubscriptions();
+    const init = async () => {
+      try {
+        await initializeSubscriptions();
+        console.log('RevenueCat initialization completed');
+      } catch (error) {
+        console.error('Failed to initialize RevenueCat:', error);
+      }
+    };
+    init();
   }, []);
 
   return (

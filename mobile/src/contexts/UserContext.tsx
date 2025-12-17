@@ -827,27 +827,37 @@ export function UserProvider({ children }: UserProviderProps) {
   useEffect(() => {
     if (!isAuthenticated) return;
 
+    let unsubscribe: (() => void) | null = null;
+
     // Set up listener (user will be linked during purchase flow)
     // Listener will work once user purchases and gets linked
-    const unsubscribe = setupSubscriptionListener(async (customerInfo) => {
-      console.log('Subscription updated in RevenueCat');
-      
-      // Determine tier from entitlements
-      const isPremium = customerInfo.entitlements.active['premium'] !== undefined;
-      const isPremiumPlus = customerInfo.entitlements.active['premium_plus'] !== undefined;
-      
-      let tier: 'FREE' | 'PREMIUM' | 'PREMIUM_PLUS' = 'FREE';
-      if (isPremiumPlus) {
-        tier = 'PREMIUM_PLUS';
-      } else if (isPremium) {
-        tier = 'PREMIUM';
-      }
-      
-      // Update local state only (webhook handles database)
-      await updateProfile({ subscriptionTier: tier }, false);
-    });
+    const setupListener = async () => {
+      unsubscribe = await setupSubscriptionListener(async (customerInfo) => {
+        console.log('Subscription updated in RevenueCat');
+        
+        // Determine tier from entitlements
+        const isPremium = customerInfo.entitlements.active['premium'] !== undefined;
+        const isPremiumPlus = customerInfo.entitlements.active['premium_plus'] !== undefined;
+        
+        let tier: 'FREE' | 'PREMIUM' | 'PREMIUM_PLUS' = 'FREE';
+        if (isPremiumPlus) {
+          tier = 'PREMIUM_PLUS';
+        } else if (isPremium) {
+          tier = 'PREMIUM';
+        }
+        
+        // Update local state only (webhook handles database)
+        await updateProfile({ subscriptionTier: tier }, false);
+      });
+    };
 
-    return unsubscribe;
+    setupListener();
+
+    return () => {
+      if (unsubscribe) {
+        unsubscribe();
+      }
+    };
   }, [isAuthenticated, updateProfile]);
 
   // Grant extra study session (from watching rewarded ad)

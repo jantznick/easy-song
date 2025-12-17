@@ -24,11 +24,18 @@ export function usePurchase() {
 
   const loadOfferings = async () => {
     try {
+      console.log('Loading offerings...');
       const current = await getOfferings();
+      console.log('Offerings loaded:', current ? 'success' : 'null');
       setOfferings(current);
       return current;
     } catch (error) {
       console.error('Load offerings error:', error);
+      setError({
+        title: 'Error',
+        message: 'Failed to load subscription options. Please try again.',
+        type: 'error',
+      });
       return null;
     }
   };
