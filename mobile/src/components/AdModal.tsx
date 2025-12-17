@@ -2,7 +2,7 @@
  * Custom branded modal with native ad
  */
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { Modal, View, Text, TouchableOpacity, StyleSheet, Image } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { 
@@ -25,19 +25,19 @@ export default function AdModal({ visible, onClose }: AdModalProps) {
   const theme = useThemeClasses();
   const { isDark } = useTheme();
   const [nativeAd, setNativeAd] = useState<NativeAd | null>(null);
+  const adInstanceRef = useRef<NativeAd | null>(null);
 
   useEffect(() => {
-    let adInstance: NativeAd | null = null;
     let isMounted = true;
 
-    if (visible) {
-      // Load native ad when modal becomes visible
+    if (visible && !nativeAd) {
+      // Load native ad when modal becomes visible (only if not already loaded)
       NativeAd.createForAdRequest(getAdUnitId('native'), {
         requestNonPersonalizedAdsOnly: false,
       })
         .then((ad) => {
           if (isMounted) {
-            adInstance = ad;
+            adInstanceRef.current = ad;
             setNativeAd(ad);
           } else {
             // Component unmounted before ad loaded, destroy immediately
@@ -49,14 +49,26 @@ export default function AdModal({ visible, onClose }: AdModalProps) {
         });
     }
 
-    // Cleanup: destroy the ad when modal closes
+    // Cleanup: only destroy on unmount, not when visibility changes
     return () => {
       isMounted = false;
-      if (adInstance) {
-        adInstance.destroy();
+    };
+  }, [visible, nativeAd]);
+
+  // Cleanup on unmount only
+  useEffect(() => {
+    return () => {
+      if (adInstanceRef.current) {
+        // Add a small delay to ensure views are fully cleaned up
+        setTimeout(() => {
+          if (adInstanceRef.current) {
+            adInstanceRef.current.destroy();
+            adInstanceRef.current = null;
+          }
+        }, 100);
       }
     };
-  }, [visible]);
+  }, []);
 
   return (
     <Modal
@@ -131,6 +143,7 @@ export default function AdModal({ visible, onClose }: AdModalProps) {
                       <Image 
                         source={{ uri: nativeAd.icon.url }} 
                         style={styles.icon}
+                        resizeMode="contain"
                       />
                     </NativeAsset>
                   </View>
@@ -141,6 +154,18 @@ export default function AdModal({ visible, onClose }: AdModalProps) {
                   styles.contentCard,
                   { backgroundColor: isDark ? '#1e293b' : '#f8fafc' }
                 ]}>
+                  {/* Advertiser (required for AdMob compliance) */}
+                  {nativeAd.advertiser && (
+                    <NativeAsset assetType={NativeAssetType.ADVERTISER}>
+                      <Text 
+                        style={[styles.advertiser, { color: isDark ? '#94a3b8' : '#64748b' }]}
+                        numberOfLines={1}
+                      >
+                        {nativeAd.advertiser}
+                      </Text>
+                    </NativeAsset>
+                  )}
+
                   {/* Headline */}
                   {nativeAd.headline && (
                     <NativeAsset assetType={NativeAssetType.HEADLINE}>
@@ -216,7 +241,7 @@ const styles = StyleSheet.create({
   },
   modalContent: {
     maxWidth: 360,
-    width: '75%',
+    width: '85%',
   },
   adWrapper: {
     borderRadius: 16,
@@ -242,6 +267,8 @@ const styles = StyleSheet.create({
     width: '100%',
     height: 200,
     position: 'relative',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   media: {
     width: '100%',
@@ -271,6 +298,11 @@ const styles = StyleSheet.create({
   contentCard: {
     padding: 16,
     gap: 10,
+  },
+  advertiser: {
+    fontSize: 12,
+    fontWeight: '500',
+    marginBottom: 4,
   },
   headline: {
     fontSize: 18,
