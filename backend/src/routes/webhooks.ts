@@ -153,11 +153,15 @@ async function handleExpiration(userId: string, event: any) {
  */
 async function handleBillingIssue(userId: string, event: any) {
   // Optionally notify user or handle grace period
-  // For now, just log it
   console.log(`[Webhook] User ${userId} has billing issue`);
-  
   // TODO: Send email notification to user
   // TODO: Implement grace period logic if needed
+  await prisma.user.update({
+    where: { id: userId },
+    data: {
+      subscriptionTier: SubscriptionTier.FREE,
+    },
+  });
 }
 
 /**

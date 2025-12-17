@@ -15,7 +15,7 @@ import {
 } from '../utils/storage';
 import { changeLanguage } from '../i18n/config';
 import { updateUserProfile as updateUserProfileAPI, fetchSongHistory as fetchSongHistoryAPI, addToHistory as addToHistoryAPI, loginUser, getCurrentUser, logoutUser as logoutUserAPI } from '../utils/api';
-import { linkUserToRevenueCat, setupSubscriptionListener } from '../utils/subscriptions';
+import { setupSubscriptionListener } from '../utils/subscriptions';
 
 // Get API base URL
 const getApiBaseUrl = () => {
@@ -79,8 +79,9 @@ export interface UserContextType {
   // Auth methods
   signIn: (email: string, password: string) => Promise<void>;
   signOut: () => Promise<void>;
-  updateProfile: (updates: Partial<User>) => Promise<void>;
+  updateProfile: (updates: Partial<User>, remoteUpdate?: boolean) => Promise<void>;
   refreshUser: () => Promise<void>;
+  userId: string | undefined; // Expose user ID for purchase checks
 }
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
@@ -154,6 +155,7 @@ function hasRecentHistoryEntry(
 
 export function UserProvider({ children }: UserProviderProps) {
   const [user, setUser] = useState<User>(GUEST_USER);
+  const [userId, setUserId] = useState<string | undefined>(undefined); // Store user ID for RevenueCat linking
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [preferences, setPreferences] = useState<UserPreferences>(DEFAULT_PREFERENCES);
@@ -168,22 +170,6 @@ export function UserProvider({ children }: UserProviderProps) {
   // Ref to track current history for duplicate checks (avoids dependency on songHistory in callbacks)
   const songHistoryRef = React.useRef<SongHistoryItem[]>([]);
 
-  // Set up subscription listener for real-time updates
-  // When subscription changes (renewal, cancellation, etc.), refresh from backend
-  useEffect(() => {
-    if (!isAuthenticated) return;
-
-    const unsubscribe = setupSubscriptionListener(async (customerInfo) => {
-      console.log('Subscription updated in RevenueCat, refreshing from backend...');
-      
-      // Wait a moment for webhook to update DB, then refresh from backend
-      setTimeout(async () => {
-        await refreshUser();
-      }, 2000); // 2 second delay to allow webhook to process
-    });
-
-    return unsubscribe;
-  }, [isAuthenticated]);
 
   // Load initial data from storage
   useEffect(() => {
@@ -210,15 +196,8 @@ export function UserProvider({ children }: UserProviderProps) {
         try {
           const currentUser = await getCurrentUser();
           if (currentUser) {
-            // Link RevenueCat to user ID (for purchase tracking)
-            try {
-              await linkUserToRevenueCat(currentUser.id);
-            } catch (error) {
-              console.error('Failed to link RevenueCat (non-critical):', error);
-              // Continue anyway - RevenueCat linking is not critical for app functionality
-            }
-            
             // Use tier from database (single source of truth)
+            // Note: RevenueCat linking happens when needed (before purchase, or when setting up listener)
             const userData: User = {
               name: currentUser.name,
               email: currentUser.email,
@@ -228,6 +207,7 @@ export function UserProvider({ children }: UserProviderProps) {
               emailVerified: currentUser.emailVerified,
             };
             setUser(userData);
+            setUserId(currentUser.id); // Store user ID for RevenueCat linking
             setIsAuthenticated(true);
             
             // Load user-specific study limit (persists across sessions and days)
@@ -272,6 +252,7 @@ export function UserProvider({ children }: UserProviderProps) {
           } else {
             // No valid session cookie - user is a guest
             setUser(GUEST_USER);
+            setUserId(undefined); // Clear user ID for guests
             setIsAuthenticated(false);
             
             // For guest users, use local history (limit to 3 most recent items)
@@ -294,6 +275,7 @@ export function UserProvider({ children }: UserProviderProps) {
           console.error('Error checking authentication:', error);
           // On error, assume guest user
           setUser(GUEST_USER);
+          setUserId(undefined); // Clear user ID for guests
           setIsAuthenticated(false);
           
           // For guest users, use local history (limit to 3 most recent items)
@@ -626,14 +608,8 @@ export function UserProvider({ children }: UserProviderProps) {
       // Check current user from session
       const currentUser = await getCurrentUser();
       if (currentUser) {
-        // Link RevenueCat to user ID (for purchase tracking)
-        try {
-          await linkUserToRevenueCat(currentUser.id);
-        } catch (error) {
-          console.error('Failed to link RevenueCat (non-critical):', error);
-        }
-        
         // Use tier from database (single source of truth)
+        // Note: RevenueCat linking happens when needed (before purchase, or when setting up listener)
         const userData: User = {
           name: currentUser.name,
           email: currentUser.email,
@@ -643,6 +619,7 @@ export function UserProvider({ children }: UserProviderProps) {
           emailVerified: currentUser.emailVerified,
         };
         setUser(userData);
+        setUserId(currentUser.id); // Store user ID for RevenueCat linking
         
         // Load user-specific study limit (persists across sessions and days)
         const userLimit = await loadTodayStudyLimit(currentUser.email, 2);
@@ -695,17 +672,8 @@ export function UserProvider({ children }: UserProviderProps) {
     // Fetch full user data including hasPassword
     const currentUser = await getCurrentUser();
     
-    // Link RevenueCat to user ID (for purchase tracking)
-    try {
-      if (currentUser?.id) {
-        await linkUserToRevenueCat(currentUser.id);
-      }
-    } catch (error) {
-      console.error('Failed to link RevenueCat (non-critical):', error);
-      // Continue anyway - RevenueCat linking is not critical
-    }
-    
     // Use tier from database (single source of truth)
+    // Note: RevenueCat linking happens when needed (before purchase, or when setting up listener)
     const userData: User = {
       name: result.user.name,
       email: result.user.email,
@@ -715,6 +683,7 @@ export function UserProvider({ children }: UserProviderProps) {
       emailVerified: currentUser?.emailVerified ?? result.user.emailVerified ?? false,
     };
     setUser(userData);
+    setUserId(currentUser?.id); // Store user ID for RevenueCat linking
     
     // Load user-specific study limit (persists across sessions and days)
     const userLimit = await loadTodayStudyLimit(result.user.email, 2);
@@ -773,6 +742,7 @@ export function UserProvider({ children }: UserProviderProps) {
     
     // Reset user to guest
     setUser(GUEST_USER);
+    setUserId(undefined); // Clear user ID
     setIsAuthenticated(false);
     
     // Reset to default preferences
@@ -794,21 +764,36 @@ export function UserProvider({ children }: UserProviderProps) {
   }, []);
 
   // Update profile
-  const updateProfile = useCallback(async (updates: Partial<User>) => {
-    // Call API to update profile
-    const updatedUserData = await updateUserProfileAPI(updates);
-    
-    // Fetch full user data to get hasPassword status
-    const currentUser = await getCurrentUser();
-    
-    // Update user state with server response (ensures we have correct emailVerified status, etc.)
+  const updateProfile = useCallback(async (updates: Partial<User>, remoteUpdate: boolean = true) => {
+    // Update local state immediately (optimistic update)
     setUser(prevUser => ({
-      name: updatedUserData.name,
-      email: updatedUserData.email,
-      avatar: updatedUserData.avatar || undefined,
-      subscriptionTier: prevUser.subscriptionTier, // Keep existing subscription tier
-      hasPassword: currentUser?.hasPassword ?? prevUser.hasPassword,
+      ...prevUser,
+      ...updates,
     }));
+    
+    // Call API to update profile
+    if (remoteUpdate) {
+      try {
+        const updatedUserData = await updateUserProfileAPI(updates);
+        
+        // Fetch full user data to get hasPassword status
+        const currentUser = await getCurrentUser();
+        
+        // Update user state with server response (ensures we have correct data)
+        setUser(prevUser => ({
+          name: updatedUserData.name,
+          email: updatedUserData.email,
+          avatar: updatedUserData.avatar || undefined,
+          subscriptionTier: updates.subscriptionTier ?? prevUser.subscriptionTier, // Use update if provided
+          hasPassword: currentUser?.hasPassword ?? prevUser.hasPassword,
+          emailVerified: currentUser?.emailVerified ?? prevUser.emailVerified,
+        }));
+      } catch (error) {
+        console.error('Failed to update profile:', error);
+        // Revert optimistic update on error
+        // Could implement rollback here if needed
+      }
+    }
   }, []); // No dependencies - use functional setState
 
   // Refresh user data from server (database is single source of truth)
@@ -828,11 +813,42 @@ export function UserProvider({ children }: UserProviderProps) {
           emailVerified: currentUser.emailVerified,
         };
         setUser(userData);
+        setUserId(currentUser.id); // Store user ID for RevenueCat linking
       }
     } catch (error) {
       console.error('Error refreshing user:', error);
     }
   }, [isAuthenticated]);
+
+  // Set up subscription listener for real-time updates
+  // When subscription changes (renewal, cancellation, expiration, etc.), update local state
+  // Webhook will update database in background
+  // Note: User is NOT linked to RevenueCat here - linking happens only when purchase button is clicked
+  useEffect(() => {
+    if (!isAuthenticated) return;
+
+    // Set up listener (user will be linked during purchase flow)
+    // Listener will work once user purchases and gets linked
+    const unsubscribe = setupSubscriptionListener(async (customerInfo) => {
+      console.log('Subscription updated in RevenueCat');
+      
+      // Determine tier from entitlements
+      const isPremium = customerInfo.entitlements.active['premium'] !== undefined;
+      const isPremiumPlus = customerInfo.entitlements.active['premium_plus'] !== undefined;
+      
+      let tier: 'FREE' | 'PREMIUM' | 'PREMIUM_PLUS' = 'FREE';
+      if (isPremiumPlus) {
+        tier = 'PREMIUM_PLUS';
+      } else if (isPremium) {
+        tier = 'PREMIUM';
+      }
+      
+      // Update local state only (webhook handles database)
+      await updateProfile({ subscriptionTier: tier }, false);
+    });
+
+    return unsubscribe;
+  }, [isAuthenticated, updateProfile]);
 
   // Grant extra study session (from watching rewarded ad)
   const grantExtraStudySession = useCallback(() => {
@@ -876,6 +892,7 @@ export function UserProvider({ children }: UserProviderProps) {
     signOut,
     updateProfile,
     refreshUser,
+    userId, // Expose user ID for purchase checks
   };
 
   return <UserContext.Provider value={value}>{children}</UserContext.Provider>;

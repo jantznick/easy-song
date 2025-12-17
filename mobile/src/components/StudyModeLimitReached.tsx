@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, ScrollView, ActivityIndicator, Alert } from 'react-native';
+import { View, Text, TouchableOpacity, ScrollView, ActivityIndicator } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { useThemeClasses } from '../utils/themeClasses';
@@ -7,6 +7,7 @@ import { useTheme } from '../contexts/ThemeContext';
 import { useTranslation } from '../hooks/useTranslation';
 import { usePurchase } from '../hooks/usePurchase';
 import { useUser } from '../contexts/UserContext';
+import ConfirmationModal from './ConfirmationModal';
 
 interface StudyModeLimitReachedProps {
   onWatchAd: () => void;
@@ -40,9 +41,10 @@ export default function StudyModeLimitReached({ onWatchAd, onPurchaseSuccess }: 
   const { isDark } = useTheme();
   const { t } = useTranslation();
   const navigation = useNavigation();
-  const { refreshUser } = useUser();
+  const { user, updateProfile, userId } = useUser();
   const [isAnnual, setIsAnnual] = useState(false);
-  const { loading, offerings, loadOfferings, makePurchase } = usePurchase();
+  const [successModal, setSuccessModal] = useState(false);
+  const { loading, offerings, loadOfferings, makePurchase, error, clearError } = usePurchase();
 
   // Load offerings on mount
   useEffect(() => {
@@ -62,29 +64,16 @@ export default function StudyModeLimitReached({ onWatchAd, onPurchaseSuccess }: 
       tier: 'premiumPlus',
       billingPeriod: isAnnual ? 'annual' : 'monthly',
       source: 'study_limit',
+      userId: userId, // Pass user ID for RevenueCat linking check
     });
 
     if (result.success) {
-      // Wait a moment for webhook to update database, then refresh from backend
-      // Webhook typically processes within 1-2 seconds
-      setTimeout(async () => {
-        await refreshUser();
-      }, 2000);
+      // Update tier in context immediately (optimistic update)
+      // Passing false skips the API call to update the database, it's handled in the webhook
+      await updateProfile({ subscriptionTier: 'PREMIUM_PLUS' }, false);
 
-      // Show success message
-      Alert.alert(
-        t('premium.successTitle') || 'Welcome to Premium Plus!',
-        t('premium.successMessage') || 'You now have unlimited study mode access!',
-        [
-          {
-            text: 'OK',
-            onPress: () => {
-              // Callback to parent (e.g., close modal, refresh UI)
-              onPurchaseSuccess?.();
-            },
-          },
-        ]
-      );
+      // Show success modal
+      setSuccessModal(true);
     }
     // Errors are handled by usePurchase hook
   };
@@ -231,6 +220,32 @@ export default function StudyModeLimitReached({ onWatchAd, onPurchaseSuccess }: 
           </Text>
         </TouchableOpacity>
       </View>
+
+      {/* Success Modal */}
+      <ConfirmationModal
+        visible={successModal}
+        title={t('premium.successTitle') || 'Welcome to Premium Plus!'}
+        message={t('premium.successMessage') || 'You now have unlimited study mode access!'}
+        type="success"
+        confirmText={t('common.ok') || 'OK'}
+        onConfirm={() => {
+          setSuccessModal(false);
+          // Callback to parent (e.g., close modal, refresh UI)
+          onPurchaseSuccess?.();
+        }}
+      />
+
+      {/* Error Modal (from usePurchase hook) */}
+      {error && (
+        <ConfirmationModal
+          visible={!!error}
+          title={error.title}
+          message={error.message}
+          type={error.type}
+          confirmText={t('common.ok') || 'OK'}
+          onConfirm={() => clearError()}
+        />
+      )}
     </ScrollView>
   );
 }

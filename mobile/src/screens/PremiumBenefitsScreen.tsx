@@ -9,7 +9,7 @@ import { useTheme } from '../contexts/ThemeContext';
 import { useTranslation } from '../hooks/useTranslation';
 import ConfirmationModal from '../components/ConfirmationModal';
 import { usePurchase } from '../hooks/usePurchase';
-import { useUser } from '../contexts/UserContext';
+import { User, useUser } from '../contexts/UserContext';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'PremiumBenefits'>;
 
@@ -177,8 +177,8 @@ export default function PremiumBenefitsScreen({ route }: Props) {
   const theme = useThemeClasses();
   const { isDark } = useTheme();
   const { t } = useTranslation();
-  const { refreshUser } = useUser();
-  const { loading, offerings, loadOfferings, makePurchase } = usePurchase();
+  const { user, updateProfile, userId } = useUser();
+  const { loading, offerings, loadOfferings, makePurchase, error, clearError } = usePurchase();
   const [loadingTier, setLoadingTier] = useState<string | null>(null);
   const [confirmationModal, setConfirmationModal] = useState<{
     visible: boolean;
@@ -223,17 +223,17 @@ export default function PremiumBenefitsScreen({ route }: Props) {
     const result = await makePurchase({
       tier,
       billingPeriod,
-      source: route.params?.source || 'settings',
+      source: (route.params as any)?.source || 'settings',
+      userId: userId, // Pass user ID for RevenueCat linking check
     });
 
     setLoadingTier(null);
 
     if (result.success) {
-      // Wait a moment for webhook to update database, then refresh from backend
-      // Webhook typically processes within 1-2 seconds
-      setTimeout(async () => {
-        await refreshUser();
-      }, 2000);
+      // Update tier in context immediately (optimistic update)
+      // Webhook will update database in background
+      const newTier = tier === 'premiumPlus' ? 'PREMIUM_PLUS' : 'PREMIUM';
+      await updateProfile({ subscriptionTier: newTier } as Partial<User>, false);
 
       // Show success message
       setConfirmationModal({
@@ -247,7 +247,7 @@ export default function PremiumBenefitsScreen({ route }: Props) {
         },
       });
     }
-    // Errors are handled by usePurchase hook
+    // Errors are exposed via error state and shown in modal below
   };
 
   // Show loading state while offerings load
@@ -324,7 +324,7 @@ export default function PremiumBenefitsScreen({ route }: Props) {
         />
       </ScrollView>
 
-      {/* Confirmation Modal */}
+      {/* Success Confirmation Modal */}
       <ConfirmationModal
         visible={confirmationModal.visible}
         title={confirmationModal.title}
@@ -340,6 +340,18 @@ export default function PremiumBenefitsScreen({ route }: Props) {
         }}
         onCancel={() => setConfirmationModal({ ...confirmationModal, visible: false })}
       />
+
+      {/* Error Modal (from usePurchase hook) */}
+      {error && (
+        <ConfirmationModal
+          visible={!!error}
+          title={error.title}
+          message={error.message}
+          type={error.type}
+          confirmText={t('common.ok') || 'OK'}
+          onConfirm={() => clearError()}
+        />
+      )}
     </SafeAreaView>
   );
 }

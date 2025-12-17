@@ -49,6 +49,61 @@ export const initializeSubscriptions = async (userId?: string) => {
 };
 
 /**
+ * Check if user is currently linked to RevenueCat
+ * Returns true if the current app user ID matches the provided user ID
+ */
+export const isUserLinkedToRevenueCat = async (userId: string): Promise<boolean> => {
+  try {
+    const customerInfo = await Purchases.getCustomerInfo();
+    // Check if the current app user ID matches our user ID
+    return customerInfo.originalAppUserId === userId;
+  } catch (error) {
+    console.error('Error checking RevenueCat link:', error);
+    return false;
+  }
+};
+
+/**
+ * Ensure user is linked to RevenueCat (with retry)
+ * Tries to link if not already linked
+ * Throws error if linking fails after retries
+ */
+export const ensureUserLinkedToRevenueCat = async (
+  userId: string,
+  retries: number = 2
+): Promise<void> => {
+  // Check if already linked
+  const isLinked = await isUserLinkedToRevenueCat(userId);
+  if (isLinked) {
+    console.log('User already linked to RevenueCat');
+    return;
+  }
+
+  // Try to link with retries
+  let lastError: any = null;
+  for (let attempt = 0; attempt <= retries; attempt++) {
+    try {
+      await linkUserToRevenueCat(userId);
+      console.log('User successfully linked to RevenueCat');
+      return;
+    } catch (error) {
+      lastError = error;
+      if (attempt < retries) {
+        console.log(`Link attempt ${attempt + 1} failed, retrying...`);
+        // Wait 1 second before retry
+        await new Promise(resolve => setTimeout(resolve, 1000));
+      }
+    }
+  }
+
+  // All retries failed
+  throw new Error(
+    `Failed to link user to RevenueCat after ${retries + 1} attempts. ` +
+    `This is required for purchases to sync to your account. Please try again or contact support.`
+  );
+};
+
+/**
  * Link RevenueCat customer to your user ID
  * Call this after user logs in
  */
@@ -60,59 +115,6 @@ export const linkUserToRevenueCat = async (userId: string) => {
   } catch (error) {
     console.error('Error linking user to RevenueCat:', error);
     throw error;
-  }
-};
-
-/**
- * Get current subscription status from RevenueCat
- */
-export const getSubscriptionStatus = async (): Promise<{
-  isPremium: boolean;
-  isPremiumPlus: boolean;
-  expirationDate?: Date;
-  willRenew: boolean;
-  tier: 'FREE' | 'PREMIUM' | 'PREMIUM_PLUS';
-}> => {
-  try {
-    const customerInfo = await Purchases.getCustomerInfo();
-
-    const isPremium = customerInfo.entitlements.active['premium'] !== undefined;
-    const isPremiumPlus =
-      customerInfo.entitlements.active['premium_plus'] !== undefined;
-
-    const premiumEntitlement =
-      customerInfo.entitlements.active['premium'] ||
-      customerInfo.entitlements.active['premium_plus'];
-
-    const expirationDate = premiumEntitlement?.expirationDate
-      ? new Date(premiumEntitlement.expirationDate)
-      : undefined;
-
-    const willRenew = premiumEntitlement?.willRenew ?? false;
-
-    // Determine tier
-    let tier: 'FREE' | 'PREMIUM' | 'PREMIUM_PLUS' = 'FREE';
-    if (isPremiumPlus) {
-      tier = 'PREMIUM_PLUS';
-    } else if (isPremium) {
-      tier = 'PREMIUM';
-    }
-
-    return {
-      isPremium: isPremium || isPremiumPlus,
-      isPremiumPlus,
-      expirationDate,
-      willRenew,
-      tier,
-    };
-  } catch (error) {
-    console.error('Get subscription status error:', error);
-    return {
-      isPremium: false,
-      isPremiumPlus: false,
-      willRenew: false,
-      tier: 'FREE',
-    };
   }
 };
 
@@ -171,11 +173,14 @@ export const restorePurchases = async (): Promise<{
 
 /**
  * Set up listener for subscription changes
- * Returns unsubscribe function
+ * Note: RevenueCat's addCustomerInfoUpdateListener doesn't return an unsubscribe function
+ * The listener is automatically cleaned up when the component unmounts
  */
 export const setupSubscriptionListener = (
   onUpdate: (customerInfo: CustomerInfo) => void
 ): (() => void) => {
-  return Purchases.addCustomerInfoUpdateListener(onUpdate);
+  Purchases.addCustomerInfoUpdateListener(onUpdate);
+  // Return a no-op function for cleanup (RevenueCat handles cleanup automatically)
+  return () => {};
 };
 

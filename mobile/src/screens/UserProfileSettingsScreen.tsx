@@ -6,6 +6,7 @@ import { Ionicons } from '@expo/vector-icons';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '../types/navigation';
 import { useUser } from '../hooks/useUser';
+import { restorePurchases } from '../utils/subscriptions';
 import { useTheme } from '../contexts/ThemeContext';
 import { useThemeClasses } from '../utils/themeClasses';
 import { useTranslation } from '../hooks/useTranslation';
@@ -23,14 +24,15 @@ interface SettingItemProps {
   subtitle?: string;
   onPress?: () => void;
   showArrow?: boolean;
+  disabled?: boolean;
 }
 
-function SettingItem({ icon, title, subtitle, onPress, showArrow = false }: SettingItemProps) {
+function SettingItem({ icon, title, subtitle, onPress, showArrow = false, disabled = false }: SettingItemProps) {
   const theme = useThemeClasses();
   const { isDark } = useTheme();
   
   const content = (
-    <View className={theme.border('border-border', 'border-[#334155]') + ' flex-row items-center py-3 px-5 border-b'}>
+    <View className={theme.border('border-border', 'border-[#334155]') + ' flex-row items-center py-3 px-5 border-b' + (disabled ? ' opacity-50' : '')}>
       <View className="w-8 items-center mr-3">
         <Ionicons name={icon} size={22} color="#6366F1" />
       </View>
@@ -40,13 +42,16 @@ function SettingItem({ icon, title, subtitle, onPress, showArrow = false }: Sett
           <Text className={theme.text('text-text-secondary', 'text-[#94A3B8]') + ' text-sm mt-0.5'}>{subtitle}</Text>
         )}
       </View>
-      {showArrow && (
+      {showArrow && !disabled && (
         <Ionicons name="chevron-forward" size={20} color={isDark ? '#94A3B8' : '#4B5563'} />
+      )}
+      {disabled && (
+        <ActivityIndicator size="small" color="#6366F1" />
       )}
     </View>
   );
 
-  if (onPress) {
+  if (onPress && !disabled) {
     return (
       <TouchableOpacity onPress={onPress} activeOpacity={0.7}>
         {content}
@@ -102,6 +107,7 @@ export default function UserProfileSettingsScreen({ route }: Props) {
   const [showCurrentPassword, setShowCurrentPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [isRestoring, setIsRestoring] = useState(false);
   const [confirmationModal, setConfirmationModal] = useState<{
     visible: boolean;
     title: string;
@@ -240,6 +246,54 @@ export default function UserProfileSettingsScreen({ route }: Props) {
                 }}
               />
             )}
+            <SettingItem
+              icon="refresh"
+              title={t('settings.profile.restorePurchases') || 'Restore Purchases'}
+              subtitle={t('settings.profile.restorePurchasesSubtitle') || 'Restore your previous purchases'}
+              showArrow
+              disabled={isRestoring}
+              onPress={async () => {
+                setIsRestoring(true);
+                try {
+                  const result = await restorePurchases();
+                  if (result.success) {
+                    // Refresh user data to get updated subscription tier
+                    await refreshUser();
+                    setConfirmationModal({
+                      visible: true,
+                      title: t('settings.profile.restoreSuccess') || 'Purchases Restored',
+                      message: t('settings.profile.restoreSuccessMessage') || 'Your purchases have been restored successfully.',
+                      type: 'success',
+                      onConfirm: () => {
+                        setConfirmationModal({ ...confirmationModal, visible: false });
+                      },
+                    });
+                  } else {
+                    setConfirmationModal({
+                      visible: true,
+                      title: t('settings.profile.restoreFailed') || 'Restore Failed',
+                      message: t('settings.profile.restoreFailedMessage') || 'No purchases were found to restore. If you believe this is an error, please contact support.',
+                      type: 'error',
+                      onConfirm: () => {
+                        setConfirmationModal({ ...confirmationModal, visible: false });
+                      },
+                    });
+                  }
+                } catch (error) {
+                  setConfirmationModal({
+                    visible: true,
+                    title: t('settings.profile.restoreFailed') || 'Restore Failed',
+                    message: t('settings.profile.restoreErrorMessage') || 'An error occurred while restoring purchases. Please try again.',
+                    type: 'error',
+                    onConfirm: () => {
+                      setConfirmationModal({ ...confirmationModal, visible: false });
+                    },
+                  });
+                } finally {
+                  setIsRestoring(false);
+                }
+              }}
+            />
             {!isAuthenticated ? (
               <SettingItem
                 icon="log-in"
