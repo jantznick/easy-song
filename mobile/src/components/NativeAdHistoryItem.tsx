@@ -27,19 +27,31 @@ export default function NativeAdHistoryItem({ isLastItem = false }: NativeAdHist
   const [nativeAd, setNativeAd] = useState<NativeAd | null>(null);
 
   useEffect(() => {
+    let adInstance: NativeAd | null = null;
+    let isMounted = true;
+
     // Load the native ad
     NativeAd.createForAdRequest(getAdUnitId('native'), {
       requestNonPersonalizedAdsOnly: false,
     })
-      .then(setNativeAd)
+      .then((ad) => {
+        if (isMounted) {
+          adInstance = ad;
+          setNativeAd(ad);
+        } else {
+          // Component unmounted before ad loaded, destroy immediately
+          ad.destroy();
+        }
+      })
       .catch((error) => {
         console.error('Failed to load native ad:', error);
       });
 
     // Cleanup: destroy the ad when component unmounts
     return () => {
-      if (nativeAd) {
-        nativeAd.destroy();
+      isMounted = false;
+      if (adInstance) {
+        adInstance.destroy();
       }
     };
   }, []);

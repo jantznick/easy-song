@@ -27,12 +27,23 @@ export default function AdModal({ visible, onClose }: AdModalProps) {
   const [nativeAd, setNativeAd] = useState<NativeAd | null>(null);
 
   useEffect(() => {
+    let adInstance: NativeAd | null = null;
+    let isMounted = true;
+
     if (visible) {
       // Load native ad when modal becomes visible
       NativeAd.createForAdRequest(getAdUnitId('native'), {
         requestNonPersonalizedAdsOnly: false,
       })
-        .then(setNativeAd)
+        .then((ad) => {
+          if (isMounted) {
+            adInstance = ad;
+            setNativeAd(ad);
+          } else {
+            // Component unmounted before ad loaded, destroy immediately
+            ad.destroy();
+          }
+        })
         .catch((error) => {
           console.error('Failed to load modal native ad:', error);
         });
@@ -40,9 +51,9 @@ export default function AdModal({ visible, onClose }: AdModalProps) {
 
     // Cleanup: destroy the ad when modal closes
     return () => {
-      if (nativeAd) {
-        nativeAd.destroy();
-        setNativeAd(null);
+      isMounted = false;
+      if (adInstance) {
+        adInstance.destroy();
       }
     };
   }, [visible]);
