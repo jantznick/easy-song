@@ -248,6 +248,7 @@ const styles = StyleSheet.create({
   },
   iconContainer: {
     alignItems: 'center',
+    justifyContent: 'center',
     paddingVertical: 20,
     paddingTop: 40,
   },
