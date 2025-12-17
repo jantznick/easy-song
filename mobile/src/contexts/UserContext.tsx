@@ -15,7 +15,7 @@ import {
 } from '../utils/storage';
 import { changeLanguage } from '../i18n/config';
 import { updateUserProfile as updateUserProfileAPI, fetchSongHistory as fetchSongHistoryAPI, addToHistory as addToHistoryAPI, loginUser, getCurrentUser, logoutUser as logoutUserAPI } from '../utils/api';
-import { linkUserToRevenueCat, getSubscriptionStatus, setupSubscriptionListener } from '../utils/subscriptions';
+import { linkUserToRevenueCat, setupSubscriptionListener } from '../utils/subscriptions';
 
 // Get API base URL
 const getApiBaseUrl = () => {
@@ -169,32 +169,20 @@ export function UserProvider({ children }: UserProviderProps) {
   const songHistoryRef = React.useRef<SongHistoryItem[]>([]);
 
   // Set up subscription listener for real-time updates
+  // When subscription changes (renewal, cancellation, etc.), refresh from backend
   useEffect(() => {
     if (!isAuthenticated) return;
 
     const unsubscribe = setupSubscriptionListener(async (customerInfo) => {
-      console.log('Subscription updated:', customerInfo);
+      console.log('Subscription updated in RevenueCat, refreshing from backend...');
       
-      // Get updated tier from RevenueCat
-      const subscriptionStatus = await getSubscriptionStatus();
-      
-      // Update local state
-      setUser(prev => ({
-        ...prev,
-        subscriptionTier: subscriptionStatus.tier,
-      }));
-      
-      // Sync with backend
-      try {
-        await updateUserProfileAPI({ subscriptionTier: subscriptionStatus.tier });
-      } catch (error) {
-        console.error('Failed to sync subscription tier:', error);
-      }
+      // Wait a moment for webhook to update DB, then refresh from backend
+      setTimeout(async () => {
+        await refreshUser();
+      }, 2000); // 2 second delay to allow webhook to process
     });
 
-    return () => {
-      unsubscribe();
-    };
+    return unsubscribe;
   }, [isAuthenticated]);
 
   // Load initial data from storage
@@ -222,47 +210,25 @@ export function UserProvider({ children }: UserProviderProps) {
         try {
           const currentUser = await getCurrentUser();
           if (currentUser) {
-            // Link RevenueCat to user ID
+            // Link RevenueCat to user ID (for purchase tracking)
             try {
               await linkUserToRevenueCat(currentUser.id);
-              
-              // Get subscription status from RevenueCat (source of truth)
-              const subscriptionStatus = await getSubscriptionStatus();
-              
-              // Sync with backend if different
-              if (currentUser.subscriptionTier !== subscriptionStatus.tier) {
-                try {
-                  await updateUserProfileAPI({ subscriptionTier: subscriptionStatus.tier });
-                } catch (error) {
-                  console.error('Failed to sync subscription tier:', error);
-                }
-              }
-              
-              // Use RevenueCat's tier (source of truth)
-              const userData: User = {
-                name: currentUser.name,
-                email: currentUser.email,
-                avatar: currentUser.avatar,
-                subscriptionTier: subscriptionStatus.tier, // From RevenueCat
-                hasPassword: currentUser.hasPassword,
-                emailVerified: currentUser.emailVerified,
-              };
-              setUser(userData);
-              setIsAuthenticated(true);
             } catch (error) {
-              console.error('RevenueCat error, using DB tier:', error);
-              // Fallback to DB tier if RevenueCat fails
-              const userData: User = {
-                name: currentUser.name,
-                email: currentUser.email,
-                avatar: currentUser.avatar,
-                subscriptionTier: currentUser.subscriptionTier,
-                hasPassword: currentUser.hasPassword,
-                emailVerified: currentUser.emailVerified,
-              };
-              setUser(userData);
-              setIsAuthenticated(true);
+              console.error('Failed to link RevenueCat (non-critical):', error);
+              // Continue anyway - RevenueCat linking is not critical for app functionality
             }
+            
+            // Use tier from database (single source of truth)
+            const userData: User = {
+              name: currentUser.name,
+              email: currentUser.email,
+              avatar: currentUser.avatar,
+              subscriptionTier: currentUser.subscriptionTier, // From database
+              hasPassword: currentUser.hasPassword,
+              emailVerified: currentUser.emailVerified,
+            };
+            setUser(userData);
+            setIsAuthenticated(true);
             
             // Load user-specific study limit (persists across sessions and days)
             const userLimit = await loadTodayStudyLimit(currentUser.email, 2);
@@ -660,44 +626,23 @@ export function UserProvider({ children }: UserProviderProps) {
       // Check current user from session
       const currentUser = await getCurrentUser();
       if (currentUser) {
-        // Link RevenueCat to user ID
+        // Link RevenueCat to user ID (for purchase tracking)
         try {
           await linkUserToRevenueCat(currentUser.id);
-          
-          // Get subscription status from RevenueCat
-          const subscriptionStatus = await getSubscriptionStatus();
-          
-          // Sync with backend if different
-          if (currentUser.subscriptionTier !== subscriptionStatus.tier) {
-            try {
-              await updateUserProfileAPI({ subscriptionTier: subscriptionStatus.tier });
-            } catch (error) {
-              console.error('Failed to sync subscription tier:', error);
-            }
-          }
-          
-          const userData: User = {
-            name: currentUser.name,
-            email: currentUser.email,
-            avatar: currentUser.avatar,
-            subscriptionTier: subscriptionStatus.tier, // From RevenueCat
-            hasPassword: currentUser.hasPassword,
-            emailVerified: currentUser.emailVerified,
-          };
-          setUser(userData);
         } catch (error) {
-          console.error('RevenueCat error, using DB tier:', error);
-          // Fallback to DB tier
-          const userData: User = {
-            name: currentUser.name,
-            email: currentUser.email,
-            avatar: currentUser.avatar,
-            subscriptionTier: currentUser.subscriptionTier,
-            hasPassword: currentUser.hasPassword,
-            emailVerified: currentUser.emailVerified,
-          };
-          setUser(userData);
+          console.error('Failed to link RevenueCat (non-critical):', error);
         }
+        
+        // Use tier from database (single source of truth)
+        const userData: User = {
+          name: currentUser.name,
+          email: currentUser.email,
+          avatar: currentUser.avatar,
+          subscriptionTier: currentUser.subscriptionTier, // From database
+          hasPassword: currentUser.hasPassword,
+          emailVerified: currentUser.emailVerified,
+        };
+        setUser(userData);
         
         // Load user-specific study limit (persists across sessions and days)
         const userLimit = await loadTodayStudyLimit(currentUser.email, 2);
@@ -750,49 +695,26 @@ export function UserProvider({ children }: UserProviderProps) {
     // Fetch full user data including hasPassword
     const currentUser = await getCurrentUser();
     
-    // Link RevenueCat to user ID
+    // Link RevenueCat to user ID (for purchase tracking)
     try {
       if (currentUser?.id) {
         await linkUserToRevenueCat(currentUser.id);
-        
-        // Get subscription status from RevenueCat
-        const subscriptionStatus = await getSubscriptionStatus();
-        
-        // Sync with backend if different
-        if (result.user.subscriptionTier !== subscriptionStatus.tier) {
-          try {
-            await updateUserProfileAPI({ subscriptionTier: subscriptionStatus.tier });
-          } catch (error) {
-            console.error('Failed to sync subscription tier:', error);
-          }
-        }
-        
-        // Update user state with RevenueCat tier
-        const userData: User = {
-          name: result.user.name,
-          email: result.user.email,
-          avatar: result.user.avatar,
-          subscriptionTier: subscriptionStatus.tier, // From RevenueCat
-          hasPassword: currentUser?.hasPassword ?? true,
-          emailVerified: currentUser?.emailVerified ?? result.user.emailVerified ?? false,
-        };
-        setUser(userData);
-      } else {
-        throw new Error('User ID not found');
       }
     } catch (error) {
-      console.error('RevenueCat error, using DB tier:', error);
-      // Fallback to DB tier
-      const userData: User = {
-        name: result.user.name,
-        email: result.user.email,
-        avatar: result.user.avatar,
-        subscriptionTier: result.user.subscriptionTier,
-        hasPassword: currentUser?.hasPassword ?? true,
-        emailVerified: currentUser?.emailVerified ?? result.user.emailVerified ?? false,
-      };
-      setUser(userData);
+      console.error('Failed to link RevenueCat (non-critical):', error);
+      // Continue anyway - RevenueCat linking is not critical
     }
+    
+    // Use tier from database (single source of truth)
+    const userData: User = {
+      name: result.user.name,
+      email: result.user.email,
+      avatar: result.user.avatar,
+      subscriptionTier: result.user.subscriptionTier, // From database
+      hasPassword: currentUser?.hasPassword ?? true,
+      emailVerified: currentUser?.emailVerified ?? result.user.emailVerified ?? false,
+    };
+    setUser(userData);
     
     // Load user-specific study limit (persists across sessions and days)
     const userLimit = await loadTodayStudyLimit(result.user.email, 2);
@@ -889,48 +811,23 @@ export function UserProvider({ children }: UserProviderProps) {
     }));
   }, []); // No dependencies - use functional setState
 
-  // Refresh user data from server
+  // Refresh user data from server (database is single source of truth)
   const refreshUser = useCallback(async () => {
     if (!isAuthenticated) return;
     
     try {
       const currentUser = await getCurrentUser();
       if (currentUser) {
-        // Get subscription status from RevenueCat
-        try {
-          const subscriptionStatus = await getSubscriptionStatus();
-          
-          // Sync with backend if different
-          if (currentUser.subscriptionTier !== subscriptionStatus.tier) {
-            try {
-              await updateUserProfileAPI({ subscriptionTier: subscriptionStatus.tier });
-            } catch (error) {
-              console.error('Failed to sync subscription tier:', error);
-            }
-          }
-          
-          const userData: User = {
-            name: currentUser.name,
-            email: currentUser.email,
-            avatar: currentUser.avatar,
-            subscriptionTier: subscriptionStatus.tier, // From RevenueCat
-            hasPassword: currentUser.hasPassword,
-            emailVerified: currentUser.emailVerified,
-          };
-          setUser(userData);
-        } catch (error) {
-          console.error('RevenueCat error, using DB tier:', error);
-          // Fallback to DB tier
-          const userData: User = {
-            name: currentUser.name,
-            email: currentUser.email,
-            avatar: currentUser.avatar,
-            subscriptionTier: currentUser.subscriptionTier,
-            hasPassword: currentUser.hasPassword,
-            emailVerified: currentUser.emailVerified,
-          };
-          setUser(userData);
-        }
+        // Use tier from database (single source of truth)
+        const userData: User = {
+          name: currentUser.name,
+          email: currentUser.email,
+          avatar: currentUser.avatar,
+          subscriptionTier: currentUser.subscriptionTier, // From database
+          hasPassword: currentUser.hasPassword,
+          emailVerified: currentUser.emailVerified,
+        };
+        setUser(userData);
       }
     } catch (error) {
       console.error('Error refreshing user:', error);

@@ -65,8 +65,11 @@ export default function StudyModeLimitReached({ onWatchAd, onPurchaseSuccess }: 
     });
 
     if (result.success) {
-      // Refresh user to get updated subscription tier
-      await refreshUser();
+      // Wait a moment for webhook to update database, then refresh from backend
+      // Webhook typically processes within 1-2 seconds
+      setTimeout(async () => {
+        await refreshUser();
+      }, 2000);
 
       // Show success message
       Alert.alert(

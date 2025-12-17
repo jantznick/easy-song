@@ -171,10 +171,11 @@ export const restorePurchases = async (): Promise<{
 
 /**
  * Set up listener for subscription changes
+ * Returns unsubscribe function
  */
 export const setupSubscriptionListener = (
   onUpdate: (customerInfo: CustomerInfo) => void
-) => {
+): (() => void) => {
   return Purchases.addCustomerInfoUpdateListener(onUpdate);
 };
 
