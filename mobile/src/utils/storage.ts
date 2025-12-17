@@ -150,7 +150,7 @@ export async function resetOnboarding(): Promise<void> {
   }
 }
 
-// Today Study Count Storage (for guest users)
+// Today Study Count Storage (for guest users only - for auth users, comes from server)
 interface TodayStudyCount {
   count: number;
   date: string; // YYYY-MM-DD format
@@ -190,6 +190,64 @@ export async function saveTodayStudyCount(count: number): Promise<void> {
   }
 }
 
+// Today Study Limit Storage (earned limit from watching ads, persists across days and tied to user)
+interface TodayStudyLimit {
+  limit: number;
+  date: string; // YYYY-MM-DD format
+}
+
+/**
+ * Load study limit for a specific user (or guest)
+ * Carries forward earned rewards across days
+ * @param userIdentifier - User email or 'GUEST' for guest users
+ * @param baseLimit - Base daily limit (2 for free/premium users)
+ */
+export async function loadTodayStudyLimit(userIdentifier: string, baseLimit: number = 2): Promise<number> {
+  try {
+    const storageKey = `${STORAGE_KEYS.TODAY_STUDY_COUNT}_LIMIT_${userIdentifier}`;
+    const data = await AsyncStorage.getItem(storageKey);
+    if (data) {
+      const parsed: TodayStudyLimit = JSON.parse(data);
+      const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
+      
+      // If the stored date is today, return the limit as-is
+      if (parsed.date === today) {
+        return parsed.limit;
+      }
+      
+      // Different day: Calculate earned rewards and carry them forward
+      // earnedRewards = how many ads they watched (storedLimit - baseLimit)
+      const earnedRewards = Math.max(0, parsed.limit - baseLimit);
+      
+      // Start new day with base limit + carried forward earned rewards
+      return baseLimit + earnedRewards;
+    }
+    return baseLimit;
+  } catch (error) {
+    console.error('Error loading today study limit:', error);
+    return baseLimit;
+  }
+}
+
+/**
+ * Save study limit for a specific user (or guest)
+ * @param userIdentifier - User email or 'GUEST' for guest users
+ * @param limit - The limit to save
+ */
+export async function saveTodayStudyLimit(userIdentifier: string, limit: number): Promise<void> {
+  try {
+    const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
+    const data: TodayStudyLimit = {
+      limit,
+      date: today,
+    };
+    const storageKey = `${STORAGE_KEYS.TODAY_STUDY_COUNT}_LIMIT_${userIdentifier}`;
+    await AsyncStorage.setItem(storageKey, JSON.stringify(data));
+  } catch (error) {
+    console.error('Error saving today study limit:', error);
+  }
+}
+
 // Clear all storage (for sign out)
 export async function clearAllStorage(): Promise<void> {
   try {
@@ -198,6 +256,7 @@ export async function clearAllStorage(): Promise<void> {
       STORAGE_KEYS.USER_PROFILE,
       STORAGE_KEYS.SONG_HISTORY,
       STORAGE_KEYS.TODAY_STUDY_COUNT,
+      // Note: We DON'T clear study limits - they're user-specific and persist across logout
       // Note: We don't clear ONBOARDING_COMPLETE on sign out
       // Note: Session cookies are cleared automatically by React Native when backend sends Set-Cookie with Max-Age=0
     ]);

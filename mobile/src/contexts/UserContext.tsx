@@ -8,6 +8,8 @@ import {
   clearAllStorage,
   loadTodayStudyCount,
   saveTodayStudyCount,
+  loadTodayStudyLimit,
+  saveTodayStudyLimit,
   type StoredPreferences,
   DEFAULT_PREFERENCES,
 } from '../utils/storage';
@@ -65,11 +67,13 @@ export interface UserContextType {
   totalHistoryCount: number | null; // null means we don't know the total yet (for guest users)
   totalPlayModeCount: number | null; // Total count of Play Mode entries (null for guest users)
   totalStudyModeCount: number | null; // Total count of Study Mode entries (null for guest users)
-  todayStudyModeCount: number | null; // Total count of Study Mode entries today (null for guest users)
+  todayStudyModeCount: number | null; // Total count of Study Mode entries today (from server or local)
+  todayStudyModeLimit: number; // Daily limit (2 by default, increases with ad rewards)
   isLoadingMoreHistory: boolean;
   addToHistory: (song: string, artist: string, mode: 'Play Mode' | 'Study Mode', videoId: string) => Promise<void>;
   clearHistory: () => Promise<void>;
   fetchMoreHistory: () => Promise<void>;
+  grantExtraStudySession: () => void; // Grant one extra study session (from watching ad)
 
   // Auth methods
   signIn: (email: string, password: string) => Promise<void>;
@@ -156,10 +160,8 @@ export function UserProvider({ children }: UserProviderProps) {
   const [totalHistoryCount, setTotalHistoryCount] = useState<number | null>(null);
   const [totalPlayModeCount, setTotalPlayModeCount] = useState<number | null>(null);
   const [totalStudyModeCount, setTotalStudyModeCount] = useState<number | null>(null);
-  const [todayStudyModeCount, setTodayStudyModeCount] = useState<number | null>(() => {
-    console.log('[UserContext] Initial state: todayStudyModeCount = null');
-    return null;
-  });
+  const [todayStudyModeCount, setTodayStudyModeCount] = useState<number | null>(null);
+  const [todayStudyModeLimit, setTodayStudyModeLimit] = useState<number>(2); // Default limit of 2
   const [isLoadingMoreHistory, setIsLoadingMoreHistory] = useState(false);
   const [historyPage, setHistoryPage] = useState(1);
   // Ref to track current history for duplicate checks (avoids dependency on songHistory in callbacks)
@@ -202,25 +204,19 @@ export function UserProvider({ children }: UserProviderProps) {
             setUser(userData);
             setIsAuthenticated(true);
             
+            // Load user-specific study limit (persists across sessions and days)
+            const userLimit = await loadTodayStudyLimit(currentUser.email, 2);
+            setTodayStudyModeLimit(userLimit);
+            
             // Fetch history from server
             try {
               const response = await fetchSongHistoryAPI(1, 20);
-            console.log('[UserContext] Initial load - Full API response:', response);
-            console.log('[UserContext] Initial load - API response counts:', { 
-              totalCount: response.totalCount, 
-              playModeCount: response.playModeCount, 
-              studyModeCount: response.studyModeCount, 
-              todayStudyModeCount: response.todayStudyModeCount,
-              todayStudyModeCountType: typeof response.todayStudyModeCount
-            });
             setSongHistory(response.items);
             songHistoryRef.current = response.items;
             setTotalHistoryCount(response.totalCount);
             setTotalPlayModeCount(response.playModeCount);
             setTotalStudyModeCount(response.studyModeCount);
-            console.log('[UserContext] About to set todayStudyModeCount from server:', response.todayStudyModeCount);
             setTodayStudyModeCount(response.todayStudyModeCount);
-            console.log('[UserContext] After setting todayStudyModeCount');
             setHistoryPage(1);
             // Limit local storage based on subscription tier
             let historyToSave = response.items;
@@ -245,7 +241,6 @@ export function UserProvider({ children }: UserProviderProps) {
               setSongHistory(fallbackHistory);
               songHistoryRef.current = fallbackHistory;
               // If server fetch fails, start count at 0 (we'll track locally)
-              console.log('[UserContext] Server fetch failed, setting todayStudyModeCount to 0');
               setTodayStudyModeCount(0);
             }
           } else {
@@ -260,8 +255,10 @@ export function UserProvider({ children }: UserProviderProps) {
             songHistoryRef.current = guestHistory;
             // For guests, load today's study count from storage (resets daily)
             const guestTodayCount = await loadTodayStudyCount();
-            console.log('[UserContext] Guest user - loaded todayStudyModeCount from storage:', guestTodayCount);
             setTodayStudyModeCount(guestTodayCount);
+            // Load guest-specific study limit (persists across sessions)
+            const guestLimit = await loadTodayStudyLimit('GUEST', 2);
+            setTodayStudyModeLimit(guestLimit);
             // Save trimmed history back to storage if it was trimmed
             if (storedHistory.length > 3) {
               await saveSongHistory(guestHistory);
@@ -279,8 +276,10 @@ export function UserProvider({ children }: UserProviderProps) {
           songHistoryRef.current = guestHistory;
           // For guests, load today's study count from storage (resets daily)
           const guestTodayCount = await loadTodayStudyCount();
-          console.log('[UserContext] Auth error - treating as guest, loaded todayStudyModeCount from storage:', guestTodayCount);
           setTodayStudyModeCount(guestTodayCount);
+          // Load guest-specific study limit (persists across sessions)
+          const guestLimit = await loadTodayStudyLimit('GUEST', 2);
+          setTodayStudyModeLimit(guestLimit);
           if (storedHistory.length > 3) {
             await saveSongHistory(guestHistory);
           }
@@ -455,11 +454,7 @@ export function UserProvider({ children }: UserProviderProps) {
               setTotalPlayModeCount(prev => (prev || 0) + 1);
             } else if (mode === 'Study Mode') {
               setTotalStudyModeCount(prev => (prev || 0) + 1);
-              setTodayStudyModeCount(prev => {
-                const newCount = (prev || 0) + 1;
-                console.log('[UserContext] Incrementing todayStudyModeCount:', prev, '->', newCount);
-                return newCount;
-              });
+              setTodayStudyModeCount(prev => (prev || 0) + 1);
             }
             return updatedHistory;
           });
@@ -503,7 +498,6 @@ export function UserProvider({ children }: UserProviderProps) {
       if (mode === 'Study Mode') {
         setTodayStudyModeCount(prev => {
           const newCount = (prev || 0) + 1;
-          console.log('[UserContext] Incrementing todayStudyModeCount (fallback):', prev, '->', newCount);
           // Save to storage for guests (persists across app restarts)
           if (!isAuthenticated) {
             saveTodayStudyCount(newCount).catch(err => {
@@ -616,6 +610,10 @@ export function UserProvider({ children }: UserProviderProps) {
         };
         setUser(userData);
         
+        // Load user-specific study limit (persists across sessions and days)
+        const userLimit = await loadTodayStudyLimit(currentUser.email, 2);
+        setTodayStudyModeLimit(userLimit);
+        
         // Migrate guest history to backend BEFORE setting authenticated
         // (only migrate if there's actually guest history to migrate)
         if (guestHistoryToMigrate.length > 0) {
@@ -635,7 +633,6 @@ export function UserProvider({ children }: UserProviderProps) {
     // Fetch history from API (includes migrated items)
         try {
           const response = await fetchSongHistoryAPI(1, 20);
-          console.log('[UserContext] Magic code login - API response todayStudyModeCount:', response.todayStudyModeCount);
           setSongHistory(response.items);
           songHistoryRef.current = response.items;
           setTotalHistoryCount(response.totalCount);
@@ -675,6 +672,10 @@ export function UserProvider({ children }: UserProviderProps) {
     };
     setUser(userData);
     
+    // Load user-specific study limit (persists across sessions and days)
+    const userLimit = await loadTodayStudyLimit(result.user.email, 2);
+    setTodayStudyModeLimit(userLimit);
+    
     // Migrate guest history to backend BEFORE setting authenticated
     if (guestHistoryToMigrate.length > 0) {
       // Call addToHistoryAPI for each guest item
@@ -693,7 +694,6 @@ export function UserProvider({ children }: UserProviderProps) {
     // Load song history from API (most recent 20, includes migrated items)
     try {
       const response = await fetchSongHistoryAPI(1, 20);
-      console.log('[UserContext] Email/password login - API response todayStudyModeCount:', response.todayStudyModeCount);
       setSongHistory(response.items);
       songHistoryRef.current = response.items;
       setTotalHistoryCount(response.totalCount);
@@ -743,6 +743,9 @@ export function UserProvider({ children }: UserProviderProps) {
     setTotalPlayModeCount(null);
     setTotalStudyModeCount(null);
     setTodayStudyModeCount(null);
+    // Load guest limit after signing out (user-specific limits persist)
+    const guestLimit = await loadTodayStudyLimit('GUEST', 2);
+    setTodayStudyModeLimit(guestLimit);
     setHistoryPage(1);
   }, []);
 
@@ -786,6 +789,23 @@ export function UserProvider({ children }: UserProviderProps) {
     }
   }, [isAuthenticated]);
 
+  // Grant extra study session (from watching rewarded ad)
+  const grantExtraStudySession = useCallback(() => {
+    setTodayStudyModeLimit(prev => {
+      const newLimit = prev + 1;
+      
+      // Get user identifier (email for auth users, 'GUEST' for guests)
+      const userIdentifier = isAuthenticated ? user.email : 'GUEST';
+      
+      // Save to storage (persists across app restarts and days)
+      saveTodayStudyLimit(userIdentifier, newLimit).catch(err => {
+        console.error('Failed to save today study limit:', err);
+      });
+      
+      return newLimit;
+    });
+  }, [isAuthenticated, user.email]);
+
   const value: UserContextType = {
     user,
     isAuthenticated,
@@ -800,21 +820,18 @@ export function UserProvider({ children }: UserProviderProps) {
     totalHistoryCount,
     totalPlayModeCount,
     totalStudyModeCount,
+    todayStudyModeCount,
+    todayStudyModeLimit,
     isLoadingMoreHistory,
     addToHistory,
     clearHistory,
     fetchMoreHistory,
+    grantExtraStudySession,
     signIn,
     signOut,
     updateProfile,
     refreshUser,
-    todayStudyModeCount
   };
-
-  // Debug log to see what's being provided
-  useEffect(() => {
-    console.log('[UserContext] Provider value - todayStudyModeCount:', todayStudyModeCount, 'type:', typeof todayStudyModeCount);
-  }, [todayStudyModeCount]);
 
   return <UserContext.Provider value={value}>{children}</UserContext.Provider>;
 }

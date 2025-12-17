@@ -7,10 +7,11 @@ import { fetchSongById, fetchStudyData, computeAdditionalContent } from '../util
 import StatusDisplay from '../components/StatusDisplay';
 import VideoPlayer from '../components/VideoPlayer';
 import StudyModeLimitReached from '../components/StudyModeLimitReached';
-import AdModal from '../components/AdModal';
+import ConfirmationModal from '../components/ConfirmationModal';
 import type { Song, StudyData, StructuredSection, StructuredLine, LyricLine } from '../types/song';
 import type { SongDetailTabParamList } from '../types/navigation';
 import { useUser } from '../hooks/useUser';
+import { useRewardedAd } from '../hooks/useRewardedAd';
 import { getFontSizes } from '../utils/fontSizes';
 import { useTheme } from '../contexts/ThemeContext';
 import { useThemeClasses } from '../utils/themeClasses';
@@ -48,10 +49,11 @@ const stopVideo = (player: any, endTime: number, setPlaying: (playing: boolean) 
 export default function StudyModeScreen({ route }: Props) {
   const { videoId } = route.params;
   const navigation = useNavigation();
-  const { preferences, addToHistory, todayStudyModeCount, isLoading: isUserLoading } = useUser();
+  const { preferences, addToHistory, todayStudyModeCount, todayStudyModeLimit, isLoading: isUserLoading, grantExtraStudySession } = useUser();
   const { isDark } = useTheme();
   const theme = useThemeClasses();
   const { t } = useTranslation();
+  const rewardedAd = useRewardedAd();
   const [song, setSong] = useState<Song | null>(null);
   const [playing, setPlaying] = useState<boolean>(false);
   const [studyData, setStudyData] = useState<StudyData | null>(null);
@@ -63,7 +65,17 @@ export default function StudyModeScreen({ route }: Props) {
   const [expandedExplanations, setExpandedExplanations] = useState<Set<number>>(new Set());
   const [activeLineIndex, setActiveLineIndex] = useState<number | null>(null);
   const [completedSections, setCompletedSections] = useState<Set<number>>(new Set());
-  const [showAdModal, setShowAdModal] = useState<boolean>(false);
+  const [confirmationModal, setConfirmationModal] = useState<{
+    visible: boolean;
+    title: string;
+    message: string;
+    type: 'default' | 'success' | 'error' | 'warning';
+  }>({
+    visible: false,
+    title: '',
+    message: '',
+    type: 'default',
+  });
 
   const contentScrollRef = useRef<ScrollView>(null);
   const videoPlayerRef = useRef<any>(null);
@@ -79,27 +91,74 @@ export default function StudyModeScreen({ route }: Props) {
   useEffect(() => {
     if (!isUserLoading && initialCount === null && todayStudyModeCount !== null) {
       setInitialCount(todayStudyModeCount);
-      console.log('[StudyMode] Captured initial count:', todayStudyModeCount);
     }
   }, [isUserLoading, todayStudyModeCount, initialCount]);
   
-  // Check if user has reached the limit BEFORE entering (at mount time)
-  const hasReachedLimit = initialCount !== null && initialCount >= 2;
+  // Check if user has reached the limit
+  // Compare count against limit (limit can increase from watching ads)
+  const hasReachedLimit = useMemo(() => {
+    if (initialCount === null || todayStudyModeCount === null) {
+      return false;
+    }
+    
+    // Check against the current limit (which can be increased by ads)
+    // Use initialCount to prevent blocking mid-session when entering a new song
+    return initialCount >= todayStudyModeLimit;
+  }, [initialCount, todayStudyModeLimit]);
 
-  console.log('todayStudyModeCount:', todayStudyModeCount, 'initialCount:', initialCount, 'hasReachedLimit:', hasReachedLimit, 'isUserLoading:', isUserLoading);
+  // Handler for when user wants to watch a rewarded ad
+  const handleWatchAd = async () => {
+    if (rewardedAd.isLoading) {
+      setConfirmationModal({
+        visible: true,
+        title: 'Loading',
+        message: 'Ad is still loading. Please wait a moment.',
+        type: 'default',
+      });
+      return;
+    }
 
-  // Handler for when user wants to watch an ad
-  const handleWatchAd = () => {
-    setShowAdModal(true);
-  };
+    if (!rewardedAd.isReady) {
+      setConfirmationModal({
+        visible: true,
+        title: 'Ad Not Available',
+        message: rewardedAd.error || 'No ad is available right now. Please try again later.',
+        type: 'warning',
+      });
+      return;
+    }
 
-  // Handler for when ad modal closes
-  const handleAdModalClose = () => {
-    setShowAdModal(false);
-    // TODO: When rewarded ads are implemented, this is where we'd:
-    // 1. Check if the ad was watched successfully
-    // 2. Grant an extra study session if successful
-    // 3. Update the todayStudyModeCount or grant a temporary bypass
+    try {
+      // Show the rewarded ad
+      const didEarnReward = await rewardedAd.show();
+      
+      if (didEarnReward) {
+        // User watched the ad completely and earned the reward
+        grantExtraStudySession();
+        setConfirmationModal({
+          visible: true,
+          title: 'Reward Earned!',
+          message: 'You earned an extra Study Mode session! Enjoy learning.',
+          type: 'success',
+        });
+      } else {
+        // User closed the ad before completion
+        setConfirmationModal({
+          visible: true,
+          title: 'No Reward',
+          message: 'You need to watch the entire ad to earn an extra study session.',
+          type: 'warning',
+        });
+      }
+    } catch (error) {
+      console.error('Error showing rewarded ad:', error);
+      setConfirmationModal({
+        visible: true,
+        title: 'Error',
+        message: 'Failed to show ad. Please try again later.',
+        type: 'error',
+      });
+    }
   };
 
   useEffect(() => {
@@ -701,8 +760,15 @@ export default function StudyModeScreen({ route }: Props) {
       </>
       )}
       
-      {/* Ad Modal for earning extra study session */}
-      <AdModal visible={showAdModal} onClose={handleAdModalClose} />
+      {/* Confirmation Modal for ad rewards */}
+      <ConfirmationModal
+        visible={confirmationModal.visible}
+        title={confirmationModal.title}
+        message={confirmationModal.message}
+        type={confirmationModal.type}
+        confirmText={t('common.ok')}
+        onConfirm={() => setConfirmationModal({ ...confirmationModal, visible: false })}
+      />
     </SafeAreaView>
   );
 }
