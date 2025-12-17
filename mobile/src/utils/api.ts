@@ -1,3 +1,4 @@
+import { Platform } from 'react-native';
 import type { Song, SongSummary, StudyData, LyricLine, SongsResponse } from '../types/song';
 
 // Note: Cookie management is handled automatically by React Native's HTTP client via credentials: 'include'
@@ -19,9 +20,16 @@ const getApiUrl = () => {
     return STATIC_BASE_URL;
   }
   
-  // For mobile development, use localhost or the configured API URL
-  // In production, you'd set this via environment variable
-  return process.env.EXPO_PUBLIC_API_URL || 'http://localhost:3001/api';
+  // For mobile development:
+  // - Android emulator: use 10.0.2.2 (maps to host machine's localhost)
+  // - iOS simulator: use localhost
+  // - Production: use environment variable
+  if (process.env.EXPO_PUBLIC_API_URL) {
+    return process.env.EXPO_PUBLIC_API_URL;
+  }
+  
+  const host = Platform.OS === 'android' ? '10.0.2.2' : 'localhost';
+  return `http://${host}:3001/api`;
 };
 
 const BASE_URL = getApiUrl();
