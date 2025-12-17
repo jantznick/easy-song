@@ -10,6 +10,7 @@ import { useThemeClasses } from '../utils/themeClasses';
 import { useTheme } from '../contexts/ThemeContext';
 import { useUser } from '../hooks/useUser';
 import { useTranslation } from '../hooks/useTranslation';
+import NativeAdHistoryItem from '../components/NativeAdHistoryItem';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'SongHistory'>;
 
@@ -141,41 +142,46 @@ export default function SongHistoryScreen({ route }: Props) {
               </Text>
             </View>
           ) : (
-            currentItems.map((item, index, array) => (
-              <TouchableOpacity
-                key={`${item.videoId}-${item.date}-${item.time}-${index}`}
-                activeOpacity={0.7}
-                className={`flex-row items-center py-4 px-5 ${
-                  index < array.length - 1 ? theme.border('border-border', 'border-[#334155]') + ' border-b' : ''
-                }`}
-                onPress={() => {
-                  const initialTab = item.mode === 'Play Mode' ? 'PlayMode' : 'StudyMode';
-                  navigation.dispatch(
-                    CommonActions.reset({
-                      index: 1,
-                      routes: [
-                        { name: 'SongList' },
-                        { name: 'SongDetail', params: { videoId: item.videoId, initialTab } },
-                      ],
-                    })
-                  );
-                }}
-              >
-                <View className="w-10 h-10 rounded-full bg-primary/20 items-center justify-center mr-3">
-                  <Ionicons
-                    name={item.mode === 'Play Mode' ? 'play-circle' : 'school'}
-                    size={20}
-                    color="#6366F1"
-                  />
-                </View>
-                <View className="flex-1">
-                  <Text className={theme.text('text-text-primary', 'text-[#F1F5F9]') + ' text-base font-medium mb-1'}>
-                    {item.song}
-                  </Text>
-                  <Text className={theme.text('text-text-secondary', 'text-[#94A3B8]') + ' text-sm mb-1'}>
-                    {item.artist}
-                  </Text>
-                  <View className="flex-row items-center">
+            currentItems.map((item, index, array) => {
+              // Insert ad every 6 items
+              const shouldShowAd = (index + 1) % 2 === 0 && index < array.length - 1;
+              
+              return (
+                <View key={`${item.videoId}-${item.date}-${item.time}-${index}`}>
+                  {/* Song History Item */}
+                  <TouchableOpacity
+                    activeOpacity={0.7}
+                    className={`flex-row items-center py-4 px-5 ${
+                      !shouldShowAd && index < array.length - 1 ? theme.border('border-border', 'border-[#334155]') + ' border-b' : ''
+                    }`}
+                    onPress={() => {
+                      const initialTab = item.mode === 'Play Mode' ? 'PlayMode' : 'StudyMode';
+                      navigation.dispatch(
+                        CommonActions.reset({
+                          index: 1,
+                          routes: [
+                            { name: 'SongList' },
+                            { name: 'SongDetail', params: { videoId: item.videoId, initialTab } },
+                          ],
+                        })
+                      );
+                    }}
+                  >
+                    <View className="w-10 h-10 rounded-full bg-primary/20 items-center justify-center mr-3">
+                      <Ionicons
+                        name={item.mode === 'Play Mode' ? 'play-circle' : 'school'}
+                        size={20}
+                        color="#6366F1"
+                      />
+                    </View>
+                    <View className="flex-1">
+                      <Text className={theme.text('text-text-primary', 'text-[#F1F5F9]') + ' text-base font-medium mb-1'}>
+                        {item.song}
+                      </Text>
+                      <Text className={theme.text('text-text-secondary', 'text-[#94A3B8]') + ' text-sm mb-1'}>
+                        {item.artist}
+                      </Text>
+                      <View className="flex-row items-center">
                     <View className="bg-primary/10 px-2 py-0.5 rounded mr-2">
                       <Text className="text-xs font-medium text-primary">
                         {item.mode === 'Play Mode' ? t('history.playMode') : t('history.studyMode')}
@@ -188,7 +194,12 @@ export default function SongHistoryScreen({ route }: Props) {
                 </View>
                 <Ionicons name="chevron-forward" size={20} color={isDark ? '#94A3B8' : '#4B5563'} />
               </TouchableOpacity>
-            ))
+              
+              {/* Native Ad - Every 6 items, styled like history item */}
+              {shouldShowAd && <NativeAdHistoryItem isLastItem={index === array.length - 1} />}
+            </View>
+              );
+            })
           )}
         </View>
       </ScrollView>

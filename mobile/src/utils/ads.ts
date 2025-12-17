@@ -31,22 +31,14 @@ export async function initializeAds(): Promise<void> {
 /**
  * AdMob Test Ad Unit IDs
  * These are Google's official test IDs - replace with your real IDs in production
+ * 
+ * NOTE: We only use native ads for maximum customization and consistency
  */
 export const AD_UNIT_IDS = {
-  // Interstitial ad unit IDs
-  interstitial: {
-    ios: 'ca-app-pub-3940256099942544/4411468910',
-    android: 'ca-app-pub-3940256099942544/1033173712',
-  },
-  // Banner ad unit IDs
-  banner: {
-    ios: 'ca-app-pub-3940256099942544/2934735716',
-    android: 'ca-app-pub-3940256099942544/6300978111',
-  },
-  // Rewarded ad unit IDs
-  rewarded: {
-    ios: 'ca-app-pub-3940256099942544/1712485313',
-    android: 'ca-app-pub-3940256099942544/5224354917',
+  // Native ad unit IDs - used for all ad placements
+  native: {
+    ios: 'ca-app-pub-3940256099942544/3986624511',
+    android: 'ca-app-pub-3940256099942544/2247696110',
   },
 };
 

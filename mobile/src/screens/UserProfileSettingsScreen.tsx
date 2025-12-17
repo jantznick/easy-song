@@ -13,6 +13,7 @@ import AuthDrawer from '../components/AuthDrawer';
 import { changePassword, getCurrentUser } from '../utils/api';
 import { validatePassword, getPasswordRequirements, getPasswordRequirementsDescription, type PasswordRequirements, type PasswordValidationResult } from '../utils/passwordValidation';
 import ConfirmationModal from '../components/ConfirmationModal';
+import NativeAdBanner from '../components/NativeAdBanner';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'UserProfileSettings'>;
 
@@ -173,6 +174,9 @@ export default function UserProfileSettingsScreen({ route }: Props) {
               </View>
             </View>
           </View>
+
+          {/* Native Ad - Below Profile Card */}
+          <NativeAdBanner />
 
           {/* Account Settings */}
           <SettingsSection title={t('settings.profile.account')}>

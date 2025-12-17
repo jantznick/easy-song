@@ -46,7 +46,7 @@ export default function SongListItem({ song, onPress }: SongListItemProps) {
           </View>
         </View>
       </View>
-      <View className="p-4">
+      <View className="p-4" style={{ height: 100 }}>
         <Text numberOfLines={2} className={theme.text('text-text-primary', 'text-[#F1F5F9]') + ' text-base font-semibold mb-1.5 leading-[22px]'}>
           {song.title}
         </Text>

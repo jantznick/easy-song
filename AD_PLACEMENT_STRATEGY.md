@@ -17,31 +17,42 @@ This document outlines strategic ad placement opportunities that balance revenue
 
 ## 📱 Mobile App Ad Placements
 
-### 1. Song List Screen (`SongListScreen.tsx`)
+### 1. Song List Screen (`SongListScreen.tsx`) ✅ IMPLEMENTED
 
-#### **Banner Ad - Top of List** ⭐ RECOMMENDED
-- **Location**: Below header, above song grid
-- **Format**: 320x50 banner or 320x100 medium rectangle
-- **Frequency**: Always visible
-- **Pros**: High visibility, doesn't block content, users see it while browsing
-- **Cons**: Takes vertical space
-- **Implementation**: Add between header (line 88) and songs grid (line 100)
+#### **Custom Modal Ad - On Screen Focus** ⭐ IMPLEMENTED
+- **Status**: ✅ **Live**
+- **Component**: `AdModal.tsx`
+- **Location**: Shows as overlay when navigating to Song List
+- **Format**: Custom branded modal with 300x250 native banner ad
+- **Frequency**: 33% chance every time screen comes into focus
+- **Implementation**: Uses `useFocusEffect` hook to trigger randomly on navigation
+- **Technical Notes**:
+  - Custom purple-themed modal with "Support Easy Song" branding
+  - Dismissible with backdrop tap, X button, or CTA button
+  - 500ms delay after screen loads for smooth UX
+  - Uses `BannerAdSize.MEDIUM_RECTANGLE`
+- **Pros**: High engagement, branded experience, non-intrusive (user can dismiss)
+- **Cons**: May not show for several visits (33% probability)
 
-#### **Native Ad - Between Songs** ⭐ RECOMMENDED
-- **Location**: Every 6-8 songs in the grid
-- **Format**: Native ad styled like a song card
-- **Frequency**: 1 ad per 6-8 songs
-- **Pros**: Blends naturally, high engagement, doesn't feel intrusive
-- **Cons**: Requires careful styling to match app design
-- **Implementation**: Insert in the map function around line 102-109
+#### **Native Ad Song Card - First Item in Grid** ⭐ IMPLEMENTED
+- **Status**: ✅ **Live**
+- **Component**: `NativeAdSongCard.tsx`
+- **Location**: First card in "All Songs" horizontal scroll section
+- **Format**: Native ad styled exactly like song cards
+- **Frequency**: Always visible as first item
+- **Implementation**: Inserted into FlatList data array with type discrimination
+- **Technical Notes**:
+  - 160px media area (NativeMediaView) with 100px content area
+  - Purple "Ad" badge in top-right corner
+  - CTA button centered like play button
+  - Fixed height (260px total) matches all song cards
+  - Uses `NativeAssetType.HEADLINE`, `ADVERTISER`, `CALL_TO_ACTION`
+- **Pros**: Blends seamlessly, high visibility, looks native
+- **Cons**: Takes first slot in song list
 
-#### **Interstitial Ad - After Song Selection** 
-- **Location**: When user taps a song, before navigating to SongDetail
-- **Format**: Full-screen interstitial
-- **Frequency**: Every 3rd song selection (33% frequency)
-- **Pros**: High CPM, natural break point
-- **Cons**: Can feel intrusive if too frequent
-- **Implementation**: Show ad in navigation handler before `navigation.navigate('SongDetail')`
+#### **Interstitial Ad - After Song Selection** ❌ NOT IMPLEMENTED
+- **Status**: Removed in favor of less intrusive placements
+- **Reason**: Full-screen interstitials can disrupt learning flow
 
 ---
 
@@ -93,56 +104,61 @@ This document outlines strategic ad placement opportunities that balance revenue
 
 ---
 
-### 4. Settings Screen (`SettingsScreen.tsx`)
+### 4. Settings Screen (`SettingsScreen.tsx`) ✅ IMPLEMENTED
 
-#### **Banner Ad - Bottom of Settings** ⭐ RECOMMENDED
-- **Location**: At bottom of ScrollView, above safe area
-- **Format**: 320x50 banner
+#### **Native Ad Banner - Bottom of Settings** ⭐ IMPLEMENTED
+- **Status**: ✅ **Live**
+- **Component**: `NativeAdBanner.tsx`
+- **Location**: At bottom of ScrollView, before closing tag
+- **Format**: Compact horizontal native ad (icon + text + CTA)
 - **Frequency**: Always visible
-- **Pros**: Low-intrusion, users browsing settings aren't actively learning
+- **Implementation**: Renders after all settings sections
+- **Technical Notes**:
+  - Horizontal layout: 48x48 icon OR 120x120 media, text, CTA button
+  - Rounded card design with subtle background
+  - Uses `NativeMediaView` if media available, falls back to icon
+  - 4px top padding, 12px bottom padding
+  - Max width 400px, centered
+- **Pros**: Low-intrusion, compact design, users aren't learning here
 - **Cons**: May be scrolled past quickly
-- **Implementation**: Add before closing ScrollView tag (around line 353)
 
 ---
 
-### 5. Song History Screen (`SongHistoryScreen.tsx`)
+### 5. Song History Screen (`SongHistoryScreen.tsx`) ✅ IMPLEMENTED
 
-#### **Native Ad - Between History Items**
-- **Location**: Every 5-7 history entries
-- **Format**: Native ad styled like history item
-- **Frequency**: 1 ad per 5-7 items
-- **Pros**: Natural break in list, doesn't interrupt browsing
-- **Cons**: Requires careful styling
-- **Implementation**: Insert in history list rendering
+#### **Native Ad - Between History Items** ⭐ IMPLEMENTED
+- **Status**: ✅ **Live**
+- **Component**: `NativeAdHistoryItem.tsx`
+- **Location**: Every 6 history entries
+- **Format**: Native ad styled exactly like history items
+- **Frequency**: 1 ad per 6 songs
+- **Implementation**: Injected into map function with conditional rendering
+- **Technical Notes**:
+  - Matches history item layout: 40x40 icon circle, headline, body, CTA badge
+  - "SPONSORED" label at top
+  - Optional 120x120 media view (only shows if ad has media)
+  - Same padding (16px vertical, 20px horizontal)
+  - Top and bottom borders match list items
+  - Uses `StyleSheet` instead of className for better border control
+  - Purple megaphone icon fallback if no ad icon
+- **Pros**: Blends perfectly, natural break in list, non-disruptive
+- **Cons**: Requires pagination to see multiple ads
 
 ---
 
-### 6. User Profile Settings Screen
+### 6. User Profile Settings Screen (`UserProfileSettingsScreen.tsx`) ✅ IMPLEMENTED
 
-#### **Banner Ad - Below Profile Card**
-- **Location**: After profile information card
-- **Format**: 320x50 banner
+#### **Native Ad Banner - Below Profile Card** ⭐ IMPLEMENTED
+- **Status**: ✅ **Live**
+- **Component**: `NativeAdBanner.tsx` (same as Settings screen)
+- **Location**: Between profile card and account settings section
+- **Format**: Compact horizontal native ad
 - **Frequency**: Always visible
+- **Implementation**: Inserted after profile card View
+- **Technical Notes**: Same component as Settings screen (reusable)
 - **Pros**: Low-intrusion area, users aren't actively learning here
-- **Cons**: Limited screen real estate
+- **Cons**: Slightly increases scroll distance to settings
 
----
-
-## 🌐 Web Frontend Ad Placements
-
-### Similar placements as mobile, with adjustments:
-
-#### **Sidebar Banner** (Desktop only)
-- **Location**: Right sidebar on song list and detail pages
-- **Format**: 300x250 medium rectangle or 300x600 half-page
-- **Frequency**: Always visible on desktop
-- **Pros**: Doesn't interfere with content, high visibility
-
-#### **Sticky Footer Banner**
-- **Location**: Fixed at bottom of viewport
-- **Format**: 728x90 leaderboard (desktop) or 320x50 (mobile)
-- **Frequency**: Always visible
-- **Pros**: Persistent visibility, doesn't block content
 
 ---
 
@@ -208,22 +224,24 @@ This document outlines strategic ad placement opportunities that balance revenue
 
 ---
 
-## 📊 Implementation Priority
+## 📊 Implementation Status
 
-### Phase 1 (Quick Wins):
-1. ✅ Banner ad below video player (Play/Study modes)
-2. ✅ Banner ad on Song List screen
-3. ✅ Banner ad on Settings screen
+### ✅ Phase 1 - COMPLETED:
+1. ✅ **Native ad banner** on Settings screen (`NativeAdBanner.tsx`)
+2. ✅ **Native ad banner** on User Profile Settings (`NativeAdBanner.tsx`)
+3. ✅ **Custom modal ad** on Song List (33% frequency, `AdModal.tsx`)
+4. ✅ **Native ad song card** in Song List grid (`NativeAdSongCard.tsx`)
+5. ✅ **Native ad history item** in Song History (`NativeAdHistoryItem.tsx`)
 
-### Phase 2 (Optimization):
-4. ✅ Native ads between songs (Song List)
-5. ✅ Interstitial after song completion
-6. ✅ Native ads in history list
+### ❌ Phase 2 - NOT STARTED:
+6. ❌ Banner ad below video player (Play/Study modes)
+7. ❌ Interstitial after song completion
+8. ❌ Native ads in Study Mode sections
 
-### Phase 3 (Premium Features):
-7. ✅ Rewarded video for section unlock
-8. ✅ Rewarded video for ad removal
-9. ✅ Premium subscription option
+### 🔮 Phase 3 - FUTURE:
+9. 🔮 Rewarded video for section unlock
+10. 🔮 Rewarded video for ad removal (1 hour)
+11. 🔮 Premium subscription tier
 
 ---
 
@@ -249,28 +267,156 @@ This document outlines strategic ad placement opportunities that balance revenue
 
 ## 🔧 Technical Implementation Notes
 
-### Ad Component Structure:
+### Current Ad Infrastructure
+
+#### Ad Configuration (`mobile/src/utils/ads.ts`)
 ```typescript
-// Example: AdBanner component
-<AdBanner 
-  unitId="ca-app-pub-xxx/xxx"
-  size="BANNER"
-  position="top" | "bottom" | "inline"
-  onAdLoaded={() => {}}
-  onAdFailedToLoad={(error) => {}}
-/>
+// Google AdMob test ad unit IDs
+export const AD_UNIT_IDS = {
+  native: {
+    ios: 'ca-app-pub-3940256099942544/3986624511',
+    android: 'ca-app-pub-3940256099942544/2247696110',
+  },
+  banner: {
+    ios: 'ca-app-pub-3940256099942544/2934735716',
+    android: 'ca-app-pub-3940256099942544/6300978111',
+  },
+  // ... other types
+};
+
+// Helper to get platform-specific ID
+export function getAdUnitId(adType: 'native' | 'banner' | ...): string
 ```
 
-### Ad Placement Hooks:
-- Use `useEffect` to track ad impressions
-- Track user session time for frequency capping
-- Implement ad loading states to prevent layout shift
+#### Native Ad Components Structure
 
-### Testing:
-- Test on different screen sizes
-- Verify ads don't break layout
-- Test rewarded video flow end-to-end
-- Monitor ad performance and user feedback
+**All ads use Native Ads API** for maximum customization:
+
+```typescript
+// Basic pattern used in all components
+const [nativeAd, setNativeAd] = useState<NativeAd | null>(null);
+
+useEffect(() => {
+  NativeAd.createForAdRequest(getAdUnitId('native'))
+    .then(setNativeAd)
+    .catch(console.error);
+  
+  return () => nativeAd?.destroy();
+}, []);
+
+return (
+  <NativeAdView nativeAd={nativeAd}>
+    <NativeAsset assetType={NativeAssetType.HEADLINE}>
+      <Text>{nativeAd.headline}</Text>
+    </NativeAsset>
+    <NativeMediaView style={{ width: 120, height: 120 }} />
+    {/* ... other assets */}
+  </NativeAdView>
+);
+```
+
+### Critical Implementation Rules
+
+#### 1. NativeMediaView Requirements ⚠️
+- **Minimum size**: 120x120 pixels (AdMob requirement for video ads)
+- **Must be included**: Even if you want text-only ads
+- **Validation**: AdMob SDK validates on load, not render
+
+```typescript
+// ✅ CORRECT - Meets minimum size
+<NativeMediaView style={{ width: 120, height: 120, minWidth: 120, minHeight: 120 }} />
+
+// ❌ WRONG - Too small, will fail validation
+<NativeMediaView style={{ width: 80, height: 80 }} />
+```
+
+#### 2. Asset Placement Rules ⚠️
+- **All assets must be direct children** of `NativeAsset` component
+- **No wrapper Views** around asset content
+- **Why**: SDK tracks clicks and impressions on direct children only
+
+```typescript
+// ✅ CORRECT - Direct child
+<NativeAsset assetType={NativeAssetType.HEADLINE}>
+  <Text style={{ padding: 8 }}>{nativeAd.headline}</Text>
+</NativeAsset>
+
+// ❌ WRONG - Wrapper View breaks tracking
+<NativeAsset assetType={NativeAssetType.HEADLINE}>
+  <View style={{ padding: 8 }}>
+    <Text>{nativeAd.headline}</Text>
+  </View>
+</NativeAsset>
+```
+
+#### 3. Border/Styling Workarounds
+- `NativeAdView` doesn't properly accept border styles
+- **Solution**: Wrap in container View for borders, keep assets inside
+
+```typescript
+// ✅ CORRECT - Border on wrapper, assets inside NativeAdView
+<View style={{ borderBottomWidth: 1, borderColor: '#333' }}>
+  <NativeAdView nativeAd={nativeAd}>
+    {/* All assets here */}
+  </NativeAdView>
+</View>
+```
+
+### Component Architecture
+
+#### Reusable Components Created:
+1. **`NativeAdBanner.tsx`** - Compact horizontal ad for settings pages
+2. **`NativeAdSongCard.tsx`** - Song card style for grid placement
+3. **`NativeAdHistoryItem.tsx`** - History item style for lists
+4. **`AdModal.tsx`** - Custom branded modal with banner ad
+
+#### Fixed Height Strategy:
+All song cards use **260px fixed height**:
+- Media area: 160px
+- Content area: 100px (fixed with `height: 100` style)
+- Ensures uniform grid regardless of text length
+
+### Ad Placement Hooks:
+
+#### Modal Ads with Navigation:
+```typescript
+// Use useFocusEffect to show on every screen focus
+useFocusEffect(
+  React.useCallback(() => {
+    const shouldShowAd = Math.random() < 0.33;
+    if (shouldShowAd) {
+      const timer = setTimeout(() => setShowAdModal(true), 500);
+      return () => clearTimeout(timer);
+    }
+  }, [])
+);
+```
+
+#### List Item Injection:
+```typescript
+// Add ad as first item in data array
+const listData = isAllSongsSection 
+  ? [{ type: 'ad' }, ...songs.map(song => ({ type: 'song', song }))]
+  : songs.map(song => ({ type: 'song', song }));
+
+// Render with type discrimination
+{item.type === 'ad' ? <NativeAdSongCard /> : <SongListItem song={item.song} />}
+```
+
+### Testing Checklist:
+- ✅ Test on different screen sizes (small/large phones)
+- ✅ Verify ads don't break layout
+- ✅ Check AdMob Ad Inspector for validation warnings
+- ✅ Test with no internet (graceful failure)
+- ✅ Verify fixed heights prevent layout shift
+- ✅ Test ad cleanup on component unmount
+- ✅ Monitor memory leaks (destroy ads properly)
+
+### Production Deployment:
+1. Replace test ad unit IDs in `ads.ts` with real IDs from AdMob dashboard
+2. Test with real ads in staging environment
+3. Monitor fill rate and eCPM in AdMob console
+4. Adjust frequencies based on user retention metrics
 
 ---
 

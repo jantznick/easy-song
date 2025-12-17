@@ -1,17 +1,19 @@
-import { useEffect, useState } from 'react';
-import { View, Text, ScrollView, SafeAreaView, TouchableOpacity, FlatList, Dimensions, Button } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, ScrollView, SafeAreaView, TouchableOpacity, FlatList, Dimensions } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useFocusEffect } from '@react-navigation/native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { SongsResponse, SongSummary } from '../types/song';
 import { fetchSongs } from '../utils/api';
 import SongListItem from '../components/SongListItem';
 import UserProfileCard from '../components/UserProfileCard';
 import StatusDisplay from '../components/StatusDisplay';
+import AdModal from '../components/AdModal';
+import NativeAdSongCard from '../components/NativeAdSongCard';
 import type { RootStackParamList } from '../types/navigation';
 import { useUser } from '../hooks/useUser';
 import { useTranslation } from '../hooks/useTranslation';
 import { useThemeClasses } from '../utils/themeClasses';
-import { useInterstitialAd } from '../hooks/useInterstitialAd';
 
 // TODO: Future implementation - Filter songs by learning language preference
 // When backend supports language filtering, use preferences.language.learning
@@ -31,10 +33,9 @@ export default function SongListScreen({ navigation }: Props) {
   const [sections, setSections] = useState<SongsResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  
-  // Initialize interstitial ad
-  const { loaded: adLoaded, showAd } = useInterstitialAd();
+  const [showAdModal, setShowAdModal] = useState<boolean>(false);
 
+  // Fetch songs on mount
   useEffect(() => {
     const getSongs = async () => {
       try {
@@ -53,6 +54,7 @@ export default function SongListScreen({ navigation }: Props) {
             }],
           });
         }
+        setError(null);
       } catch (e) {
         if (e instanceof Error) {
           setError(`Failed to fetch songs: ${e.message}. Is the backend server running?`);
@@ -68,6 +70,21 @@ export default function SongListScreen({ navigation }: Props) {
     getSongs();
   }, []);
 
+  // Show ad randomly (33% chance) every time screen comes into focus
+  useFocusEffect(
+    React.useCallback(() => {
+      // Show ad modal 33% of the time when navigating to this screen
+      const shouldShowAd = process.env.NODE_ENV === 'development' ? true : Math.random() < 0.33;
+      if (shouldShowAd) {
+        // Delay slightly so the UI settles before showing the ad
+        const timer = setTimeout(() => {
+          setShowAdModal(true);
+        }, 500);
+        return () => clearTimeout(timer);
+      }
+    }, [])
+  );
+
   const renderSection = ({ item: section }: { item: { id: string; title: string; songs: SongSummary[] } }) => {
     if (section.songs.length === 0) return null;
 
@@ -75,6 +92,12 @@ export default function SongListScreen({ navigation }: Props) {
     const sectionTitle = section.id === 'all' || section.title === 'All Songs' || section.title === 'all'
       ? t('songs.allSongs') 
       : section.title;
+    
+    // Insert ad as first item in "All Songs" section
+    const isAllSongsSection = section.id === 'all' || section.title === 'all';
+    const listData = isAllSongsSection 
+      ? [{ type: 'ad' } as const, ...section.songs.map(song => ({ type: 'song' as const, song }))]
+      : section.songs.map(song => ({ type: 'song' as const, song }));
 
     return (
       <View className="mb-8">
@@ -87,17 +110,21 @@ export default function SongListScreen({ navigation }: Props) {
 
         {/* Horizontal Scrollable Songs */}
         <FlatList
-          data={section.songs}
+          data={listData}
           horizontal
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={{ paddingHorizontal: HORIZONTAL_PADDING }}
-          keyExtractor={(song) => song.videoId}
-          renderItem={({ item: song }) => (
+          keyExtractor={(item, index) => item.type === 'ad' ? 'native-ad' : item.song.videoId}
+          renderItem={({ item }) => (
             <View style={{ width: ITEM_WIDTH, marginRight: ITEM_GAP }}>
-              <SongListItem
-                song={song}
-                onPress={() => navigation.navigate('SongDetail', { videoId: song.videoId })}
-              />
+              {item.type === 'ad' ? (
+                <NativeAdSongCard />
+              ) : (
+                <SongListItem
+                  song={item.song}
+                  onPress={() => navigation.navigate('SongDetail', { videoId: item.song.videoId })}
+                />
+              )}
             </View>
           )}
           ListEmptyComponent={
@@ -114,6 +141,12 @@ export default function SongListScreen({ navigation }: Props) {
 
   return (
     <SafeAreaView className={theme.bg('bg-background', 'bg-[#0F172A]')} style={{ flex: 1 }}>
+      {/* Ad Modal - shows 33% of the time */}
+      <AdModal 
+        visible={showAdModal} 
+        onClose={() => setShowAdModal(false)} 
+      />
+      
       <ScrollView 
         className="flex-1"
         contentContainerStyle={{ paddingBottom: 32 }}
@@ -132,20 +165,6 @@ export default function SongListScreen({ navigation }: Props) {
             {/* Header */}
             <View className={theme.border('border-border', 'border-[#334155]') + ' px-5 pt-2 pb-4 border-b flex-row items-center justify-between mb-2'}>
               <Text className={theme.text('text-text-primary', 'text-[#F1F5F9]') + ' text-3xl font-bold'}>{t('songs.title')}</Text>
-            </View>
-
-            {/* Test Ad Button - TODO: Remove after testing */}
-            <View className="px-5 py-3 bg-yellow-100 border-2 border-yellow-500 rounded-lg mx-4 mb-4">
-              <Text className="text-yellow-900 font-bold mb-2">🧪 Ad Test (Remove Later)</Text>
-              <TouchableOpacity
-                onPress={showAd}
-                className="bg-blue-600 py-3 px-4 rounded-lg"
-                disabled={!adLoaded}
-              >
-                <Text className="text-white text-center font-semibold">
-                  {adLoaded ? 'Show Test Ad' : 'Loading Ad...'}
-                </Text>
-              </TouchableOpacity>
             </View>
 
             {/* Sections */}
