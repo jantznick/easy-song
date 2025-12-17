@@ -93,6 +93,7 @@
     "failedToFetchSong": "Failed to fetch song"
   },
   "playMode": {
+    "playMode": "Play Mode",
     "lyrics": "Lyrics",
     "showTranslations": "Show translations"
   },

@@ -291,10 +291,6 @@ export default function StudyModeScreen({ route }: Props) {
     stopVideoIntervalRef.current = stopVideo(videoPlayerRef, line.end_ms, setPlaying);
   };
 
-  if (isLoading || error || !song) {
-    return <StatusDisplay loading={isLoading} error={error || (!song ? t('studyMode.songNotFound') : null)} loadingText={t('studyMode.loadingData')} />;
-  }
-
   const sections = studyData?.structuredSections || [];
   const hasStudyData = studyData !== null;
   const currentSection = expandedSectionIndex !== null && expandedSectionIndex < sections.length 
@@ -306,7 +302,12 @@ export default function StudyModeScreen({ route }: Props) {
       {/* Custom Header */}
       <View className={theme.bg('bg-surface', 'bg-[#1E293B]') + ' ' + theme.border('border-border', 'border-[#334155]') + ' border-b px-5 py-4 flex-row items-center'}>
         <TouchableOpacity
-          onPress={() => navigation.goBack()}
+          onPress={() => {
+            const parent = navigation.getParent();
+            if (parent) {
+              parent.navigate('SongList' as never);
+            }
+          }}
           className="mr-4"
           hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
         >
@@ -314,11 +315,51 @@ export default function StudyModeScreen({ route }: Props) {
         </TouchableOpacity>
         <View className="flex-1">
           <Text className={theme.text('text-text-primary', 'text-[#F1F5F9]') + ' text-lg font-semibold'} numberOfLines={1}>
-            {song.title}
+            {song?.title || t('studyMode.title')}
           </Text>
-          <Text className={theme.text('text-text-secondary', 'text-[#94A3B8]') + ' text-xs'}>{t('studyMode.title')}</Text>
+          {song && (
+            <Text className={theme.text('text-text-secondary', 'text-[#94A3B8]') + ' text-xs'}>{t('studyMode.title')}</Text>
+          )}
         </View>
       </View>
+
+      {/* Show loading or error state */}
+      {(isLoading || error || !song) && (
+        <View className="flex-1 justify-center items-center px-8">
+          {isLoading ? (
+            <StatusDisplay loading={true} loadingText={t('studyMode.loadingData')} />
+          ) : (
+            <View className="items-center">
+              <View className="bg-red-100 dark:bg-red-900/20 rounded-full p-4 mb-4">
+                <Ionicons name="alert-circle-outline" size={48} color="#ef4444" />
+              </View>
+              <Text className={theme.text('text-text-primary', 'text-[#F1F5F9]') + ' text-xl font-bold mb-2 text-center'}>
+                {t('common.error')}
+              </Text>
+              <Text className={theme.text('text-text-secondary', 'text-[#94A3B8]') + ' text-base text-center mb-6'}>
+                {error || (!song ? t('studyMode.songNotFound') : null)}
+              </Text>
+              <TouchableOpacity
+                onPress={() => {
+                  const parent = navigation.getParent();
+                  if (parent) {
+                    parent.navigate('SongList' as never);
+                  }
+                }}
+                className="bg-primary rounded-xl py-3 px-6"
+              >
+                <Text className="text-white text-center font-semibold">
+                  {t('common.back')}
+                </Text>
+              </TouchableOpacity>
+            </View>
+          )}
+        </View>
+      )}
+
+      {/* Main Content - only show if loaded successfully */}
+      {!isLoading && !error && song && (
+        <>
 
       {/* Fixed Video Player */}
       <VideoPlayer ref={videoPlayerRef} videoId={videoId} play={playing} onChangeState={onPlayerStateChange} />
@@ -621,6 +662,8 @@ export default function StudyModeScreen({ route }: Props) {
             </Text>
           </View>
         </View>
+      )}
+      </>
       )}
     </SafeAreaView>
   );

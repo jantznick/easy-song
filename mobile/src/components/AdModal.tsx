@@ -89,7 +89,7 @@ export default function AdModal({ visible, onClose }: AdModalProps) {
               <Ionicons 
                 name="close-circle" 
                 size={28} 
-                color={theme.isDark ? '#94a3b8' : '#64748b'} 
+                color={isDark ? '#94a3b8' : '#64748b'} 
               />
             </TouchableOpacity>
           </View>

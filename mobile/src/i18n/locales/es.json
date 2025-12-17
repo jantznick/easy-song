@@ -77,6 +77,7 @@
     "failedToFetchSong": "Error al cargar la canción"
   },
   "playMode": {
+    "playMode": "Modo Reproducción",
     "lyrics": "Letras",
     "showTranslations": "Mostrar traducciones"
   },

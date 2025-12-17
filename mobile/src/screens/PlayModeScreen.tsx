@@ -2,6 +2,7 @@ import { useEffect, useState, useRef, useMemo } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, SafeAreaView, Switch } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import type { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
+import { Ionicons } from '@expo/vector-icons';
 import { fetchSongById } from '../utils/api';
 import VideoPlayer from '../components/VideoPlayer';
 import StatusDisplay from '../components/StatusDisplay';
@@ -164,25 +165,69 @@ export default function PlayModeScreen({ route }: Props) {
     }
   };
 
-  if (isLoading || error || !song) {
-    return <StatusDisplay loading={isLoading} error={error || (!song ? t('songs.songNotFound') : null)} loadingText={t('songs.loadingSong')} />;
-  }
-
   return (
     <SafeAreaView className={theme.bg('bg-background', 'bg-[#0F172A]')} style={{ flex: 1 }}>
       {/* Custom Header */}
       <View className={theme.bg('bg-surface', 'bg-[#1E293B]') + ' ' + theme.border('border-border', 'border-[#334155]') + ' border-b px-5 py-4 flex-row items-center'}>
         <TouchableOpacity
-          onPress={() => navigation.goBack()}
+          onPress={() => {
+            const parent = navigation.getParent();
+            if (parent) {
+              parent.navigate('SongList' as never);
+            }
+          }}
           className="mr-4"
           hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
         >
           <Text className={theme.text('text-text-primary', 'text-[#F1F5F9]') + ' text-2xl'}>←</Text>
         </TouchableOpacity>
-        <Text className={theme.text('text-text-primary', 'text-[#F1F5F9]') + ' text-lg font-semibold flex-1'} numberOfLines={1}>
-          {song.title}
-        </Text>
+        <View className="flex-1">
+          <Text className={theme.text('text-text-primary', 'text-[#F1F5F9]') + ' text-lg font-semibold'} numberOfLines={1}>
+            {song?.title || t('playMode.playMode')}
+          </Text>
+          {song && (
+            <Text className={theme.text('text-text-secondary', 'text-[#94A3B8]') + ' text-xs'}>{t('playMode.playMode')}</Text>
+          )}
+        </View>
       </View>
+
+      {/* Show loading or error state */}
+      {(isLoading || error || !song) && (
+        <View className="flex-1 justify-center items-center px-8">
+          {isLoading ? (
+            <StatusDisplay loading={true} loadingText={t('songs.loadingSong')} />
+          ) : (
+            <View className="items-center">
+              <View className="bg-red-100 dark:bg-red-900/20 rounded-full p-4 mb-4">
+                <Ionicons name="alert-circle-outline" size={48} color="#ef4444" />
+              </View>
+              <Text className={theme.text('text-text-primary', 'text-[#F1F5F9]') + ' text-xl font-bold mb-2 text-center'}>
+                {t('common.error')}
+              </Text>
+              <Text className={theme.text('text-text-secondary', 'text-[#94A3B8]') + ' text-base text-center mb-6'}>
+                {error || (!song ? t('songs.songNotFound') : null)}
+              </Text>
+              <TouchableOpacity
+                onPress={() => {
+                  const parent = navigation.getParent();
+                  if (parent) {
+                    parent.navigate('SongList' as never);
+                  }
+                }}
+                className="bg-primary rounded-xl py-3 px-6"
+              >
+                <Text className="text-white text-center font-semibold">
+                  {t('common.back')}
+                </Text>
+              </TouchableOpacity>
+            </View>
+          )}
+        </View>
+      )}
+
+      {/* Main Content - only show if loaded successfully */}
+      {!isLoading && !error && song && (
+        <>
 
       {/* Fixed Content - Video and Song Info */}
       <View>
@@ -297,6 +342,8 @@ export default function PlayModeScreen({ route }: Props) {
           </ScrollView>
         </View>
       </View>
+      </>
+      )}
     </SafeAreaView>
   );
 }
