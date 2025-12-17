@@ -1,13 +1,16 @@
-import { useState } from 'react';
-import { View, Text, TouchableOpacity, ScrollView } from 'react-native';
+import { useState, useEffect } from 'react';
+import { View, Text, TouchableOpacity, ScrollView, ActivityIndicator, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { useThemeClasses } from '../utils/themeClasses';
 import { useTheme } from '../contexts/ThemeContext';
 import { useTranslation } from '../hooks/useTranslation';
+import { usePurchase } from '../hooks/usePurchase';
+import { useUser } from '../contexts/UserContext';
 
 interface StudyModeLimitReachedProps {
   onWatchAd: () => void;
+  onPurchaseSuccess?: () => void;
 }
 
 // Benefit Item Component (Compact)
@@ -32,12 +35,19 @@ function BenefitItem({ text, isComingSoon }: { text: string; isComingSoon?: bool
   );
 }
 
-export default function StudyModeLimitReached({ onWatchAd }: StudyModeLimitReachedProps) {
+export default function StudyModeLimitReached({ onWatchAd, onPurchaseSuccess }: StudyModeLimitReachedProps) {
   const theme = useThemeClasses();
   const { isDark } = useTheme();
   const { t } = useTranslation();
   const navigation = useNavigation();
+  const { refreshUser } = useUser();
   const [isAnnual, setIsAnnual] = useState(false);
+  const { loading, offerings, loadOfferings, makePurchase } = usePurchase();
+
+  // Load offerings on mount
+  useEffect(() => {
+    loadOfferings();
+  }, []);
 
   const premiumPlusBenefits = [
     { text: t('premium.premiumPlus.benefits.history') },
@@ -47,11 +57,33 @@ export default function StudyModeLimitReached({ onWatchAd }: StudyModeLimitReach
     { text: t('premium.premiumPlus.benefits.noAds') },
   ];
 
-  const handleUpgradePress = () => {
-    // TODO: Implement app store purchase flow
-    // For now, just log
-    console.log('Upgrade to Premium Plus - Purchase flow to be implemented');
-    // Could open app store or in-app purchase modal here
+  const handleUpgradePress = async () => {
+    const result = await makePurchase({
+      tier: 'premiumPlus',
+      billingPeriod: isAnnual ? 'annual' : 'monthly',
+      source: 'study_limit',
+    });
+
+    if (result.success) {
+      // Refresh user to get updated subscription tier
+      await refreshUser();
+
+      // Show success message
+      Alert.alert(
+        t('premium.successTitle') || 'Welcome to Premium Plus!',
+        t('premium.successMessage') || 'You now have unlimited study mode access!',
+        [
+          {
+            text: 'OK',
+            onPress: () => {
+              // Callback to parent (e.g., close modal, refresh UI)
+              onPurchaseSuccess?.();
+            },
+          },
+        ]
+      );
+    }
+    // Errors are handled by usePurchase hook
   };
 
   const handleBackPress = () => {
@@ -104,6 +136,7 @@ export default function StudyModeLimitReached({ onWatchAd }: StudyModeLimitReach
           <View className="flex-row items-center mb-2">
             <TouchableOpacity
               onPress={() => setIsAnnual(false)}
+              disabled={loading || !offerings}
               className={`px-2.5 py-1 rounded-lg mr-2 ${!isAnnual ? 'bg-primary/20' : ''}`}
             >
               <Text className={`text-xs font-bold uppercase ${!isAnnual ? 'text-primary' : theme.text('text-text-secondary', 'text-[#94A3B8]')}`}>
@@ -112,6 +145,7 @@ export default function StudyModeLimitReached({ onWatchAd }: StudyModeLimitReach
             </TouchableOpacity>
             <TouchableOpacity
               onPress={() => setIsAnnual(true)}
+              disabled={loading || !offerings}
               className={`px-2.5 py-1 rounded-lg ${isAnnual ? 'bg-primary/20' : ''}`}
             >
               <Text className={`text-xs font-bold uppercase ${isAnnual ? 'text-primary' : theme.text('text-text-secondary', 'text-[#94A3B8]')}`}>
@@ -146,12 +180,17 @@ export default function StudyModeLimitReached({ onWatchAd }: StudyModeLimitReach
         {/* Purchase Button */}
         <TouchableOpacity
           onPress={handleUpgradePress}
+          disabled={loading || !offerings}
           className="bg-primary rounded-xl py-3 items-center"
           activeOpacity={0.8}
         >
-          <Text className="text-white text-base font-bold">
-            {t('premium.premiumPlus.purchase')}
-          </Text>
+          {loading ? (
+            <ActivityIndicator color="white" />
+          ) : (
+            <Text className="text-white text-base font-bold">
+              {t('premium.premiumPlus.purchase')}
+            </Text>
+          )}
         </TouchableOpacity>
       </View>
 

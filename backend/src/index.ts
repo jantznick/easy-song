@@ -10,6 +10,7 @@ import authRoutes from './routes/auth';
 import userRoutes from './routes/user';
 import preferencesRoutes from './routes/preferences';
 import historyRoutes from './routes/history';
+import webhookRoutes from './routes/webhooks';
 
 const app = express();
 const PORT = config.port;
@@ -45,6 +46,9 @@ app.use('/api/user', preferencesRoutes);
 
 // History routes
 app.use('/api/history', historyRoutes);
+
+// Webhook routes (no /api prefix - webhooks are typically at root level)
+app.use('/webhooks', webhookRoutes);
 
 // --- Song Data Endpoints (existing) ---
 

@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { View, Text, SafeAreaView, ScrollView, TouchableOpacity } from 'react-native';
+import { useState, useEffect } from 'react';
+import { View, Text, SafeAreaView, ScrollView, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
@@ -8,6 +8,8 @@ import { useThemeClasses } from '../utils/themeClasses';
 import { useTheme } from '../contexts/ThemeContext';
 import { useTranslation } from '../hooks/useTranslation';
 import ConfirmationModal from '../components/ConfirmationModal';
+import { usePurchase } from '../hooks/usePurchase';
+import { useUser } from '../contexts/UserContext';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'PremiumBenefits'>;
 
@@ -49,7 +51,8 @@ interface TierCardProps {
   purchaseText: string;
   benefits: Array<{ text: string; isComingSoon?: boolean }>;
   isHighlighted?: boolean;
-  onPurchase: () => void;
+  onPurchase: (billingPeriod: 'monthly' | 'annual') => void;
+  loading?: boolean;
 }
 
 function TierCard({ 
@@ -63,7 +66,8 @@ function TierCard({
   purchaseText,
   benefits, 
   isHighlighted = false,
-  onPurchase
+  onPurchase,
+  loading = false,
 }: TierCardProps) {
   const theme = useThemeClasses();
   const { isDark } = useTheme();
@@ -101,6 +105,7 @@ function TierCard({
         <View className="flex-row items-center mb-3">
           <TouchableOpacity
             onPress={() => setIsAnnual(false)}
+            disabled={loading}
             className={`px-3 py-1.5 rounded-lg mr-2 ${!isAnnual ? 'bg-primary/20' : ''}`}
           >
             <Text className={`text-sm font-bold uppercase ${!isAnnual ? 'text-primary' : theme.text('text-text-secondary', 'text-[#94A3B8]')}`}>
@@ -109,6 +114,7 @@ function TierCard({
           </TouchableOpacity>
           <TouchableOpacity
             onPress={() => setIsAnnual(true)}
+            disabled={loading}
             className={`px-3 py-1.5 rounded-lg ${isAnnual ? 'bg-primary/20' : ''}`}
           >
             <Text className={`text-sm font-bold uppercase ${isAnnual ? 'text-primary' : theme.text('text-text-secondary', 'text-[#94A3B8]')}`}>
@@ -142,7 +148,8 @@ function TierCard({
       
       {/* Purchase Button */}
       <TouchableOpacity
-        onPress={onPurchase}
+        onPress={() => onPurchase(isAnnual ? 'annual' : 'monthly')}
+        disabled={loading}
         className="bg-primary rounded-xl py-5 items-center"
         activeOpacity={0.8}
         style={{
@@ -153,9 +160,13 @@ function TierCard({
           elevation: 6,
         }}
       >
-        <Text className="text-white text-lg font-bold">
-          {purchaseText}
-        </Text>
+        {loading ? (
+          <ActivityIndicator color="white" />
+        ) : (
+          <Text className="text-white text-lg font-bold">
+            {purchaseText}
+          </Text>
+        )}
       </TouchableOpacity>
     </View>
   );
@@ -166,6 +177,9 @@ export default function PremiumBenefitsScreen({ route }: Props) {
   const theme = useThemeClasses();
   const { isDark } = useTheme();
   const { t } = useTranslation();
+  const { refreshUser } = useUser();
+  const { loading, offerings, loadOfferings, makePurchase } = usePurchase();
+  const [loadingTier, setLoadingTier] = useState<string | null>(null);
   const [confirmationModal, setConfirmationModal] = useState<{
     visible: boolean;
     title: string;
@@ -178,6 +192,11 @@ export default function PremiumBenefitsScreen({ route }: Props) {
     message: '',
     type: 'default',
   });
+
+  // Load offerings on mount
+  useEffect(() => {
+    loadOfferings();
+  }, []);
 
   const premiumBenefits = [
     { text: t('premium.premium.benefits.history') },
@@ -195,21 +214,52 @@ export default function PremiumBenefitsScreen({ route }: Props) {
     { text: t('premium.premiumPlus.benefits.noAds') },
   ];
 
-  const handlePurchase = (tier: 'premium' | 'premiumPlus') => {
-    // TODO: Implement app store purchase flow
-    setConfirmationModal({
-      visible: true,
-      title: t('premium.purchase'),
-      message: t('premium.purchaseMessage').replace('{tier}', tier === 'premium' ? t('premium.premium.title') : t('premium.premiumPlus.title')),
-      type: 'default',
-      onConfirm: () => {
-        // Placeholder for app store purchase
-        // Linking.openURL('app-store-url-here');
-        console.log(`Purchase ${tier}`);
-        setConfirmationModal({ ...confirmationModal, visible: false });
-      },
+  const handlePurchase = async (
+    tier: 'premium' | 'premiumPlus',
+    billingPeriod: 'monthly' | 'annual'
+  ) => {
+    setLoadingTier(`${tier}_${billingPeriod}`);
+
+    const result = await makePurchase({
+      tier,
+      billingPeriod,
+      source: route.params?.source || 'settings',
     });
+
+    setLoadingTier(null);
+
+    if (result.success) {
+      // Refresh user to get updated subscription tier
+      await refreshUser();
+
+      // Show success message
+      setConfirmationModal({
+        visible: true,
+        title: t('premium.successTitle') || 'Welcome to Premium!',
+        message: t('premium.successMessage') || 'Your subscription is now active. Enjoy!',
+        type: 'success',
+        onConfirm: () => {
+          setConfirmationModal(prev => ({ ...prev, visible: false }));
+          navigation.goBack();
+        },
+      });
+    }
+    // Errors are handled by usePurchase hook
   };
+
+  // Show loading state while offerings load
+  if (!offerings) {
+    return (
+      <SafeAreaView className={theme.bg('bg-background', 'bg-[#0F172A]')} style={{ flex: 1 }}>
+        <View className="flex-1 justify-center items-center">
+          <ActivityIndicator size="large" color="#6366F1" />
+          <Text className={theme.text('text-text-secondary', 'text-[#94A3B8]') + ' mt-4'}>
+            Loading subscription options...
+          </Text>
+        </View>
+      </SafeAreaView>
+    );
+  }
 
   return (
     <SafeAreaView className={theme.bg('bg-background', 'bg-[#0F172A]')} style={{ flex: 1 }}>
@@ -251,7 +301,8 @@ export default function PremiumBenefitsScreen({ route }: Props) {
           annualBilling={t('premium.premium.annualBilling')}
           purchaseText={t('premium.premium.purchase')}
           benefits={premiumBenefits}
-          onPurchase={() => handlePurchase('premium')}
+          loading={loadingTier?.startsWith('premium_') && !loadingTier?.startsWith('premiumPlus_')}
+          onPurchase={(billingPeriod) => handlePurchase('premium', billingPeriod)}
         />
 
         <TierCard
@@ -265,7 +316,8 @@ export default function PremiumBenefitsScreen({ route }: Props) {
           purchaseText={t('premium.premiumPlus.purchase')}
           benefits={premiumPlusBenefits}
           isHighlighted={true}
-          onPurchase={() => handlePurchase('premiumPlus')}
+          loading={loadingTier?.startsWith('premiumPlus_')}
+          onPurchase={(billingPeriod) => handlePurchase('premiumPlus', billingPeriod)}
         />
       </ScrollView>
 

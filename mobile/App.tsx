@@ -12,6 +12,7 @@ import './src/i18n/config';
 import { UserProvider } from './src/contexts/UserContext';
 import { ThemeProvider, useTheme } from './src/contexts/ThemeContext';
 import { initializeAds } from './src/utils/ads';
+import { initializeSubscriptions } from './src/utils/subscriptions';
 import OnboardingScreen from './src/screens/OnboardingScreen';
 import AuthScreen from './src/screens/AuthScreen';
 import SongListScreen from './src/screens/SongListScreen';
@@ -127,6 +128,11 @@ export default function App() {
   // Initialize AdMob when app starts
   useEffect(() => {
     initializeAds();
+  }, []);
+
+  // Initialize RevenueCat when app starts
+  useEffect(() => {
+    initializeSubscriptions();
   }, []);
 
   return (
