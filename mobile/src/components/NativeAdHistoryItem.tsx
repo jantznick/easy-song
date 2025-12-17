@@ -50,44 +50,37 @@ export default function NativeAdHistoryItem({ isLastItem = false }: NativeAdHist
   }
 
   return (
-    <View style={[
-      styles.borderContainer,
-      { 
-        borderBottomWidth: 1,
-        borderBottomColor: isDark ? '#334155' : '#E5E7EB',
-        borderTopWidth: 1,
-        borderTopColor: isDark ? '#334155' : '#E5E7EB',
-      }
-    ]}>
-      <NativeAdView 
-        nativeAd={nativeAd}
-        style={styles.container}
-      >
-      {/* Mimics history item structure - all assets must be direct children of NativeAsset */}
+    <NativeAdView 
+      nativeAd={nativeAd}
+      style={[
+        styles.container,
+        { 
+          backgroundColor: isDark ? '#1E293B' : '#FFFFFF',
+          borderTopWidth: 1,
+          borderTopColor: isDark ? '#334155' : '#E5E7EB',
+          borderBottomWidth: 1,
+          borderBottomColor: isDark ? '#334155' : '#E5E7EB',
+        }
+      ]}
+    >
+      {/* Mimics history item structure exactly */}
       <View style={styles.row}>
         {/* Ad Icon - 40x40 circle to match history items */}
         {nativeAd.icon ? (
-          <NativeAsset assetType={NativeAssetType.ICON}>
-            <View style={[styles.iconContainer, { backgroundColor: isDark ? 'rgba(168, 85, 247, 0.1)' : 'rgba(168, 85, 247, 0.1)' }]}>
-              <Image 
-                source={{ uri: nativeAd.icon.url }} 
-                style={styles.icon}
-              />
-            </View>
-          </NativeAsset>
+          <View style={[styles.iconContainer, { backgroundColor: 'rgba(168, 85, 247, 0.1)' }]}>
+            <Image 
+              source={{ uri: nativeAd.icon.url }} 
+              style={styles.icon}
+            />
+          </View>
         ) : (
-          <View style={[styles.iconContainer, { backgroundColor: isDark ? 'rgba(168, 85, 247, 0.1)' : 'rgba(168, 85, 247, 0.1)' }]}>
+          <View style={[styles.iconContainer, { backgroundColor: 'rgba(168, 85, 247, 0.1)' }]}>
             <Ionicons name="megaphone-outline" size={18} color="#a855f7" />
           </View>
         )}
 
         {/* Ad Content */}
         <View style={styles.content}>
-          {/* SPONSORED label */}
-          <Text style={[styles.sponsoredLabel, { color: isDark ? '#94A3B8' : '#6B7280' }]}>
-            SPONSORED
-          </Text>
-
           {/* Headline - acts like song title */}
           {nativeAd.headline && (
             <NativeAsset assetType={NativeAssetType.HEADLINE}>
@@ -106,7 +99,7 @@ export default function NativeAdHistoryItem({ isLastItem = false }: NativeAdHist
             </NativeAsset>
           )}
 
-          {/* Call to Action & Media Row */}
+          {/* Bottom row with CTA and Ad label - matches mode badge + date layout */}
           <View style={styles.bottomRow}>
             {/* Call to Action - styled like mode badge */}
             {nativeAd.callToAction && (
@@ -118,38 +111,33 @@ export default function NativeAdHistoryItem({ isLastItem = false }: NativeAdHist
                 </View>
               </NativeAsset>
             )}
+            
+            {/* Ad label to indicate sponsored content */}
+            <Text style={[styles.adLabel, { color: isDark ? '#64748B' : '#6B7280' }]}>
+              Ad
+            </Text>
           </View>
-
-          {/* Compact Media View - minimum 120x120 for AdMob compliance, only shows if media exists */}
-          {nativeAd.mediaContent && (
-            <View style={styles.mediaContainer}>
-              <NativeMediaView 
-                style={styles.media}
-                resizeMode="cover"
-              />
-            </View>
-          )}
         </View>
 
         {/* Chevron to match history items */}
-        <Ionicons name="chevron-forward" size={20} color={isDark ? '#94A3B8' : '#6B7280'} style={styles.chevron} />
+        <Ionicons name="chevron-forward" size={20} color={isDark ? '#94A3B8' : '#4B5563'} style={styles.chevron} />
       </View>
     </NativeAdView>
-    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  borderContainer: {
-    // This wrapper handles the border
-  },
   container: {
-    paddingVertical: 16,
-    paddingHorizontal: 20,
+    paddingVertical: 0,
+    paddingHorizontal: 0,
   },
   row: {
     flexDirection: 'row',
     alignItems: 'center',
+    paddingTop: 14,
+    paddingBottom: 14,
+    paddingLeft: 17.5,
+    paddingRight: 17.5,
   },
   iconContainer: {
     width: 40,
@@ -167,10 +155,6 @@ const styles = StyleSheet.create({
   content: {
     flex: 1,
   },
-  sponsoredLabel: {
-    fontSize: 10,
-    marginBottom: 4,
-  },
   headline: {
     fontSize: 16,
     fontWeight: '500',
@@ -183,7 +167,6 @@ const styles = StyleSheet.create({
   bottomRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginTop: 4,
   },
   ctaButton: {
     backgroundColor: 'rgba(99, 102, 241, 0.1)',
@@ -197,17 +180,8 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: '500',
   },
-  mediaContainer: {
-    marginTop: 8,
-    borderRadius: 8,
-    overflow: 'hidden',
-    alignSelf: 'flex-start',
-  },
-  media: {
-    width: 120,
-    height: 120,
-    minWidth: 120,
-    minHeight: 120,
+  adLabel: {
+    fontSize: 12,
   },
   chevron: {
     marginLeft: 8,
