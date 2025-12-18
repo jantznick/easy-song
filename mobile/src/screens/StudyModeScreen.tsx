@@ -108,6 +108,20 @@ export default function StudyModeScreen({ route }: Props) {
 
   // Handler for when user wants to watch a rewarded ad
   const handleWatchAd = async () => {
+    // If ads are disabled, grant reward immediately
+    const showAds = process.env.SHOWADS !== 'false';
+    if (!showAds) {
+      // Grant reward immediately when ads are disabled
+      grantExtraStudySession();
+      setConfirmationModal({
+        visible: true,
+        title: 'Extra Session Granted',
+        message: 'You have been granted an extra study session!',
+        type: 'success',
+      });
+      return;
+    }
+
     if (rewardedAd.isLoading) {
       setConfirmationModal({
         visible: true,

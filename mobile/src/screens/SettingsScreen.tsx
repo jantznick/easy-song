@@ -368,7 +368,7 @@ export default function SettingsScreen({ route }: Props) {
         </View>
 
         {/* Native Ad - Bottom of Settings */}
-        <NativeAdBanner />
+        {process.env.SHOWADS !== 'false' && <NativeAdBanner />}
       </ScrollView>
 
       {/* Learning Language Modal */}

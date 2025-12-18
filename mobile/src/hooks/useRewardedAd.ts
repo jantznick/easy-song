@@ -5,7 +5,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { RewardedAd, RewardedAdEventType, AdEventType } from 'react-native-google-mobile-ads';
-import { getAdUnitId } from '../utils/ads';
+import { getAdUnitId, shouldShowAds } from '../utils/ads';
 
 export interface UseRewardedAdReturn {
   isLoading: boolean;
@@ -23,6 +23,13 @@ export function useRewardedAd(): UseRewardedAdReturn {
   const isShowingRef = useRef(false);
 
   useEffect(() => {
+    // Don't load ads if disabled
+    if (!shouldShowAds()) {
+      setIsLoading(false);
+      setIsReady(false);
+      return;
+    }
+
     // Create and load rewarded ad
     const adUnitId = getAdUnitId('rewarded');
     const rewarded = RewardedAd.createForAdRequest(adUnitId, {
@@ -65,6 +72,12 @@ export function useRewardedAd(): UseRewardedAdReturn {
   }, []);
 
   const show = async (): Promise<boolean> => {
+    // Don't show ads if disabled
+    if (!shouldShowAds()) {
+      // Return true to simulate successful ad view when ads are disabled
+      return true;
+    }
+
     if (!rewardedAdRef.current || !isReady || isShowingRef.current) {
       console.warn('Rewarded ad not ready or already showing');
       return false;

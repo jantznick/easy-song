@@ -196,7 +196,7 @@ export default function SongHistoryScreen({ route }: Props) {
               </TouchableOpacity>
               
               {/* Native Ad - Every 6 items, styled like history item */}
-              {shouldShowAd && <NativeAdHistoryItem isLastItem={index === array.length - 1} />}
+              {shouldShowAd && process.env.SHOWADS !== 'false' && <NativeAdHistoryItem isLastItem={index === array.length - 1} />}
             </View>
               );
             })

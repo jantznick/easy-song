@@ -182,7 +182,7 @@ export default function UserProfileSettingsScreen({ route }: Props) {
           </View>
 
           {/* Native Ad - Below Profile Card */}
-          <NativeAdBanner />
+          {process.env.SHOWADS !== 'false' && <NativeAdBanner />}
 
           {/* Account Settings */}
           <SettingsSection title={t('settings.profile.account')}>
