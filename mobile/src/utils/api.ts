@@ -629,11 +629,21 @@ export async function resendVerificationCode(): Promise<{
 }
 
 /**
- * Fetch available languages from the API
+ * Fetch available languages from the API or CDN
  */
 export async function fetchLanguages(): Promise<{
   languages: Array<{ code: string; name: string }>;
 }> {
+  if (API_MODE === 'static') {
+    // In static mode, fetch from CDN
+    const response = await fetch(`${BASE_URL}/i18n/languages.json`);
+    if (!response.ok) {
+      throw new Error(`Failed to fetch languages (${response.status})`);
+    }
+    return response.json();
+  }
+  
+  // In API mode, fetch from backend
   const baseUrl = getApiUrl().replace('/api', '');
   const response = await fetch(`${baseUrl}/api/i18n/languages`, {
     method: 'GET',
@@ -648,12 +658,26 @@ export async function fetchLanguages(): Promise<{
 }
 
 /**
- * Fetch translations for a specific language from the API
+ * Fetch translations for a specific language from the API or CDN
  */
 export async function fetchTranslations(lang: string): Promise<{
   language: string;
   translations: Record<string, any>;
 }> {
+  if (API_MODE === 'static') {
+    // In static mode, fetch from CDN
+    const response = await fetch(`${BASE_URL}/i18n/translations/${lang}.json`);
+    if (!response.ok) {
+      throw new Error(`Failed to fetch translations for language ${lang} (${response.status})`);
+    }
+    const translations = await response.json();
+    return {
+      language: lang,
+      translations,
+    };
+  }
+  
+  // In API mode, fetch from backend
   const baseUrl = getApiUrl().replace('/api', '');
   const response = await fetch(`${baseUrl}/api/i18n/translations/${lang}`, {
     method: 'GET',
