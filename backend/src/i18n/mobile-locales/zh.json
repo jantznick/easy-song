@@ -1,0 +1,342 @@
+{
+  "common": {
+    "loading": "加载中...",
+    "error": "错误",
+    "settings": "设置",
+    "back": "返回",
+    "save": "保存",
+    "cancel": "取消",
+    "done": "完成",
+    "next": "下一步",
+    "previous": "上一步",
+    "close": "关闭",
+    "version": "版本",
+    "guest": "访客用户"
+  },
+  "auth": {
+    "signup": {
+      "title": "创建账户",
+      "subtitle": "加入 EasySong，通过音乐开始学习语言",
+      "button": "注册"
+    },
+    "login": {
+      "title": "欢迎回来",
+      "subtitle": "登录以继续您的语言学习之旅",
+      "button": "登录"
+    },
+    "magicCode": {
+      "title": "魔法代码登录",
+      "subtitle": "我们将向您的电子邮件发送代码",
+      "signupTitle": "魔法代码注册",
+      "signupSubtitle": "我们将向您的电子邮件发送代码以创建您的账户",
+      "loginTitle": "魔法代码登录",
+      "loginSubtitle": "我们将向您的电子邮件发送代码以登录",
+      "sendCode": "发送代码",
+      "code": "输入代码",
+      "verify": "验证代码",
+      "resend": "重新发送代码",
+      "sent": "代码已发送",
+      "checkEmail": "请查看您的电子邮件以获取6位数字代码",
+      "usePassword": "改用密码"
+    },
+    "name": "姓名",
+    "namePlaceholder": "输入您的姓名",
+    "email": "电子邮件",
+    "emailPlaceholder": "输入您的电子邮件",
+    "password": "密码",
+    "passwordPlaceholder": "输入您的密码",
+    "passwordHint": "至少8个字符",
+    "signupWithMagicCode": "改用魔法代码注册",
+    "loginWithMagicCode": "改用魔法代码登录",
+    "alreadyHaveAccount": "已有账户？登录",
+    "dontHaveAccount": "没有账户？注册",
+    "errors": {
+      "invalidEmail": "请输入有效的电子邮件地址",
+      "nameRequired": "姓名是必需的",
+      "passwordRequired": "密码是必需的",
+      "passwordTooShort": "密码必须至少8个字符",
+      "invalidCode": "请输入有效的6位数字代码",
+      "signupFailed": "创建账户失败。请重试。",
+      "loginFailed": "登录失败。请检查您的凭据。",
+      "sendCodeFailed": "发送代码失败。请重试。",
+      "invalidCredentials": "电子邮件或密码无效",
+      "userAlreadyExists": "此电子邮件已存在账户。请改为登录。"
+    }
+  },
+  "songs": {
+    "title": "歌曲",
+    "loading": "正在加载歌曲...",
+    "noSongs": "暂无歌曲",
+    "noSongsDescription": "请稍后再来查看新内容！",
+    "noSongsInSection": "此部分暂无歌曲",
+    "allSongs": "所有歌曲",
+    "error": "加载歌曲失败",
+    "errorDescription": "发生未知错误。",
+    "loadingSong": "正在加载歌曲...",
+    "songNotFound": "未找到歌曲",
+    "failedToFetchSong": "加载歌曲失败"
+  },
+  "playMode": {
+    "playMode": "播放模式",
+    "lyrics": "歌词",
+    "showTranslations": "显示翻译"
+  },
+  "studyMode": {
+    "title": "学习模式",
+    "loadingData": "正在加载学习数据...",
+    "songNotFound": "未找到歌曲",
+    "failedToFetchData": "加载数据失败",
+    "studyContent": "学习内容",
+    "showTranslations": "显示翻译",
+    "sectionExplanation": "章节说明",
+    "playAll": "播放全部",
+    "pause": "暂停",
+    "nextSection": "下一步",
+    "additional": "附加",
+    "selectSection": "请在上方选择一个章节查看其内容",
+    "studyDataNotAvailable": "学习数据不可用",
+    "studyDataNotAvailableDescription": "结构化学习格式将在数据生成后可用。",
+    "additionalContentNote": "这些行未包含在上面的结构化章节中。",
+    "limitReached": "已达每日限制",
+    "limitReachedMessage": "您今天已达到 2 次学习模式的限制。",
+    "limitReachedUpgrade": "升级到高级增强版，无限制使用学习模式！",
+    "limitReachedAd": "或观看广告以获得今天额外的一次学习模式",
+    "watchAdButton": "观看广告",
+    "upgradeToPremium": "升级到高级增强版",
+    "comeBackTomorrow": "明天再回来继续学习！"
+  },
+  "settings": {
+    "title": "设置",
+    "playback": {
+      "title": "播放",
+      "autoplay": "自动播放",
+      "autoplayDescription": "自动开始播放视频",
+      "autoscroll": "自动滚动歌词",
+      "autoscrollDescription": "自动滚动到当前歌词行",
+      "loop": "循环播放",
+      "loopDescription": "歌曲结束时自动重播"
+    },
+    "display": {
+      "title": "显示",
+      "fontSize": "字体大小",
+      "fontSizeDescription": "歌词文本大小",
+      "defaultTranslation": "默认翻译",
+      "defaultTranslationDescription": "默认显示翻译",
+      "theme": "主题",
+      "themeDescription": "应用主题偏好",
+      "light": "浅色",
+      "dark": "深色",
+      "system": "系统"
+    },
+    "language": {
+      "title": "语言",
+      "learning": "学习语言",
+      "learningDescription": "正在学习的语言",
+      "interface": "应用语言",
+      "interfaceDescription": "应用界面语言",
+      "learningLanguage": "学习语言",
+      "interfaceLanguage": "应用语言",
+      "names": {
+        "en": "英语",
+        "es": "西班牙语",
+        "zh": "中文（普通话）",
+        "fr": "法语",
+        "de": "德语"
+      }
+    },
+    "profile": {
+      "title": "用户资料",
+      "editProfile": "编辑资料",
+      "email": "电子邮件",
+      "changePassword": "更改密码",
+      "signIn": "登录",
+      "signOut": "退出登录",
+      "notSignedIn": "未登录",
+      "account": "账户",
+      "name": "姓名",
+      "signInToSync": "登录以同步您的进度",
+      "signOutOfAccount": "退出您的账户"
+    },
+    "onboarding": {
+      "skip": "跳过",
+      "next": "下一步",
+      "signUp": "注册",
+      "continueAsGuest": "以访客身份继续",
+      "welcome": {
+        "title": "欢迎使用 EasySong",
+        "description": "通过音乐学习语言！发现您喜爱的歌曲，跟着唱，以有趣且引人入胜的方式掌握新语言。"
+      },
+      "playMode": {
+        "title": "播放模式",
+        "description": "观看带有同步歌词的音乐视频。跟着唱，在享受您喜爱的歌曲时自然地学习。"
+      },
+      "studyMode": {
+        "title": "学习模式",
+        "description": "深入了解每首歌曲，提供详细解释、翻译和结构化学习部分，以掌握语言。"
+      },
+      "language": {
+        "title": "选择您的语言",
+        "description": "选择您想学习的语言和您的母语，以获得最佳体验",
+        "learningLanguage": "您想学习的语言",
+        "nativeLanguage": "母语",
+        "selectLanguage": "选择语言"
+      }
+    },
+    "about": {
+      "title": "关于",
+      "appVersion": "应用版本",
+      "helpSupport": "帮助与支持",
+      "viewWalkthrough": "查看教程",
+      "viewWalkthroughDescription": "再次查看应用介绍",
+      "termsOfService": "服务条款",
+      "privacyPolicy": "隐私政策",
+      "premiumBenefits": "高级版权益"
+    }
+  },
+  "premium": {
+    "title": "高级版权益",
+    "heading": "选择您的计划",
+    "description": "升级以解锁更多功能，提升您的语言学习体验。",
+    "comingSoon": "即将推出",
+    "monthly": "月度",
+    "annual": "年度",
+    "premium": {
+      "title": "高级版",
+      "monthlyPrice": "$5",
+      "monthlyPeriod": "/月",
+      "annualPrice": "$3",
+      "annualPeriod": "/月",
+      "annualTotal": "$36",
+      "annualBilling": "按年计费",
+      "purchase": "订阅",
+      "benefits": {
+        "history": "查看最近10条历史记录",
+        "studyMode": "每天2个学习模式视频",
+        "games": "每天3个游戏",
+        "requests": "歌曲/视频请求在1周内完成",
+        "noAds": "无广告"
+      }
+    },
+    "premiumPlus": {
+      "title": "高级版Plus",
+      "monthlyPrice": "$8",
+      "monthlyPeriod": "/月",
+      "annualPrice": "$5",
+      "annualPeriod": "/月",
+      "annualTotal": "$60",
+      "annualBilling": "按年计费",
+      "purchase": "订阅",
+      "benefits": {
+        "history": "查看无限历史记录",
+        "studyMode": "每天无限学习模式视频",
+        "games": "每天无限游戏",
+        "requests": "歌曲/视频请求在1天内完成",
+        "noAds": "无广告"
+      }
+    }
+  },
+  "profile": {
+    "editName": "编辑姓名",
+    "editEmail": "编辑电子邮件",
+    "enterName": "请输入您的姓名",
+    "enterEmail": "请输入您的电子邮件",
+    "nameCannotBeEmpty": "姓名不能为空",
+    "emailCannotBeEmpty": "电子邮件不能为空",
+    "invalidEmail": "请输入有效的电子邮件地址",
+    "failedToUpdateName": "更新姓名失败",
+    "failedToUpdateEmail": "更新电子邮件失败",
+    "failedToSignOut": "退出登录失败",
+    "password": "密码",
+    "emailAndPasswordRequired": "需要电子邮件和密码",
+    "failedToSignIn": "登录失败。请重试。",
+    "songsLearned": "已学歌曲",
+    "playMode": "播放模式",
+    "studyMode": "学习模式"
+  },
+  "history": {
+    "title": "歌曲历史",
+    "noHistory": "暂无歌曲历史",
+    "noHistoryDescription": "开始播放歌曲以在此处查看您的历史记录",
+    "viewAll": "查看全部",
+    "previous": "上一步",
+    "next": "下一步",
+    "lastPage": "最后一页",
+    "loadMore": "加载更多",
+    "page": "页",
+    "of": "共",
+    "noHistoryShort": "无历史记录",
+    "playMode": "播放模式",
+    "studyMode": "学习模式",
+    "upgradeTitle": "升级到高级版",
+    "upgradeMessage": "注册以保存您的完整收听历史记录并在设备间同步！",
+    "guestUpgradeMessage": "注册以保存更多历史记录，升级到高级版以保存所有历史记录",
+    "clickToUpgrade": "点击此处升级到高级版"
+  },
+  "tabs": {
+    "play": "播放",
+    "study": "学习",
+    "settings": "设置"
+  },
+  "help": {
+    "title": "帮助与支持",
+    "gettingStarted": "入门指南",
+    "howToUse": "如何使用应用",
+    "howToUseDescription": "Easy Song 帮助您通过音乐学习语言。浏览歌曲、观看视频，并通过翻译和解释学习歌词。",
+    "playMode": "播放模式",
+    "playModeDescription": "观看视频并跟随高亮的歌词。点击任何歌词即可跳转到歌曲的那一部分。根据需要切换翻译的显示。",
+    "studyMode": "学习模式",
+    "studyModeDescription": "通过结构化章节深入了解每首歌曲。每个章节包括解释、逐行播放和详细翻译。",
+    "faq": "常见问题",
+    "changeLanguage": "如何更改语言？",
+    "changeLanguageAnswer": "转到设置 → 语言以更改您的学习语言或界面语言。",
+    "downloadSongs": "我可以下载歌曲以供离线使用吗？",
+    "downloadSongsAnswer": "目前，歌曲需要互联网连接才能播放。离线功能可能在未来的更新中提供。",
+    "saveProgress": "如何保存我的进度？",
+    "saveProgressAnswer": "登录您的账户以在所有设备上同步您的进度。您的学习历史和偏好将自动保存。",
+    "videoNotPlaying": "视频无法播放",
+    "videoNotPlayingAnswer": "确保您有稳定的互联网连接。如果问题仍然存在，请尝试关闭并重新打开应用，或重启您的设备。",
+    "contactSupport": "联系支持",
+    "contactSupportDescription": "需要更多帮助？我们的支持团队随时为您提供帮助。",
+    "supportEmail": "hi@creativeendurancelab.com"
+  },
+  "about": {
+    "title": "关于",
+    "appName": "Easy Song",
+    "version": "版本 1.0.0",
+    "description": "通过音乐学习语言。观看视频、学习歌词，并通过结构化课程提高您的语言技能。",
+    "developmentStudio": "Creative Endurance Lab, LLC",
+    "studioName": "Your Studio Name",
+    "studioDescription": "我们热衷于创建创新的语言学习工具，使教育变得引人入胜且易于获得。",
+    "contactEmail": "hi@creativeendurancelab.com",
+    "website": "creativeendurancelab.com",
+    "versionHistory": "版本历史",
+    "credits": "致谢",
+    "creditsDescription": "Easy Song 使用 YouTube 视频用于教育目的。所有歌曲内容，包括歌词和翻译，均用于语言学习。",
+    "creditsDescription2": "视频内容由 YouTube 提供，归其各自所有者所有。",
+    "version1_0_0": "版本 1.0.0",
+    "version1_0_0Date": "2025年1月",
+    "version1_0_0Changes": [
+      "Easy Song 初始发布",
+      "播放模式与 YouTube 视频集成",
+      "学习模式，包含结构化章节和解释",
+      "歌词高亮和自动滚动",
+      "翻译切换功能",
+      "用户设置和偏好",
+      "多语言支持"
+    ],
+    "version0_9_0": "版本 0.9.0",
+    "version0_9_0Date": "2024年12月",
+    "version0_9_0Changes": [
+      "Beta 测试发布",
+      "核心播放功能",
+      "基本学习模式功能"
+    ],
+    "version0_8_0": "版本 0.8.0",
+    "version0_8_0Date": "2024年11月",
+    "version0_8_0Changes": [
+      "初始开发版本",
+      "歌曲列表和导航",
+      "视频播放器集成"
+    ]
+  }
+}

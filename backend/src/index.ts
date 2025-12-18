@@ -11,6 +11,7 @@ import userRoutes from './routes/user';
 import preferencesRoutes from './routes/preferences';
 import historyRoutes from './routes/history';
 import webhookRoutes from './routes/webhooks';
+import i18nRoutes from './routes/i18n';
 
 const app = express();
 const PORT = config.port;
@@ -46,6 +47,9 @@ app.use('/api/user', preferencesRoutes);
 
 // History routes
 app.use('/api/history', historyRoutes);
+
+// i18n routes
+app.use('/api/i18n', i18nRoutes);
 
 // Webhook routes (no /api prefix - webhooks are typically at root level)
 app.use('/webhooks', webhookRoutes);

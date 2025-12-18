@@ -1,0 +1,342 @@
+{
+  "common": {
+    "loading": "Lädt...",
+    "error": "Fehler",
+    "settings": "Einstellungen",
+    "back": "Zurück",
+    "save": "Speichern",
+    "cancel": "Abbrechen",
+    "done": "Fertig",
+    "next": "Weiter",
+    "previous": "Zurück",
+    "close": "Schließen",
+    "version": "Version",
+    "guest": "Gastbenutzer"
+  },
+  "auth": {
+    "signup": {
+      "title": "Konto Erstellen",
+      "subtitle": "Treten Sie EasySong bei und beginnen Sie, Sprachen durch Musik zu lernen",
+      "button": "Registrieren"
+    },
+    "login": {
+      "title": "Willkommen Zurück",
+      "subtitle": "Melden Sie sich an, um Ihre Sprachlernreise fortzusetzen",
+      "button": "Anmelden"
+    },
+    "magicCode": {
+      "title": "Anmeldung mit Magischem Code",
+      "subtitle": "Wir senden Ihnen einen Code an Ihre E-Mail",
+      "signupTitle": "Registrierung mit Magischem Code",
+      "signupSubtitle": "Wir senden Ihnen einen Code an Ihre E-Mail, um Ihr Konto zu erstellen",
+      "loginTitle": "Anmeldung mit Magischem Code",
+      "loginSubtitle": "Wir senden Ihnen einen Code an Ihre E-Mail, um Sie anzumelden",
+      "sendCode": "Code Senden",
+      "code": "Code Eingeben",
+      "verify": "Code Verifizieren",
+      "resend": "Code Erneut Senden",
+      "sent": "Code Gesendet",
+      "checkEmail": "Überprüfen Sie Ihre E-Mail für den 6-stelligen Code",
+      "usePassword": "Stattdessen Passwort verwenden"
+    },
+    "name": "Name",
+    "namePlaceholder": "Geben Sie Ihren Namen ein",
+    "email": "E-Mail",
+    "emailPlaceholder": "Geben Sie Ihre E-Mail ein",
+    "password": "Passwort",
+    "passwordPlaceholder": "Geben Sie Ihr Passwort ein",
+    "passwordHint": "Mindestens 8 Zeichen",
+    "signupWithMagicCode": "Stattdessen mit magischem Code registrieren",
+    "loginWithMagicCode": "Stattdessen mit magischem Code anmelden",
+    "alreadyHaveAccount": "Haben Sie bereits ein Konto? Anmelden",
+    "dontHaveAccount": "Haben Sie noch kein Konto? Registrieren",
+    "errors": {
+      "invalidEmail": "Bitte geben Sie eine gültige E-Mail-Adresse ein",
+      "nameRequired": "Name ist erforderlich",
+      "passwordRequired": "Passwort ist erforderlich",
+      "passwordTooShort": "Passwort muss mindestens 8 Zeichen lang sein",
+      "invalidCode": "Bitte geben Sie einen gültigen 6-stelligen Code ein",
+      "signupFailed": "Konto konnte nicht erstellt werden. Bitte versuchen Sie es erneut.",
+      "loginFailed": "Anmeldung fehlgeschlagen. Bitte überprüfen Sie Ihre Anmeldedaten.",
+      "sendCodeFailed": "Code konnte nicht gesendet werden. Bitte versuchen Sie es erneut.",
+      "invalidCredentials": "Ungültige E-Mail oder Passwort",
+      "userAlreadyExists": "Ein Konto mit dieser E-Mail existiert bereits. Bitte melden Sie sich stattdessen an."
+    }
+  },
+  "songs": {
+    "title": "Lieder",
+    "loading": "Lieder werden geladen...",
+    "noSongs": "Keine Lieder verfügbar",
+    "noSongsDescription": "Kommen Sie bald wieder, um neue Inhalte zu sehen!",
+    "noSongsInSection": "Keine Lieder in diesem Abschnitt",
+    "allSongs": "Alle Lieder",
+    "error": "Fehler beim Laden der Lieder",
+    "errorDescription": "Ein unbekannter Fehler ist aufgetreten.",
+    "loadingSong": "Lied wird geladen...",
+    "songNotFound": "Lied nicht gefunden",
+    "failedToFetchSong": "Fehler beim Laden des Liedes"
+  },
+  "playMode": {
+    "playMode": "Wiedergabemodus",
+    "lyrics": "Texte",
+    "showTranslations": "Übersetzungen anzeigen"
+  },
+  "studyMode": {
+    "title": "Lernmodus",
+    "loadingData": "Lerndaten werden geladen...",
+    "songNotFound": "Lied nicht gefunden",
+    "failedToFetchData": "Fehler beim Laden der Daten",
+    "studyContent": "Lerninhalt",
+    "showTranslations": "Übersetzungen anzeigen",
+    "sectionExplanation": "Abschnittserklärung",
+    "playAll": "Alles Abspielen",
+    "pause": "Pause",
+    "nextSection": "Weiter",
+    "additional": "Zusätzlich",
+    "selectSection": "Wählen Sie oben einen Abschnitt aus, um dessen Inhalt anzuzeigen",
+    "studyDataNotAvailable": "Lerndaten sind nicht verfügbar",
+    "studyDataNotAvailableDescription": "Das strukturierte Lernformat wird verfügbar sein, sobald die Daten generiert wurden.",
+    "additionalContentNote": "Diese Zeilen wurden nicht in die strukturierten Abschnitte oben aufgenommen.",
+    "limitReached": "Tageslimit Erreicht",
+    "limitReachedMessage": "Sie haben Ihr Limit von 2 Lernmodus-Sitzungen für heute erreicht.",
+    "limitReachedUpgrade": "Upgraden Sie auf Premium Plus für unbegrenzten Zugriff auf den Lernmodus!",
+    "limitReachedAd": "Oder schauen Sie sich eine Werbung an, um heute eine weitere Lernmodus-Sitzung zu erhalten",
+    "watchAdButton": "Werbung Ansehen",
+    "upgradeToPremium": "Auf Premium Plus Upgraden",
+    "comeBackTomorrow": "Kommen Sie morgen zurück, um weiter zu lernen!"
+  },
+  "settings": {
+    "title": "Einstellungen",
+    "playback": {
+      "title": "Wiedergabe",
+      "autoplay": "Automatische Wiedergabe",
+      "autoplayDescription": "Videos automatisch abspielen",
+      "autoscroll": "Automatisches Scrollen der Texte",
+      "autoscrollDescription": "Automatisch zur aktiven Textzeile scrollen",
+      "loop": "Lied wiederholen",
+      "loopDescription": "Automatisch wiederholen, wenn das Lied endet"
+    },
+    "display": {
+      "title": "Anzeige",
+      "fontSize": "Schriftgröße",
+      "fontSizeDescription": "Textgröße für die Texte",
+      "defaultTranslation": "Standardübersetzung",
+      "defaultTranslationDescription": "Übersetzungen standardmäßig anzeigen",
+      "theme": "Design",
+      "themeDescription": "Design-Präferenz der App",
+      "light": "Hell",
+      "dark": "Dunkel",
+      "system": "System"
+    },
+    "language": {
+      "title": "Sprache",
+      "learning": "Lernsprache",
+      "learningDescription": "Zu lernende Sprache",
+      "interface": "App-Sprache",
+      "interfaceDescription": "Sprache der Benutzeroberfläche",
+      "learningLanguage": "Lernsprache",
+      "interfaceLanguage": "App-Sprache",
+      "names": {
+        "en": "Englisch",
+        "es": "Spanisch",
+        "zh": "Chinesisch (Mandarin)",
+        "fr": "Französisch",
+        "de": "Deutsch"
+      }
+    },
+    "profile": {
+      "title": "Benutzerprofil",
+      "editProfile": "Profil bearbeiten",
+      "email": "E-Mail",
+      "changePassword": "Passwort ändern",
+      "signIn": "Anmelden",
+      "signOut": "Abmelden",
+      "notSignedIn": "Nicht angemeldet",
+      "account": "Konto",
+      "name": "Name",
+      "signInToSync": "Melden Sie sich an, um Ihren Fortschritt zu synchronisieren",
+      "signOutOfAccount": "Von Ihrem Konto abmelden"
+    },
+    "onboarding": {
+      "skip": "Überspringen",
+      "next": "Weiter",
+      "signUp": "Registrieren",
+      "continueAsGuest": "Als Gast fortfahren",
+      "welcome": {
+        "title": "Willkommen bei EasySong",
+        "description": "Lernen Sie Sprachen durch Musik! Entdecken Sie Ihre Lieblingssongs, singen Sie mit und meistern Sie neue Sprachen auf unterhaltsame und ansprechende Weise."
+      },
+      "playMode": {
+        "title": "Wiedergabemodus",
+        "description": "Sehen Sie Musikvideos mit synchronisierten Texten. Singen Sie mit und lernen Sie natürlich, während Sie Ihre Lieblingssongs genießen."
+      },
+      "studyMode": {
+        "title": "Lernmodus",
+        "description": "Tauchen Sie tiefer in jedes Lied ein mit detaillierten Erklärungen, Übersetzungen und strukturierten Lernabschnitten, um die Sprache zu meistern."
+      },
+      "language": {
+        "title": "Wählen Sie Ihre Sprachen",
+        "description": "Wählen Sie die Sprache, die Sie lernen möchten, und Ihre Muttersprache für die beste Erfahrung",
+        "learningLanguage": "Sprache, die Sie lernen möchten",
+        "nativeLanguage": "Muttersprache",
+        "selectLanguage": "Sprache Auswählen"
+      }
+    },
+    "about": {
+      "title": "Über",
+      "appVersion": "App-Version",
+      "helpSupport": "Hilfe & Support",
+      "viewWalkthrough": "Einführung Anzeigen",
+      "viewWalkthroughDescription": "App-Einführung erneut anzeigen",
+      "termsOfService": "Nutzungsbedingungen",
+      "privacyPolicy": "Datenschutzrichtlinie",
+      "premiumBenefits": "Premium-Vorteile"
+    }
+  },
+  "premium": {
+    "title": "Premium-Vorteile",
+    "heading": "Wählen Sie Ihren Plan",
+    "description": "Upgraden Sie, um mehr Funktionen freizuschalten und Ihr Sprachenlernerlebnis zu verbessern.",
+    "comingSoon": "demnächst",
+    "monthly": "Monatlich",
+    "annual": "Jährlich",
+    "premium": {
+      "title": "Premium-Stufe",
+      "monthlyPrice": "$5",
+      "monthlyPeriod": "/Monat",
+      "annualPrice": "$3",
+      "annualPeriod": "/Monat",
+      "annualTotal": "$36",
+      "annualBilling": "jährlich abgerechnet",
+      "purchase": "Abonnieren",
+      "benefits": {
+        "history": "Letzte 10 Verlaufselemente anzeigen",
+        "studyMode": "2 Lernmodus-Videos pro Tag",
+        "games": "3 Spiele pro Tag",
+        "requests": "Lied-/Video-Anfragen in 1 Woche abgeschlossen",
+        "noAds": "Keine Werbung"
+      }
+    },
+    "premiumPlus": {
+      "title": "Premium Plus-Stufe",
+      "monthlyPrice": "$8",
+      "monthlyPeriod": "/Monat",
+      "annualPrice": "$5",
+      "annualPeriod": "/Monat",
+      "annualTotal": "$60",
+      "annualBilling": "jährlich abgerechnet",
+      "purchase": "Abonnieren",
+      "benefits": {
+        "history": "Unbegrenzte Verlaufselemente anzeigen",
+        "studyMode": "Unbegrenzte Lernmodus-Videos pro Tag",
+        "games": "Unbegrenzte Spiele pro Tag",
+        "requests": "Lied-/Video-Anfragen in 1 Tag abgeschlossen",
+        "noAds": "Keine Werbung"
+      }
+    }
+  },
+  "profile": {
+    "editName": "Namen Bearbeiten",
+    "editEmail": "E-Mail Bearbeiten",
+    "enterName": "Geben Sie Ihren Namen ein",
+    "enterEmail": "Geben Sie Ihre E-Mail ein",
+    "nameCannotBeEmpty": "Der Name darf nicht leer sein",
+    "emailCannotBeEmpty": "Die E-Mail darf nicht leer sein",
+    "invalidEmail": "Bitte geben Sie eine gültige E-Mail-Adresse ein",
+    "failedToUpdateName": "Fehler beim Aktualisieren des Namens",
+    "failedToUpdateEmail": "Fehler beim Aktualisieren der E-Mail",
+    "failedToSignOut": "Fehler beim Abmelden",
+    "password": "Passwort",
+    "emailAndPasswordRequired": "E-Mail und Passwort sind erforderlich",
+    "failedToSignIn": "Anmeldung fehlgeschlagen. Bitte versuchen Sie es erneut.",
+    "songsLearned": "Gelernte Lieder",
+    "playMode": "Wiedergabemodus",
+    "studyMode": "Lernmodus"
+  },
+  "history": {
+    "title": "Liedverlauf",
+    "noHistory": "Noch kein Liedverlauf",
+    "noHistoryDescription": "Beginnen Sie mit dem Abspielen von Liedern, um Ihren Verlauf hier zu sehen",
+    "viewAll": "Alle Anzeigen",
+    "previous": "Zurück",
+    "next": "Weiter",
+    "lastPage": "Letzte Seite",
+    "loadMore": "Mehr Laden",
+    "page": "Seite",
+    "of": "von",
+    "noHistoryShort": "Kein Verlauf",
+    "playMode": "Wiedergabemodus",
+    "studyMode": "Lernmodus",
+    "upgradeTitle": "Auf Premium upgraden",
+    "upgradeMessage": "Registrieren Sie sich, um Ihren gesamten Wiedergabeverlauf zu speichern und zwischen Geräten zu synchronisieren!",
+    "guestUpgradeMessage": "Registrieren Sie sich, um mehr Verlauf zu speichern, upgraden Sie auf Premium, um den gesamten Verlauf zu speichern",
+    "clickToUpgrade": "Klicken Sie hier, um auf Premium zu upgraden"
+  },
+  "tabs": {
+    "play": "Abspielen",
+    "study": "Lernen",
+    "settings": "Einstellungen"
+  },
+  "help": {
+    "title": "Hilfe & Support",
+    "gettingStarted": "Erste Schritte",
+    "howToUse": "Wie man die App verwendet",
+    "howToUseDescription": "Easy Song hilft Ihnen, Sprachen durch Musik zu lernen. Durchsuchen Sie Lieder, schauen Sie Videos und studieren Sie Texte mit Übersetzungen und Erklärungen.",
+    "playMode": "Wiedergabemodus",
+    "playModeDescription": "Schauen Sie das Video an und folgen Sie den hervorgehobenen Texten. Tippen Sie auf einen beliebigen Text, um zu diesem Teil des Liedes zu springen. Schalten Sie Übersetzungen nach Bedarf ein oder aus.",
+    "studyMode": "Lernmodus",
+    "studyModeDescription": "Tauchen Sie tiefer in jedes Lied mit strukturierten Abschnitten ein. Jeder Abschnitt enthält Erklärungen, zeilenweise Wiedergabe und detaillierte Übersetzungen.",
+    "faq": "Häufig Gestellte Fragen",
+    "changeLanguage": "Wie ändere ich die Sprache?",
+    "changeLanguageAnswer": "Gehen Sie zu Einstellungen → Sprache, um Ihre Lernsprache oder die Sprache der Benutzeroberfläche zu ändern.",
+    "downloadSongs": "Kann ich Lieder für die Offline-Nutzung herunterladen?",
+    "downloadSongsAnswer": "Derzeit benötigen Lieder eine Internetverbindung zum Abspielen. Offline-Funktionalität könnte in zukünftigen Updates verfügbar sein.",
+    "saveProgress": "Wie speichere ich meinen Fortschritt?",
+    "saveProgressAnswer": "Melden Sie sich in Ihrem Konto an, um Ihren Fortschritt auf allen Geräten zu synchronisieren. Ihr Lernverlauf und Ihre Einstellungen werden automatisch gespeichert.",
+    "videoNotPlaying": "Das Video wird nicht abgespielt",
+    "videoNotPlayingAnswer": "Stellen Sie sicher, dass Sie eine stabile Internetverbindung haben. Wenn das Problem weiterhin besteht, versuchen Sie, die App zu schließen und erneut zu öffnen oder Ihr Gerät neu zu starten.",
+    "contactSupport": "Support Kontaktieren",
+    "contactSupportDescription": "Benötigen Sie weitere Hilfe? Unser Support-Team ist hier, um Ihnen zu helfen.",
+    "supportEmail": "hi@creativeendurancelab.com"
+  },
+  "about": {
+    "title": "Über",
+    "appName": "Easy Song",
+    "version": "Version 1.0.0",
+    "description": "Lernen Sie Sprachen durch Musik. Schauen Sie Videos, studieren Sie Texte und verbessern Sie Ihre Sprachkenntnisse mit strukturierten Lektionen.",
+    "developmentStudio": "Creative Endurance Lab, LLC",
+    "studioName": "Your Studio Name",
+    "studioDescription": "Wir sind leidenschaftlich daran interessiert, innovative Sprachlern-Tools zu erstellen, die Bildung ansprechend und zugänglich machen.",
+    "contactEmail": "hi@creativeendurancelab.com",
+    "website": "creativeendurancelab.com",
+    "versionHistory": "Versionsverlauf",
+    "credits": "Danksagungen",
+    "creditsDescription": "Easy Song verwendet YouTube-Videos zu Bildungszwecken. Alle Liedinhalte, einschließlich Texte und Übersetzungen, werden zum Sprachenlernen bereitgestellt.",
+    "creditsDescription2": "Videoinhalte werden von YouTube bereitgestellt und sind Eigentum ihrer jeweiligen Besitzer.",
+    "version1_0_0": "Version 1.0.0",
+    "version1_0_0Date": "Januar 2025",
+    "version1_0_0Changes": [
+      "Erstveröffentlichung von Easy Song",
+      "Wiedergabemodus mit YouTube-Video-Integration",
+      "Lernmodus mit strukturierten Abschnitten und Erklärungen",
+      "Texthervorhebung und automatisches Scrollen",
+      "Übersetzungs-Umschaltfunktion",
+      "Benutzereinstellungen und Präferenzen",
+      "Mehrsprachige Unterstützung"
+    ],
+    "version0_9_0": "Version 0.9.0",
+    "version0_9_0Date": "Dezember 2024",
+    "version0_9_0Changes": [
+      "Beta-Test-Version",
+      "Kern-Wiedergabefunktionalität",
+      "Grundlegende Lernmodus-Funktionen"
+    ],
+    "version0_8_0": "Version 0.8.0",
+    "version0_8_0Date": "November 2024",
+    "version0_8_0Changes": [
+      "Erste Entwicklungsversion",
+      "Liedliste und Navigation",
+      "Video-Player-Integration"
+    ]
+  }
+}

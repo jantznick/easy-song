@@ -628,3 +628,42 @@ export async function resendVerificationCode(): Promise<{
   return data;
 }
 
+/**
+ * Fetch available languages from the API
+ */
+export async function fetchLanguages(): Promise<{
+  languages: Array<{ code: string; name: string }>;
+}> {
+  const baseUrl = getApiUrl().replace('/api', '');
+  const response = await fetch(`${baseUrl}/api/i18n/languages`, {
+    method: 'GET',
+    credentials: 'include',
+  });
+
+  if (!response.ok) {
+    throw new Error('Failed to fetch languages');
+  }
+
+  return response.json();
+}
+
+/**
+ * Fetch translations for a specific language from the API
+ */
+export async function fetchTranslations(lang: string): Promise<{
+  language: string;
+  translations: Record<string, any>;
+}> {
+  const baseUrl = getApiUrl().replace('/api', '');
+  const response = await fetch(`${baseUrl}/api/i18n/translations/${lang}`, {
+    method: 'GET',
+    credentials: 'include',
+  });
+
+  if (!response.ok) {
+    throw new Error(`Failed to fetch translations for language ${lang}`);
+  }
+
+  return response.json();
+}
+
