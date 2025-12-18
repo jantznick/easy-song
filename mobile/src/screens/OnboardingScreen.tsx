@@ -19,13 +19,12 @@ import { useTheme } from '../contexts/ThemeContext';
 import { saveOnboardingComplete } from '../utils/storage';
 import { useUser } from '../contexts/UserContext';
 import { LANGUAGE_NAME_MAP } from '../i18n/config';
+import { usei18n } from '../contexts/i18nContext';
 import AuthDrawer from '../components/AuthDrawer';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Onboarding'>;
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
-
-const SUPPORTED_LANGUAGES = ['English', 'Spanish', 'Chinese (Mandarin)', 'French', 'German'];
 
 interface OnboardingPage {
   id: string;
@@ -41,6 +40,7 @@ export default function OnboardingScreen({ navigation }: Props) {
   const theme = useThemeClasses();
   const { isDark } = useTheme();
   const { updateLanguagePreference } = useUser();
+  const { availableLanguages } = usei18n();
   const flatListRef = useRef<FlatList>(null);
   const [currentPage, setCurrentPage] = useState(0);
   const [showAuthDrawer, setShowAuthDrawer] = useState(false);
@@ -48,6 +48,11 @@ export default function OnboardingScreen({ navigation }: Props) {
   const [nativeLanguage, setNativeLanguage] = useState('English');
   const [showLearningDropdown, setShowLearningDropdown] = useState(false);
   const [showNativeDropdown, setShowNativeDropdown] = useState(false);
+
+  // Get language names from available languages (fallback to defaults if not loaded yet)
+  const supportedLanguages = availableLanguages.length > 0 
+    ? availableLanguages.map(lang => lang.name)
+    : ['English', 'Spanish', 'Chinese (Mandarin)', 'French', 'German'];
 
   const pages: OnboardingPage[] = [
     {
@@ -175,7 +180,7 @@ export default function OnboardingScreen({ navigation }: Props) {
             </TouchableOpacity>
           </View>
           <FlatList
-            data={SUPPORTED_LANGUAGES}
+            data={supportedLanguages}
             keyExtractor={(item) => item}
             renderItem={({ item }) => (
               <TouchableOpacity
