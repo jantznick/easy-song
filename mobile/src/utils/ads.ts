@@ -3,15 +3,18 @@
  */
 
 import mobileAds, { MaxAdContentRating } from 'react-native-google-mobile-ads';
+import Constants from 'expo-constants';
 
 /**
  * Check if ads should be shown
  * Set SHOWADS=false in .env to disable ads during testing
+ * Only SHOWADS is exposed via app.config.js - other secrets remain private
  */
 export const shouldShowAds = (): boolean => {
-  const showAds = process.env.SHOWADS;
+  // Get from Expo Constants (exposed via app.config.js extra field)
+  const showAds = Constants.expoConfig?.extra?.showAds;
   // Default to true if not set, but allow explicit false to disable
-  return showAds !== 'false';
+  return showAds !== false;
 };
 
 /**
@@ -21,7 +24,7 @@ export const shouldShowAds = (): boolean => {
 export async function initializeAds(): Promise<void> {
   // Don't initialize if ads are disabled
   if (!shouldShowAds()) {
-    console.log('Ads disabled via EXPO_PUBLIC_SHOWADS=false');
+    console.log('Ads disabled via SHOWADS=false');
     return;
   }
 

@@ -13,6 +13,7 @@ import { LANGUAGE_CODE_MAP } from '../i18n/config';
 import { usei18n } from '../contexts/i18nContext';
 import { resetOnboarding } from '../utils/storage';
 import NativeAdBanner from '../components/NativeAdBanner';
+import { shouldShowAds } from '../utils/ads';
 
 // Support both tab navigator (from SongDetail) and stack navigator (from root)
 type SettingsScreenProps = 
@@ -376,7 +377,7 @@ export default function SettingsScreen({ route }: Props) {
         </View>
 
         {/* Native Ad - Bottom of Settings */}
-        {process.env.SHOWADS !== 'false' && <NativeAdBanner />}
+        {shouldShowAds() && <NativeAdBanner />}
       </ScrollView>
 
       {/* Learning Language Modal */}

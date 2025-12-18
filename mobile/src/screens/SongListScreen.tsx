@@ -14,6 +14,7 @@ import type { RootStackParamList } from '../types/navigation';
 import { useUser } from '../hooks/useUser';
 import { useTranslation } from '../hooks/useTranslation';
 import { useThemeClasses } from '../utils/themeClasses';
+import { shouldShowAds } from '../utils/ads';
 
 // TODO: Future implementation - Filter songs by learning language preference
 // When backend supports language filtering, use preferences.language.learning
@@ -75,7 +76,7 @@ export default function SongListScreen({ navigation }: Props) {
     React.useCallback(() => {
       // Show ad modal 33% of the time when navigating to this screen
       // Check if ads are enabled
-      const showAds = process.env.SHOWADS !== 'false';
+      const showAds = shouldShowAds();
       const shouldShowAd = showAds && (process.env.NODE_ENV === 'development' ? true : Math.random() < 0.33);
       if (shouldShowAd) {
         // Delay slightly so the UI settles before showing the ad
@@ -98,7 +99,7 @@ export default function SongListScreen({ navigation }: Props) {
     // Insert ad as first item in "All Songs" section
     const isAllSongsSection = section.id === 'all' || section.title === 'all';
     const listData = isAllSongsSection 
-      ? (process.env.SHOWADS !== 'false' 
+      ? (shouldShowAds() 
           ? [{ type: 'ad' } as const, ...section.songs.map(song => ({ type: 'song' as const, song }))]
           : section.songs.map(song => ({ type: 'song' as const, song })))
       : section.songs.map(song => ({ type: 'song' as const, song }));
@@ -122,7 +123,7 @@ export default function SongListScreen({ navigation }: Props) {
           renderItem={({ item }) => (
             <View style={{ width: ITEM_WIDTH, marginRight: ITEM_GAP }}>
               {item.type === 'ad' ? (
-                process.env.SHOWADS !== 'false' ? <NativeAdSongCard /> : null
+                shouldShowAds() ? <NativeAdSongCard /> : null
               ) : (
                 <SongListItem
                   song={item.song}
@@ -146,7 +147,7 @@ export default function SongListScreen({ navigation }: Props) {
   return (
     <SafeAreaView className={theme.bg('bg-background', 'bg-[#0F172A]')} style={{ flex: 1 }}>
       {/* Ad Modal - shows 33% of the time (if ads enabled) */}
-      {process.env.SHOWADS !== 'false' && (
+      {shouldShowAds() && (
         <AdModal 
           visible={showAdModal} 
           onClose={() => setShowAdModal(false)} 

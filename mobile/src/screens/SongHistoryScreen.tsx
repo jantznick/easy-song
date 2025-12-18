@@ -11,6 +11,7 @@ import { useTheme } from '../contexts/ThemeContext';
 import { useUser } from '../hooks/useUser';
 import { useTranslation } from '../hooks/useTranslation';
 import NativeAdHistoryItem from '../components/NativeAdHistoryItem';
+import { shouldShowAds } from '../utils/ads';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'SongHistory'>;
 
@@ -196,7 +197,7 @@ export default function SongHistoryScreen({ route }: Props) {
               </TouchableOpacity>
               
               {/* Native Ad - Every 6 items, styled like history item */}
-              {shouldShowAd && process.env.SHOWADS !== 'false' && <NativeAdHistoryItem isLastItem={index === array.length - 1} />}
+              {shouldShowAd && shouldShowAds() && <NativeAdHistoryItem isLastItem={index === array.length - 1} />}
             </View>
               );
             })

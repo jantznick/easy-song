@@ -16,6 +16,7 @@ import { getFontSizes } from '../utils/fontSizes';
 import { useTheme } from '../contexts/ThemeContext';
 import { useThemeClasses } from '../utils/themeClasses';
 import { useTranslation } from '../hooks/useTranslation';
+import { shouldShowAds } from '../utils/ads';
 
 type Props = BottomTabScreenProps<SongDetailTabParamList, 'StudyMode'>;
 
@@ -109,7 +110,7 @@ export default function StudyModeScreen({ route }: Props) {
   // Handler for when user wants to watch a rewarded ad
   const handleWatchAd = async () => {
     // If ads are disabled, grant reward immediately
-    const showAds = process.env.SHOWADS !== 'false';
+    const showAds = shouldShowAds();
     if (!showAds) {
       // Grant reward immediately when ads are disabled
       grantExtraStudySession();
