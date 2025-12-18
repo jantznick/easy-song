@@ -11,7 +11,9 @@ import './global.css';
 import './src/i18n/config';
 import { UserProvider } from './src/contexts/UserContext';
 import { ThemeProvider, useTheme } from './src/contexts/ThemeContext';
+import { I18nProvider, usei18n } from './src/contexts/i18nContext';
 import { initializeAds } from './src/utils/ads';
+import { initializeSubscriptions } from './src/utils/subscriptions';
 import OnboardingScreen from './src/screens/OnboardingScreen';
 import AuthScreen from './src/screens/AuthScreen';
 import SongListScreen from './src/screens/SongListScreen';
@@ -38,6 +40,7 @@ function ThemeWrapper({ children }: { children: React.ReactNode }) {
 // Inner component that can use theme
 function AppContent() {
   const { isDark } = useTheme();
+  const { isLoading: i18nLoading, translationsLoaded } = usei18n();
   const [isLoading, setIsLoading] = useState(true);
   const [initialRoute, setInitialRoute] = useState<keyof RootStackParamList>('Onboarding');
 
@@ -50,7 +53,8 @@ function AppContent() {
     checkOnboarding();
   }, []);
 
-  if (isLoading) {
+  // Wait for both onboarding check and translations to load
+  if (isLoading || i18nLoading || !translationsLoaded) {
     return (
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: isDark ? '#000' : '#fff' }}>
         <ActivityIndicator size="large" color={isDark ? '#fff' : '#000'} />
@@ -129,16 +133,31 @@ export default function App() {
     initializeAds();
   }, []);
 
+  // Initialize RevenueCat when app starts
+  useEffect(() => {
+    const init = async () => {
+      try {
+        await initializeSubscriptions();
+        console.log('RevenueCat initialization completed');
+      } catch (error) {
+        console.error('Failed to initialize RevenueCat:', error);
+      }
+    };
+    init();
+  }, []);
+
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <SafeAreaProvider>
         <BottomSheetModalProvider>
           <UserProvider>
-            <ThemeProvider>
-              <ThemeWrapper>
-                <AppContent />
-              </ThemeWrapper>
-            </ThemeProvider>
+            <I18nProvider>
+              <ThemeProvider>
+                <ThemeWrapper>
+                  <AppContent />
+                </ThemeWrapper>
+              </ThemeProvider>
+            </I18nProvider>
           </UserProvider>
         </BottomSheetModalProvider>
       </SafeAreaProvider>

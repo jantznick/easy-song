@@ -5,10 +5,26 @@
 import mobileAds, { MaxAdContentRating } from 'react-native-google-mobile-ads';
 
 /**
+ * Check if ads should be shown
+ * Set SHOWADS=false in .env to disable ads during testing
+ */
+export const shouldShowAds = (): boolean => {
+  const showAds = process.env.SHOWADS;
+  // Default to true if not set, but allow explicit false to disable
+  return showAds !== 'false';
+};
+
+/**
  * Initialize AdMob
  * Call this once when the app starts
  */
 export async function initializeAds(): Promise<void> {
+  // Don't initialize if ads are disabled
+  if (!shouldShowAds()) {
+    console.log('Ads disabled via EXPO_PUBLIC_SHOWADS=false');
+    return;
+  }
+
   try {
     await mobileAds().initialize();
     

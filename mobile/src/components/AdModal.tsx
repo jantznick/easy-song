@@ -14,7 +14,7 @@ import {
 } from 'react-native-google-mobile-ads';
 import { useThemeClasses } from '../utils/themeClasses';
 import { useTheme } from '../contexts/ThemeContext';
-import { getAdUnitId } from '../utils/ads';
+import { getAdUnitId, shouldShowAds } from '../utils/ads';
 
 interface AdModalProps {
   visible: boolean;
@@ -28,6 +28,11 @@ export default function AdModal({ visible, onClose }: AdModalProps) {
   const adInstanceRef = useRef<NativeAd | null>(null);
 
   useEffect(() => {
+    // Don't load ads if disabled
+    if (!shouldShowAds()) {
+      return;
+    }
+
     let isMounted = true;
 
     if (visible && !nativeAd) {

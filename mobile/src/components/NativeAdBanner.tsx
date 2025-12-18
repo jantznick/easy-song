@@ -13,13 +13,18 @@ import {
   NativeMediaView,
 } from 'react-native-google-mobile-ads';
 import { useTheme } from '../contexts/ThemeContext';
-import { getAdUnitId } from '../utils/ads';
+import { getAdUnitId, shouldShowAds } from '../utils/ads';
 
 export default function NativeAdBanner() {
   const { isDark } = useTheme();
   const [nativeAd, setNativeAd] = useState<NativeAd | null>(null);
 
   useEffect(() => {
+    // Don't load ads if disabled
+    if (!shouldShowAds()) {
+      return;
+    }
+
     let adInstance: NativeAd | null = null;
     let isMounted = true;
 

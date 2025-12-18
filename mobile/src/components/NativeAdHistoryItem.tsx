@@ -15,7 +15,7 @@ import {
 } from 'react-native-google-mobile-ads';
 import { useThemeClasses } from '../utils/themeClasses';
 import { useTheme } from '../contexts/ThemeContext';
-import { getAdUnitId } from '../utils/ads';
+import { getAdUnitId, shouldShowAds } from '../utils/ads';
 
 interface NativeAdHistoryItemProps {
   isLastItem?: boolean;
@@ -27,6 +27,11 @@ export default function NativeAdHistoryItem({ isLastItem = false }: NativeAdHist
   const [nativeAd, setNativeAd] = useState<NativeAd | null>(null);
 
   useEffect(() => {
+    // Don't load ads if disabled
+    if (!shouldShowAds()) {
+      return;
+    }
+
     let adInstance: NativeAd | null = null;
     let isMounted = true;
 

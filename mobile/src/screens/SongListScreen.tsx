@@ -74,7 +74,9 @@ export default function SongListScreen({ navigation }: Props) {
   useFocusEffect(
     React.useCallback(() => {
       // Show ad modal 33% of the time when navigating to this screen
-      const shouldShowAd = process.env.NODE_ENV === 'development' ? true : Math.random() < 0.33;
+      // Check if ads are enabled
+      const showAds = process.env.SHOWADS !== 'false';
+      const shouldShowAd = showAds && (process.env.NODE_ENV === 'development' ? true : Math.random() < 0.33);
       if (shouldShowAd) {
         // Delay slightly so the UI settles before showing the ad
         const timer = setTimeout(() => {
@@ -96,7 +98,9 @@ export default function SongListScreen({ navigation }: Props) {
     // Insert ad as first item in "All Songs" section
     const isAllSongsSection = section.id === 'all' || section.title === 'all';
     const listData = isAllSongsSection 
-      ? [{ type: 'ad' } as const, ...section.songs.map(song => ({ type: 'song' as const, song }))]
+      ? (process.env.SHOWADS !== 'false' 
+          ? [{ type: 'ad' } as const, ...section.songs.map(song => ({ type: 'song' as const, song }))]
+          : section.songs.map(song => ({ type: 'song' as const, song })))
       : section.songs.map(song => ({ type: 'song' as const, song }));
 
     return (
@@ -118,7 +122,7 @@ export default function SongListScreen({ navigation }: Props) {
           renderItem={({ item }) => (
             <View style={{ width: ITEM_WIDTH, marginRight: ITEM_GAP }}>
               {item.type === 'ad' ? (
-                <NativeAdSongCard />
+                process.env.SHOWADS !== 'false' ? <NativeAdSongCard /> : null
               ) : (
                 <SongListItem
                   song={item.song}
@@ -141,11 +145,13 @@ export default function SongListScreen({ navigation }: Props) {
 
   return (
     <SafeAreaView className={theme.bg('bg-background', 'bg-[#0F172A]')} style={{ flex: 1 }}>
-      {/* Ad Modal - shows 33% of the time */}
-      <AdModal 
-        visible={showAdModal} 
-        onClose={() => setShowAdModal(false)} 
-      />
+      {/* Ad Modal - shows 33% of the time (if ads enabled) */}
+      {process.env.SHOWADS !== 'false' && (
+        <AdModal 
+          visible={showAdModal} 
+          onClose={() => setShowAdModal(false)} 
+        />
+      )}
       
       <ScrollView 
         className="flex-1"

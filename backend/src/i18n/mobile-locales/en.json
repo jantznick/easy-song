@@ -1,0 +1,378 @@
+{
+  "common": {
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success",
+    "settings": "Settings",
+    "back": "Back",
+    "save": "Save",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "ok": "OK",
+    "done": "Done",
+    "next": "Next",
+    "previous": "Previous",
+    "close": "Close",
+    "version": "Version",
+    "guest": "Guest User"
+  },
+  "auth": {
+    "signup": {
+      "title": "Create Account",
+      "subtitle": "Join EasySong and start learning languages through music",
+      "button": "Sign Up"
+    },
+    "login": {
+      "title": "Welcome Back",
+      "subtitle": "Sign in to continue your language learning journey",
+      "button": "Sign In"
+    },
+    "passwordRequirements": "Current password requirements",
+    "magicCode": {
+      "title": "Magic Code Login",
+      "subtitle": "We'll send a code to your email",
+      "signupTitle": "Magic Code Sign Up",
+      "signupSubtitle": "We'll send a code to your email to create your account",
+      "loginTitle": "Magic Code Login",
+      "loginSubtitle": "We'll send a code to your email to sign you in",
+      "sendCode": "Send Code",
+      "code": "Enter Code",
+      "verify": "Verify Code",
+      "resend": "Resend Code",
+      "sent": "Code Sent",
+      "checkEmail": "Check your email for the 6-digit code",
+      "usePassword": "Use password instead"
+    },
+    "emailVerification": {
+      "title": "Verify Your Email",
+      "description": "We sent a 6-digit verification code to {email}. Please enter it below.",
+      "pleaseVerify": "Please verify your email address to continue",
+      "verify": "Verify",
+      "resend": "Resend Code",
+      "emailVerified": "Email verified successfully!",
+      "verificationCodeResent": "Verification code sent to your email"
+    },
+    "emailVerified": "Email verified successfully!",
+    "name": "Name",
+    "namePlaceholder": "Enter your name",
+    "email": "Email",
+    "emailPlaceholder": "Enter your email",
+    "password": "Password",
+    "passwordPlaceholder": "Enter your password",
+    "passwordHint": "At least 8 characters",
+    "signupWithMagicCode": "Sign up with a magic code instead",
+    "loginWithMagicCode": "Login with magic code instead",
+    "alreadyHaveAccount": "Already have an account? Sign in",
+    "dontHaveAccount": "Don't have an account? Sign up",
+    "errors": {
+      "invalidEmail": "Please enter a valid email address",
+      "nameRequired": "Name is required",
+      "passwordRequired": "Password is required",
+      "passwordTooShort": "Password must be at least 8 characters",
+      "invalidCode": "Please enter a valid 6-digit code",
+      "signupFailed": "Failed to create account. Please try again.",
+      "loginFailed": "Login failed. Please check your credentials.",
+      "sendCodeFailed": "Failed to send code. Please try again.",
+      "invalidCredentials": "Invalid email or password",
+      "userAlreadyExists": "An account with this email already exists. Please sign in instead.",
+      "verificationFailed": "Failed to verify email. Please check the code and try again.",
+      "resendFailed": "Failed to resend verification code. Please try again."
+    }
+  },
+  "songs": {
+    "title": "Songs",
+    "loading": "Loading songs...",
+    "noSongs": "No songs available",
+    "noSongsDescription": "Check back soon for new content!",
+    "noSongsInSection": "No songs in this section",
+    "allSongs": "All Songs",
+    "error": "Failed to fetch songs",
+    "errorDescription": "An unknown error occurred.",
+    "loadingSong": "Loading song...",
+    "songNotFound": "Song not found",
+    "failedToFetchSong": "Failed to fetch song"
+  },
+  "playMode": {
+    "playMode": "Play Mode",
+    "lyrics": "Lyrics",
+    "showTranslations": "Show translations"
+  },
+  "studyMode": {
+    "title": "Study Mode",
+    "loadingData": "Loading study data...",
+    "songNotFound": "Song not found",
+    "failedToFetchData": "Failed to fetch data",
+    "studyContent": "Study Content",
+    "showTranslations": "Show translations",
+    "sectionExplanation": "Section Explanation",
+    "playAll": "Play All",
+    "pause": "Pause",
+    "nextSection": "Next",
+    "additional": "Additional",
+    "selectSection": "Select a section above to view its content",
+    "studyDataNotAvailable": "Study data is not available",
+    "studyDataNotAvailableDescription": "The structured study format will be available once the data is generated.",
+    "additionalContentNote": "These lines weren't included in the structured sections above.",
+    "limitReached": "Daily Limit Reached",
+    "limitReachedMessage": "You've reached your limit of 2 Study Mode sessions for today.",
+    "limitReachedUpgrade": "Upgrade to Premium Plus for unlimited Study Mode access!",
+    "limitReachedAd": "Or watch an ad to get one more Study Mode session today",
+    "watchAdButton": "Watch Ad",
+    "upgradeToPremium": "Upgrade to Premium Plus",
+    "comeBackTomorrow": "Come back tomorrow to continue learning!"
+  },
+  "settings": {
+    "title": "Settings",
+    "playback": {
+      "title": "Playback",
+      "autoplay": "Autoplay",
+      "autoplayDescription": "Automatically start playing videos",
+      "autoscroll": "Auto-scroll Lyrics",
+      "autoscrollDescription": "Automatically scroll to active lyric line",
+      "loop": "Loop Song",
+      "loopDescription": "Automatically replay when song ends"
+    },
+    "display": {
+      "title": "Display",
+      "fontSize": "Font Size",
+      "fontSizeDescription": "Text size for lyrics",
+      "defaultTranslation": "Default Translation",
+      "defaultTranslationDescription": "Show translations by default",
+      "theme": "Theme",
+      "themeDescription": "App theme preference",
+      "light": "Light",
+      "dark": "Dark",
+      "system": "System"
+    },
+    "language": {
+      "title": "Language",
+      "learning": "Learning Language",
+      "learningDescription": "Language being learned",
+      "interface": "App Language",
+      "interfaceDescription": "App UI language",
+      "learningLanguage": "Learning Language",
+      "interfaceLanguage": "App Language",
+      "names": {
+        "en": "English",
+        "es": "Spanish",
+        "zh": "Chinese (Mandarin)",
+        "fr": "French",
+        "de": "German"
+      }
+    },
+    "profile": {
+      "title": "User Profile",
+      "editProfile": "Edit Profile",
+      "email": "Email",
+      "changePassword": "Change Password",
+      "setPassword": "Set Password",
+      "currentPassword": "Current Password",
+      "newPassword": "New Password",
+      "confirmPassword": "Confirm Password",
+      "passwordDetecting": "Detecting if you have an existing password...",
+      "setPasswordDescription": "You're currently using magic code login. Set a password to enable email/password login.",
+      "currentPasswordRequired": "Current password is required",
+      "newPasswordRequired": "New password is required",
+      "passwordsDoNotMatch": "Passwords do not match",
+      "passwordTooShort": "Password must be at least 8 characters long",
+      "passwordUpdated": "Password updated successfully",
+      "failedToUpdatePassword": "Failed to update password",
+      "passwordRequirements": "Password Requirements",
+      "signIn": "Sign In",
+      "signOut": "Sign Out",
+      "notSignedIn": "Not signed in",
+      "account": "Account",
+      "name": "Name",
+      "signInToSync": "Sign in to sync your progress",
+      "signOutOfAccount": "Sign out of your account",
+      "signInRequired": "Sign In Required",
+      "signInToUpdateProfile": "Please sign in to update your profile"
+    },
+    "onboarding": {
+      "language": {
+        "title": "Choose Your Languages",
+        "description": "Select the language you want to learn and your native language for the best experience",
+        "learningLanguage": "Language you want to learn",
+        "nativeLanguage": "Native language",
+        "selectLanguage": "Select Language"
+      },
+      "skip": "Skip",
+      "next": "Next",
+      "signUp": "Sign Up",
+      "continueAsGuest": "Continue as Guest",
+      "welcome": {
+        "title": "Welcome to EasySong",
+        "description": "Learn languages through music! Discover your favorite songs, sing along, and master new languages in a fun and engaging way."
+      },
+      "playMode": {
+        "title": "Play Mode",
+        "description": "Watch music videos with synchronized lyrics. Sing along and learn naturally as you enjoy your favorite songs."
+      },
+      "studyMode": {
+        "title": "Study Mode",
+        "description": "Dive deeper into each song with detailed explanations, translations, and structured learning sections to master the language."
+      }
+    },
+    "about": {
+      "title": "About",
+      "appVersion": "App Version",
+      "helpSupport": "Help & Support",
+      "viewWalkthrough": "View Walkthrough",
+      "viewWalkthroughDescription": "See the app introduction again",
+      "termsOfService": "Terms of Service",
+      "privacyPolicy": "Privacy Policy",
+      "premiumBenefits": "Premium Benefits"
+    }
+  },
+  "premium": {
+    "title": "Premium Benefits",
+    "heading": "Choose Your Plan",
+    "description": "Upgrade to unlock more features and enhance your language learning experience.",
+    "comingSoon": "coming soon",
+    "monthly": "Monthly",
+    "annual": "Annual",
+    "purchase": "Purchase",
+    "purchaseMessage": "This will open the app store to purchase {tier}.",
+    "premium": {
+      "title": "Premium Tier",
+      "monthlyPrice": "$5",
+      "monthlyPeriod": "/month",
+      "annualPrice": "$3",
+      "annualPeriod": "/month",
+      "annualTotal": "$36",
+      "annualBilling": "billed annually",
+      "purchase": "Subscribe",
+      "benefits": {
+        "history": "View last 10 history items",
+        "studyMode": "2 study mode videos per day",
+        "games": "3 games per day",
+        "requests": "Song/video requests completed in 1 week",
+        "noAds": "No ads"
+      }
+    },
+    "premiumPlus": {
+      "title": "Premium Plus Tier",
+      "monthlyPrice": "$8",
+      "monthlyPeriod": "/month",
+      "annualPrice": "$5",
+      "annualPeriod": "/month",
+      "annualTotal": "$60",
+      "annualBilling": "billed annually",
+      "purchase": "Subscribe",
+      "benefits": {
+        "history": "View unlimited history items",
+        "studyMode": "Unlimited study mode videos per day",
+        "games": "Unlimited games per day",
+        "requests": "Song/video requests completed in 1 day",
+        "noAds": "No ads"
+      }
+    }
+  },
+  "profile": {
+    "editName": "Edit Name",
+    "editEmail": "Edit Email",
+    "enterName": "Enter your name",
+    "enterEmail": "Enter your email",
+    "nameCannotBeEmpty": "Name cannot be empty",
+    "emailCannotBeEmpty": "Email cannot be empty",
+    "invalidEmail": "Please enter a valid email address",
+    "failedToUpdateName": "Failed to update name",
+    "failedToUpdateEmail": "Failed to update email",
+    "nameUpdated": "Name updated successfully",
+    "emailUpdated": "Email updated successfully. Please verify your new email address.",
+    "failedToSignOut": "Failed to sign out",
+    "password": "Password",
+    "emailAndPasswordRequired": "Email and password are required",
+    "failedToSignIn": "Failed to sign in. Please try again.",
+    "songsLearned": "Songs Learned",
+    "playMode": "Play Mode",
+    "studyMode": "Study Mode"
+  },
+  "history": {
+    "title": "Song History",
+    "noHistory": "No song history yet",
+    "noHistoryDescription": "Start playing songs to see your history here",
+    "viewAll": "View All",
+    "previous": "Previous",
+    "next": "Next",
+    "lastPage": "Last Page",
+    "loadMore": "Load More",
+    "page": "Page",
+    "of": "of",
+    "noHistoryShort": "No history",
+    "playMode": "Play Mode",
+    "studyMode": "Study Mode",
+    "upgradeTitle": "Upgrade to Premium",
+    "upgradeMessage": "Sign up to save your entire listening history and sync across devices!",
+    "guestUpgradeMessage": "Sign up to save more history, upgrade to premium to save all history",
+    "clickToUpgrade": "Click here to upgrade to premium"
+  },
+  "tabs": {
+    "play": "Play",
+    "study": "Study",
+    "settings": "Settings"
+  },
+  "help": {
+    "title": "Help & Support",
+    "gettingStarted": "Getting Started",
+    "howToUse": "How to use the app",
+    "howToUseDescription": "Easy Song helps you Learn languages through music. Browse songs, watch videos, and study lyrics with translations and explanations.",
+    "playMode": "Play Mode",
+    "playModeDescription": "Watch the video and follow along with highlighted lyrics. Tap any lyric to jump to that part of the song. Toggle translations on or off as needed.",
+    "studyMode": "Study Mode",
+    "studyModeDescription": "Dive deeper into each song with structured sections. Each section includes explanations, line-by-line playback, and detailed translations.",
+    "faq": "Frequently Asked Questions",
+    "changeLanguage": "How do I change the language?",
+    "changeLanguageAnswer": "Go to Settings → Language to change your learning language or interface language.",
+    "downloadSongs": "Can I download songs for offline use?",
+    "downloadSongsAnswer": "Currently, songs require an internet connection to play. Offline functionality may be available in future updates.",
+    "saveProgress": "How do I save my progress?",
+    "saveProgressAnswer": "Sign in to your account to sync your progress across devices. Your learning history and preferences will be saved automatically.",
+    "videoNotPlaying": "The video isn't playing",
+    "videoNotPlayingAnswer": "Make sure you have a stable internet connection. If the issue persists, try closing and reopening the app, or restarting your device.",
+    "contactSupport": "Contact Support",
+    "contactSupportDescription": "Need more help? Our support team is here to assist you.",
+    "supportEmail": "hi@creativeendurancelab.com"
+  },
+  "about": {
+    "title": "About",
+    "appName": "Easy Song",
+    "version": "Version 1.0.0",
+    "description": "Learn languages through music. Watch videos, study lyrics, and improve your language skills with structured lessons.",
+    "developmentStudio": "Creative Endurance Lab, LLC",
+    "studioName": "Your Studio Name",
+    "studioDescription": "We're passionate about creating innovative language learning tools that make education engaging and accessible.",
+    "contactEmail": "hi@creativeendurancelab.com",
+    "website": "creativeendurancelab.com",
+    
+    "versionHistory": "Version History",
+    "credits": "Credits",
+    "creditsDescription": "Easy Song uses YouTube videos for educational purposes. All song content, including lyrics and translations, is provided for language learning.",
+    "creditsDescription2": "Video content is provided by YouTube and is the property of their respective owners.",
+    "version1_0_0": "Version 1.0.0",
+    "version1_0_0Date": "January 2025",
+    "version1_0_0Changes": [
+      "Initial release of Easy Song",
+      "Play Mode with YouTube video integration",
+      "Study Mode with structured sections and explanations",
+      "Lyric highlighting and auto-scrolling",
+      "Translation toggle functionality",
+      "User settings and preferences",
+      "Multi-language support"
+    ],
+    "version0_9_0": "Version 0.9.0",
+    "version0_9_0Date": "December 2024",
+    "version0_9_0Changes": [
+      "Beta testing release",
+      "Core playback functionality",
+      "Basic study mode features"
+    ],
+    "version0_8_0": "Version 0.8.0",
+    "version0_8_0Date": "November 2024",
+    "version0_8_0Changes": [
+      "Initial development build",
+      "Song list and navigation",
+      "Video player integration"
+    ]
+  }
+}

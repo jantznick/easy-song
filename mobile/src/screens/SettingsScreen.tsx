@@ -10,6 +10,7 @@ import { useTheme } from '../contexts/ThemeContext';
 import { useTranslation } from '../hooks/useTranslation';
 import { useThemeClasses } from '../utils/themeClasses';
 import { LANGUAGE_CODE_MAP } from '../i18n/config';
+import { usei18n } from '../contexts/i18nContext';
 import { resetOnboarding } from '../utils/storage';
 import NativeAdBanner from '../components/NativeAdBanner';
 
@@ -105,15 +106,22 @@ export default function SettingsScreen({ route }: Props) {
 
   const [showLearningLanguageModal, setShowLearningLanguageModal] = useState(false);
   const [showInterfaceLanguageModal, setShowInterfaceLanguageModal] = useState(false);
+  const { availableLanguages } = usei18n();
 
-  // Memoize languages array so it updates when the language changes
-  const languages = useMemo(() => [
-    { code: 'en', name: t('settings.language.names.en') },
-    { code: 'es', name: t('settings.language.names.es') },
-    { code: 'zh', name: t('settings.language.names.zh') },
-    { code: 'fr', name: t('settings.language.names.fr') },
-    { code: 'de', name: t('settings.language.names.de') },
-  ], [t, language]);
+  // Use available languages from API, fallback to defaults if not loaded yet
+  const languages = useMemo(() => {
+    if (availableLanguages.length > 0) {
+      return availableLanguages;
+    }
+    // Fallback to defaults if API hasn't loaded yet
+    return [
+      { code: 'en', name: t('settings.language.names.en') },
+      { code: 'es', name: t('settings.language.names.es') },
+      { code: 'zh', name: t('settings.language.names.zh') },
+      { code: 'fr', name: t('settings.language.names.fr') },
+      { code: 'de', name: t('settings.language.names.de') },
+    ];
+  }, [availableLanguages, t]);
 
   // Helper function to translate stored language name to current interface language
   const getTranslatedLanguageName = (storedName: string) => {
@@ -368,7 +376,7 @@ export default function SettingsScreen({ route }: Props) {
         </View>
 
         {/* Native Ad - Bottom of Settings */}
-        <NativeAdBanner />
+        {process.env.SHOWADS !== 'false' && <NativeAdBanner />}
       </ScrollView>
 
       {/* Learning Language Modal */}
