@@ -10,7 +10,7 @@ import i18next from '../lib/i18n';
 export function i18nMiddleware(req: Request, res: Response, next: NextFunction): void {
   // Check query parameter first
   const langFromQuery = req.query.lang as string;
-  if (langFromQuery && ['en', 'es', 'fr', 'de', 'zh'].includes(langFromQuery)) {
+  if (langFromQuery && ['en', 'es', 'fr', 'de', 'zh', 'it'].includes(langFromQuery)) {
     i18next.changeLanguage(langFromQuery);
     (req as any).language = langFromQuery;
     return next();
@@ -28,7 +28,7 @@ export function i18nMiddleware(req: Request, res: Response, next: NextFunction):
       });
 
     // Find first supported language
-    const supportedLanguages = ['en', 'es', 'fr', 'de', 'zh'];
+    const supportedLanguages = ['en', 'es', 'fr', 'de', 'zh', 'it'];
     const detectedLang = languages.find(lang => supportedLanguages.includes(lang)) || 'en';
     
     i18next.changeLanguage(detectedLang);

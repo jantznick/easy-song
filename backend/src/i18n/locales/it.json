@@ -1,0 +1,91 @@
+{
+  "errors": {
+    "auth": {
+      "emailRequired": "È richiesta un'email valida",
+      "passwordRequired": "È richiesta una password",
+      "nameRequired": "È richiesto un nome",
+      "userExists": "Esiste già un utente con questa email",
+      "invalidCredentials": "Email o password non validi",
+      "invalidCode": "Codice non valido o scaduto",
+      "tooManyRequests": "Troppe richieste di codice di accesso",
+      "tooManyRequestsMessage": "Hai richiesto troppi codici di accesso. Attendi qualche minuto, controlla la cartella spam o contatta il supporto se continui ad avere problemi.",
+      "tooManyVerificationRequests": "Troppe richieste di codice di verifica",
+      "tooManyVerificationRequestsMessage": "Hai richiesto troppi codici di verifica. Attendi qualche minuto, controlla la cartella spam o contatta il supporto se continui ad avere problemi.",
+      "emailAlreadyVerified": "Email già verificata",
+      "failedToRegister": "Impossibile registrare l'utente",
+      "failedToLogin": "Impossibile accedere",
+      "failedToSendCode": "Impossibile inviare il codice di accesso",
+      "failedToVerifyEmail": "Impossibile verificare l'email",
+      "failedToResendVerification": "Impossibile inviare il codice di verifica",
+      "codeRequired": "È richiesto un codice valido di 6 cifre",
+      "noPasswordSetMessage": "Questo account non ha una password impostata. Si prega di utilizzare l'accesso con codice magico.",
+      "verifyCodeFailed": "Impossibile verificare il codice",
+      "fetchUserFailed": "Impossibile recuperare l'utente",
+      "logoutSuccess": "Disconnessione riuscita",
+      "logoutFailed": "Impossibile disconnettersi",
+      "passwordRequirementsNotMet": "La password non soddisfa i requisiti"
+    },
+    "user": {
+      "notFound": "Utente non trovato",
+      "nameInvalid": "Il nome deve essere una stringa non vuota",
+      "emailInvalid": "È richiesta un'email valida",
+      "emailInUse": "Email già in uso",
+      "avatarInvalid": "L'avatar deve essere una stringa o null",
+      "currentPasswordRequired": "È richiesta la password attuale",
+      "newPasswordRequired": "È richiesta una nuova password",
+      "currentPasswordIncorrect": "La password attuale non è corretta",
+      "noPasswordSet": "L'account non ha una password impostata. Si prega di impostare una password prima.",
+      "failedToFetchProfile": "Impossibile recuperare il profilo",
+      "failedToUpdateProfile": "Impossibile aggiornare il profilo",
+      "failedToChangePassword": "Impossibile cambiare la password",
+      "passwordChanged": "Password cambiata con successo",
+      "passwordSet": "Password impostata con successo"
+    },
+    "preferences": {
+      "failedToFetch": "Impossibile recuperare le preferenze",
+      "failedToUpdate": "Impossibile aggiornare le preferenze",
+      "autoplayInvalid": "playback.autoplay deve essere un booleano",
+      "autoscrollInvalid": "playback.autoscroll deve essere un booleano",
+      "loopInvalid": "playback.loop deve essere un booleano",
+      "fontSizeInvalid": "display.fontSize deve essere uno di: small, medium, large",
+      "defaultTranslationInvalid": "display.defaultTranslation deve essere un booleano",
+      "themeInvalid": "display.theme deve essere uno di: light, dark, system",
+      "learningLanguageInvalid": "language.learning deve essere una stringa",
+      "interfaceLanguageInvalid": "language.interface deve essere una stringa"
+    },
+    "history": {
+      "failedToAdd": "Impossibile aggiungere alla cronologia",
+      "failedToFetch": "Impossibile recuperare la cronologia",
+      "failedToClear": "Impossibile cancellare la cronologia",
+      "failedToDelete": "Impossibile eliminare la voce della cronologia",
+      "entryNotFound": "Voce della cronologia non trovata",
+      "notAuthorized": "Non autorizzato a eliminare questa voce",
+      "pageOutOfRange": "La pagina {{page}} è fuori intervallo. La pagina massima è {{maxPage}}",
+      "pageInvalid": "la pagina deve essere >= 1",
+      "songRequired": "la canzone è richiesta e deve essere una stringa",
+      "artistRequired": "l'artista è richiesto e deve essere una stringa",
+      "modeInvalid": "la modalità deve essere \"Play Mode\" o \"Study Mode\"",
+      "videoIdRequired": "videoId è richiesto e deve essere una stringa"
+    },
+    "common": {
+      "serverError": "Si è verificato un errore sul server",
+      "notFound": "Risorsa non trovata",
+      "unauthorized": "Non autorizzato",
+      "forbidden": "Vietato"
+    },
+    "songs": {
+      "failedToFetchList": "Impossibile recuperare l'elenco delle canzoni",
+      "songNotFound": "Canzone non trovata",
+      "studyDataNotFound": "Dati di studio non trovati"
+    }
+  },
+  "success": {
+    "loginCodeSent": "Codice di accesso inviato all'email",
+    "emailVerified": "Email verificata con successo",
+    "verificationCodeSent": "Codice di verifica inviato",
+    "historyCleared": "Cronologia cancellata",
+    "historyEntryDeleted": "Voce della cronologia eliminata",
+    "logoutSuccess": "Disconnessione riuscita"
+  }
+}
+

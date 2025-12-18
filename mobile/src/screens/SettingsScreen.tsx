@@ -121,6 +121,7 @@ export default function SettingsScreen({ route }: Props) {
       { code: 'zh', name: t('settings.language.names.zh') },
       { code: 'fr', name: t('settings.language.names.fr') },
       { code: 'de', name: t('settings.language.names.de') },
+      { code: 'it', name: t('settings.language.names.it') },
     ];
   }, [availableLanguages, t]);
 

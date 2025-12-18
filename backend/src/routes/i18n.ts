@@ -35,6 +35,7 @@ async function getAvailableLanguages(): Promise<Array<{ code: string; name: stri
       { code: 'zh', name: 'Chinese (Mandarin)' },
       { code: 'fr', name: 'French' },
       { code: 'de', name: 'German' },
+      { code: 'it', name: 'Italian' },
     ];
   }
 }

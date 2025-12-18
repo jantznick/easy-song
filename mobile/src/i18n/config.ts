@@ -9,6 +9,7 @@ export let LANGUAGE_CODE_MAP: Record<string, string> = {
   'Chinese (Mandarin)': 'zh',
   'French': 'fr',
   'German': 'de',
+  'Italian': 'it',
 };
 
 export let LANGUAGE_NAME_MAP: Record<string, string> = {
@@ -17,6 +18,7 @@ export let LANGUAGE_NAME_MAP: Record<string, string> = {
   'zh': 'Chinese (Mandarin)',
   'fr': 'French',
   'de': 'German',
+  'it': 'Italian',
 };
 
 // Get device language

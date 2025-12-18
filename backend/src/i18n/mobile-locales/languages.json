@@ -4,7 +4,8 @@
     { "code": "es", "name": "Spanish" },
     { "code": "zh", "name": "Chinese (Mandarin)" },
     { "code": "fr", "name": "French" },
-    { "code": "de", "name": "German" }
+    { "code": "de", "name": "German" },
+    { "code": "it", "name": "Italian" }
   ]
 }
 
