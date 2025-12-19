@@ -4,6 +4,7 @@ import path from 'path';
 import { Innertube } from 'youtubei.js';
 import { createLLMClient, callLLM, getLLMConfigFromEnv, LLMConfig } from './utils/llm-client';
 import { checkSystemResources, formatSystemResources, waitForResources } from './utils/system-resources';
+import { convertTitleToI18n } from './utils/section-titles';
 
 // --- Configuration ---
 const LYRICS_TO_ANALYZE_DIR = path.resolve(__dirname, '../data/lyrics-to-analyze');
@@ -187,6 +188,7 @@ async function processLyricsFile(filePath: string) {
     }
     
     // 9. Combine AI analysis with structured lyrics
+    // Use new i18n format: es/en instead of spanish/english
     const normalizeText = (text: string) => text.trim().replace(/[.,\/#!$%\^&\*;:{}=\-_`~()?¿]/g,"").toLowerCase();
     const analysisMap = new Map<string, { english: string, explanation: string | null }>();
     
@@ -199,10 +201,17 @@ async function processLyricsFile(filePath: string) {
     
     const finalLines = structuredLyrics.map(seg => {
       const analysis = analysisMap.get(normalizeText(seg.text));
+      const explanation = analysis ? analysis.explanation : null;
+      
+      // Convert explanation to i18n object (currently English only, can be translated later)
+      const explanationI18n: Record<string, string> | null = explanation
+        ? { en: explanation }
+        : null;
+      
       return {
-        spanish: seg.text,
-        english: analysis ? analysis.english : "...",
-        explanation: analysis ? analysis.explanation : null,
+        es: seg.text, // Original Spanish text
+        en: analysis ? analysis.english : "...", // English translation
+        explanation: explanationI18n, // i18n object instead of string
         start_ms: seg.start_ms,
         end_ms: seg.end_ms,
       };
@@ -215,7 +224,7 @@ async function processLyricsFile(filePath: string) {
       thumbnailUrl: thumbnailUrl,
       language: detectedLanguage,
       sections: [{
-        title: "Lyrics",
+        title: convertTitleToI18n("Lyrics"), // Convert to i18n object
         lines: finalLines,
       }],
     };

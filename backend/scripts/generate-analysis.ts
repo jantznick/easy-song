@@ -4,6 +4,7 @@ import fs from 'fs/promises';
 import path from 'path';
 import { createLLMClient, callLLM, getLLMConfigFromEnv } from './utils/llm-client';
 import { checkSystemResources, formatSystemResources } from './utils/system-resources';
+import { convertTitleToI18n } from './utils/section-titles';
 
 // --- Configuration ---
 const RAW_LYRICS_DIR = path.resolve(__dirname, '../data/raw-lyrics');
@@ -172,18 +173,27 @@ async function main() {
     }
 
     // Iterate through our original, timestamped lyrics as the source of truth
+    // Use new i18n format: es/en instead of spanish/english
+    // Explanations are now i18n objects
     const finalLines = structuredLyrics.map(seg => {
         const analysis = analysisMap.get(normalizeText(seg.text));
+        const explanation = analysis ? analysis.explanation : null;
+        
+        // Convert explanation to i18n object (currently English only, can be translated later)
+        const explanationI18n: Record<string, string> | null = explanation
+            ? { en: explanation }
+            : null;
+        
         return {
-            spanish: seg.text,
-            english: analysis ? analysis.english : "...", // Use AI english or a placeholder
-            explanation: analysis ? analysis.explanation : null,
+            es: seg.text, // Original Spanish text
+            en: analysis ? analysis.english : "...", // English translation
+            explanation: explanationI18n, // i18n object instead of string
             start_ms: seg.start_ms,
             end_ms: seg.end_ms,
         };
     });
     
-    // For now, we will put all lines into a single "Main" section.
+    // For now, we will put all lines into a single "Lyrics" section.
     // Structuring into verses/choruses can be a future enhancement.
     const finalSongData = {
         videoId: videoId,
@@ -191,7 +201,7 @@ async function main() {
         artist: artist,
         thumbnailUrl: thumbnailUrl,
         sections: [{
-            title: "Lyrics",
+            title: convertTitleToI18n("Lyrics"), // Convert to i18n object
             lines: finalLines,
         }],
     };
