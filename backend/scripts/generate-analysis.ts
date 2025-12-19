@@ -1,25 +1,93 @@
 import 'dotenv/config';
 import { Innertube } from 'youtubei.js';
-import OpenAI from 'openai';
 import fs from 'fs/promises';
 import path from 'path';
+import { createLLMClient, callLLM, getLLMConfigFromEnv } from './utils/llm-client';
+import { checkSystemResources, formatSystemResources } from './utils/system-resources';
 
 // --- Configuration ---
-const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
 const RAW_LYRICS_DIR = path.resolve(__dirname, '../data/raw-lyrics');
 const SONGS_DIR = path.resolve(__dirname, '../data/songs');
 const PROMPT_PATH = path.resolve(__dirname, '../prompt.txt');
+const EXAMPLES_DIR = path.resolve(__dirname, '../data/analysis-examples');
 
-if (!OPENAI_API_KEY) {
-  throw new Error("OPENAI_API_KEY is not set. Please create a .env file in the 'backend' directory.");
-}
-
-const openai = new OpenAI({ apiKey: OPENAI_API_KEY });
+// Get LLM configuration
+const llmConfig = getLLMConfigFromEnv();
+const llmClient = createLLMClient(llmConfig);
 
 interface LyricSegment {
   text: string;
   start_ms: number;
   end_ms: number;
+}
+
+/**
+ * Load analysis examples for few-shot learning.
+ * 
+ * Place example JSON files in: backend/data/analysis-examples/
+ * Each file should contain a complete analysis object matching the expected output format.
+ * 
+ * Example file structure (example-1.json):
+ * {
+ *   "analysis": [
+ *     {
+ *       "spanish": "Example Spanish lyric line",
+ *       "english": "Example English translation",
+ *       "explanation": "Example explanation of meaning, culture, or slang"
+ *     },
+ *     ...
+ *   ]
+ * }
+ * 
+ * The script will automatically load up to 5 examples to include in the prompt.
+ * This helps the AI understand the desired format and quality level.
+ * 
+ * When to switch to RAG/MCP:
+ * - If you have 10+ examples and want semantic search over them
+ * - If examples are getting too large for context window
+ * - If you need to dynamically select relevant examples based on song genre/theme
+ * - If token costs become a concern (few-shot uses more tokens)
+ */
+async function loadAnalysisExamples(): Promise<string> {
+  try {
+    const files = await fs.readdir(EXAMPLES_DIR);
+    const exampleFiles = files.filter(f => f.endsWith('.json')).sort();
+    
+    if (exampleFiles.length === 0) {
+      console.log('No analysis examples found. Add examples to:', EXAMPLES_DIR);
+      return '';
+    }
+
+    // Load up to 5 examples (to avoid token limits)
+    // You can adjust this number based on your needs
+    const maxExamples = 5;
+    const examples: any[] = [];
+    
+    for (const file of exampleFiles.slice(0, maxExamples)) {
+      try {
+        const content = await fs.readFile(path.join(EXAMPLES_DIR, file), 'utf-8');
+        const example = JSON.parse(content);
+        examples.push(example);
+      } catch (e) {
+        console.warn(`Failed to load example ${file}:`, e);
+      }
+    }
+
+    if (examples.length === 0) {
+      return '';
+    }
+
+    console.log(`Loaded ${examples.length} analysis example(s) for few-shot learning.`);
+    
+    // Format examples as a string for the prompt
+    return `\n\nHere are ${examples.length} example(s) of the analysis format I'm looking for:\n${JSON.stringify(examples, null, 2)}`;
+  } catch (error) {
+    // If directory doesn't exist, that's okay - examples are optional
+    if ((error as NodeJS.ErrnoException).code !== 'ENOENT') {
+      console.warn('Error loading examples:', error);
+    }
+    return '';
+  }
 }
 
 /**
@@ -54,32 +122,48 @@ async function main() {
     // 4. Format lyrics into a simple text block for the prompt
     const lyricsText = structuredLyrics.map(seg => seg.text).join('\n');
 
-    // 5. Build the final prompt
+    // 5. Load examples for few-shot learning
+    const examplesText = await loadAnalysisExamples();
+
+    // 6. Build the final prompt
     let finalPrompt = promptTemplate
       .replace('[Song Title]', title)
       .replace('[Artist]', artist);
     
-    finalPrompt = `${finalPrompt}\n\nHere are the lyrics to analyze:\n\n${lyricsText}`;
+    finalPrompt = `${finalPrompt}${examplesText}\n\nHere are the lyrics to analyze:\n\n${lyricsText}`;
 
-    // 6. Call OpenAI API
-    console.log('Generating analysis with OpenAI...');
-    const completion = await openai.chat.completions.create({
-      model: "gpt-4-turbo",
-      messages: [
+    // 7. Check system resources if using Ollama
+    if (llmConfig.provider === 'ollama') {
+      const resources = await checkSystemResources();
+      console.log(formatSystemResources(resources));
+      if (!resources.canRunLLM) {
+        console.warn('⚠️  System resources may be insufficient. Proceeding anyway...');
+      }
+    }
+
+    // 8. Call LLM API (OpenAI or Ollama)
+    console.log(`Generating analysis with ${llmConfig.provider.toUpperCase()} (${llmConfig.model})...`);
+    
+    const llmResponse = await callLLM(
+      llmClient,
+      llmConfig.model,
+      [
         { role: "system", content: "You are an expert in music history, linguistics, and cultural studies. Your task is to analyze song lyrics and provide detailed, structured explanations in JSON format as requested." },
         { role: "user", content: finalPrompt }
       ],
-      response_format: { type: "json_object" },
-    });
+      {
+        responseFormat: { type: "json_object" },
+        temperature: 0.7,
+      }
+    );
 
-    const aiResponse = completion.choices[0]?.message?.content;
-    if (!aiResponse) {
-      throw new Error("OpenAI response was empty.");
+    const analysisData = JSON.parse(llmResponse.content);
+    
+    if (llmResponse.usage) {
+      console.log(`   Tokens used: ${llmResponse.usage.total_tokens} (prompt: ${llmResponse.usage.prompt_tokens}, completion: ${llmResponse.usage.completion_tokens})`);
     }
 
-    const analysisData = JSON.parse(aiResponse);
-
-    // 7. Combine AI analysis with our structured lyrics
+    // 9. Combine AI analysis with our structured lyrics
     // Create a lookup map from the AI's analysis for robust matching
     const normalizeText = (text: string) => text.trim().replace(/[.,\/#!$%\^&\*;:{}=\-_`~()?¿]/g,"").toLowerCase();
     const analysisMap = new Map<string, { english: string, explanation: string | null }>();
@@ -113,7 +197,7 @@ async function main() {
     };
 
 
-    // 8. Save the final, combined data
+    // 10. Save the final, combined data
     await fs.mkdir(SONGS_DIR, { recursive: true });
     const outputPath = path.join(SONGS_DIR, `${videoId}.json`);
     await fs.writeFile(outputPath, JSON.stringify(finalSongData, null, 2));
