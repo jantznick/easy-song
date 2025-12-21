@@ -1,0 +1,71 @@
+Your task is to translate the song lyrics and explanations into multiple languages.
+
+You will receive:
+1. Lyrics with explanations
+2. Section information with explanations
+
+## Response Format
+
+Your response must be a JSON object with two keys:
+
+### 1. "translations"
+An array of translation objects for each lyric line:
+```json
+{
+  "translations": [
+    {
+      "text": "Original lyric text",
+      "translations": {
+        "en": "English translation",
+        "es": "Spanish translation (original)",
+        "fr": "French translation",
+        "de": "German translation",
+        "zh": "Chinese translation",
+        "it": "Italian translation"
+      }
+    }
+  ]
+}
+```
+
+### 2. "sectionExplanations"
+An array of section explanation translations:
+```json
+{
+  "sectionExplanations": [
+    {
+      "title": {
+        "en": "Intro",
+        "es": "Introducción",
+        "fr": "Introduction",
+        "de": "Einleitung",
+        "zh": "介绍",
+        "it": "Introduzione"
+      },
+      "sectionExplanation": {
+        "en": "The introduction sets the stage...",
+        "es": "La introducción establece el escenario...",
+        "fr": "L'introduction établit le décor...",
+        "de": "Die Einleitung setzt die Bühne...",
+        "zh": "介绍为歌曲奠定了基础...",
+        "it": "L'introduzione prepara il terreno..."
+      }
+    }
+  ]
+}
+```
+
+## Translation Guidelines
+- Maintain the meaning and tone of the original
+- Preserve cultural references and context
+- For explanations, ensure the translated explanation makes sense in the target language
+- Section titles must be translated into all languages as i18n objects (not strings)
+
+## Supported Languages
+- `en` - English
+- `es` - Spanish
+- `fr` - French
+- `de` - German
+- `zh` - Chinese
+- `it` - Italian
+

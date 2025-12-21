@@ -15,11 +15,11 @@ from pathlib import Path
 
 # Configuration
 PORT = 8000
-# server.py is in backend/, so SCRIPT_DIR is backend/
+# server.py is in content-generation/
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-# Data and scripts are also in backend/
-DATA_DIR = os.path.join(SCRIPT_DIR, 'data')
+DATA_DIR = os.path.join(SCRIPT_DIR, 'data')  # content-generation/data only
 RAW_LYRICS_DIR = os.path.join(DATA_DIR, 'raw-lyrics')
+TRANSCRIBED_LYRICS_DIR = os.path.join(DATA_DIR, 'transcribed-lyrics')
 SCRIPTS_DIR = os.path.join(SCRIPT_DIR, 'scripts')
 SCRIPT_PATH = os.path.join(SCRIPTS_DIR, 'download-and-transcribe.ts')
 LOGS_DIR = os.path.join(SCRIPT_DIR, 'logs')
@@ -84,6 +84,7 @@ def check_existing_videos(video_ids):
 
 class VideoProcessorHandler(http.server.SimpleHTTPRequestHandler):
     def __init__(self, *args, **kwargs):
+        # Serve files from content-generation directory
         super().__init__(*args, directory=SCRIPT_DIR, **kwargs)
     
     def do_GET(self):
@@ -142,14 +143,17 @@ class VideoProcessorHandler(http.server.SimpleHTTPRequestHandler):
         
         print(f"[GET] /song/{video_id} - Serving detail page")
         
-        # Check which files exist
-        TRANSCRIBED_LYRICS_DIR = os.path.join(DATA_DIR, 'transcribed-lyrics')
+        # Check which files exist - only look in content-generation/data/
         raw_path = os.path.join(RAW_LYRICS_DIR, f'{video_id}.json')
         transcribed_path = os.path.join(TRANSCRIBED_LYRICS_DIR, f'{video_id}.json')
         
-        # Prefer transcribed if available, otherwise use raw
-        file_path = transcribed_path if os.path.exists(transcribed_path) else raw_path
-        file_type = 'transcribed' if os.path.exists(transcribed_path) else 'raw'
+        # Prefer transcribed (has metadata), then raw
+        if os.path.exists(transcribed_path):
+            file_path = transcribed_path
+            file_type = 'transcribed'
+        else:
+            file_path = raw_path
+            file_type = 'raw'
         
         if not os.path.exists(file_path):
             self.send_error(404, f"Song file not found for video ID: {video_id}")
@@ -263,13 +267,15 @@ class VideoProcessorHandler(http.server.SimpleHTTPRequestHandler):
         
         print(f"[GET] /api/song/{video_id} - Serving JSON data")
         
-        # Check which files exist
-        TRANSCRIBED_LYRICS_DIR = os.path.join(DATA_DIR, 'transcribed-lyrics')
+        # Check which files exist - only look in content-generation/data/
         raw_path = os.path.join(RAW_LYRICS_DIR, f'{video_id}.json')
         transcribed_path = os.path.join(TRANSCRIBED_LYRICS_DIR, f'{video_id}.json')
         
-        # Prefer transcribed if available, otherwise use raw
-        file_path = transcribed_path if os.path.exists(transcribed_path) else raw_path
+        # Prefer transcribed (has metadata), then raw
+        if os.path.exists(transcribed_path):
+            file_path = transcribed_path
+        else:
+            file_path = raw_path
         
         if not os.path.exists(file_path):
             self.send_error(404, f"Song file not found for video ID: {video_id}")
@@ -359,8 +365,7 @@ class VideoProcessorHandler(http.server.SimpleHTTPRequestHandler):
             # Run the script (only for new videos, but --skip-existing will handle duplicates)
             # Note: The script only processes ONE video ID at a time, so we need to call it multiple times
             try:
-                # Change to backend directory to run the script
-                # Use relative path from SCRIPT_DIR (backend/) to the script
+                # Use relative path from content-generation/ to the script
                 script_rel_path = os.path.relpath(SCRIPT_PATH, SCRIPT_DIR)
                 
                 # Use Node v20 - try multiple methods to find it
@@ -412,11 +417,14 @@ class VideoProcessorHandler(http.server.SimpleHTTPRequestHandler):
                 
                 # Set environment variables
                 env = os.environ.copy()
-                backend_node_modules = os.path.join(SCRIPT_DIR, 'node_modules')
-                if 'NODE_PATH' in env:
-                    env['NODE_PATH'] = f"{backend_node_modules}:{env['NODE_PATH']}"
-                else:
-                    env['NODE_PATH'] = backend_node_modules
+                # Check for node_modules in content-generation
+                content_gen_node_modules = os.path.join(SCRIPT_DIR, 'node_modules')
+                
+                if os.path.exists(content_gen_node_modules):
+                    if 'NODE_PATH' in env:
+                        env['NODE_PATH'] = f"{content_gen_node_modules}:{env['NODE_PATH']}"
+                    else:
+                        env['NODE_PATH'] = content_gen_node_modules
                 
                 # Add separator and timestamp to log for this batch
                 from datetime import datetime
@@ -431,14 +439,15 @@ class VideoProcessorHandler(http.server.SimpleHTTPRequestHandler):
                 process_pids = []
                 for video_id in new_video_ids:
                     # Build command for this single video
+                    # Note: Script always uses OpenAI Whisper now, no --openai flag needed
                     if use_nvm_bash:
                         escaped_script = script_rel_path.replace("'", "'\"'\"'")
                         escaped_video_id = video_id.replace("'", "'\"'\"'")
-                        cmd = ['bash', '-c', f'source {nvm_source} && nvm use 20 > /dev/null 2>&1 && node -r ts-node/register {escaped_script} --openai --skip-existing {escaped_video_id}']
+                        cmd = ['bash', '-c', f'source {nvm_source} && nvm use 20 > /dev/null 2>&1 && node -r ts-node/register {escaped_script} --skip-existing {escaped_video_id}']
                     elif node_cmd:
-                        cmd = [node_cmd, '-r', 'ts-node/register', script_rel_path, '--openai', '--skip-existing', video_id]
+                        cmd = [node_cmd, '-r', 'ts-node/register', script_rel_path, '--skip-existing', video_id]
                     else:
-                        cmd = ['node', '-r', 'ts-node/register', script_rel_path, '--openai', '--skip-existing', video_id]
+                        cmd = ['node', '-r', 'ts-node/register', script_rel_path, '--skip-existing', video_id]
                     
                     # Log this individual command
                     with open(log_file, 'a') as log:

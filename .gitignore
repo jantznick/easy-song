@@ -31,3 +31,4 @@ backend/data/
 mobile/ios/*
 mobile/android/
 backend/Easy Song API/
+content-generation/data/raw-lyrics/*

@@ -1,0 +1,62 @@
+Your task is to analyze the song lyrics for "[Song Title]" by [Artist].
+
+You need to provide two things:
+1. **Line-by-line explanations** for each lyric segment
+2. **Section identification** (Intro, Verse, Chorus, Bridge, etc.) with section-level explanations
+
+## Response Format
+
+Your response must be a JSON object with two keys:
+
+### 1. "lyrics"
+An array of lyric objects with explanations:
+```json
+{
+  "lyrics": [
+    {
+      "text": "Original lyric text",
+      "start_ms": 0,
+      "end_ms": 2000,
+      "explanation": "Detailed explanation of meaning, culture, or slang in English. Can be null for grouping."
+    }
+  ]
+}
+```
+
+**Explanation Grouping:**
+To explain a phrase that spans multiple lines, set `explanation` to `null` for the initial lines. The next line with a non-null `explanation` should explain the entire group.
+
+### 2. "structuredSections"
+An array of section objects with timestamps:
+```json
+{
+  "structuredSections": [
+    {
+      "title": "Intro",
+      "sectionExplanation": "The introduction sets the stage for the song...",
+      "start_ms": 0,
+      "end_ms": 15000
+    },
+    {
+      "title": "Chorus",
+      "sectionExplanation": "The chorus presents the main hook...",
+      "start_ms": 45000,
+      "end_ms": 60000
+    }
+  ]
+}
+```
+
+**Section Guidelines:**
+- Use standard section names when appropriate: Intro, Verse, Verse 1/2/3, Chorus, Bridge, Outro, Interlude, etc
+- Sections can repeat (e.g., multiple Choruses with different timestamp ranges)
+- Provide meaningful section explanations that describe the section as a whole
+- Timestamps should match the lyric segments provided
+
+## Notes
+- All explanations should be in English (they will be translated in the next step)
+- Section titles should be standard English names (e.g., "Intro", "Verse 1", "Chorus") - they will be translated later
+- Include `start_ms` and `end_ms` timestamps for each lyric line (from the input segments)
+- Focus on cultural context, slang, and deeper meaning
+- Be thorough but concise
+

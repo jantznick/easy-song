@@ -1,0 +1,17 @@
+{
+  "structuredSections": [
+    {
+      "title": "Intro",
+      "sectionExplanation": "The introduction sets a melancholic tone, using 'cold' as a metaphor for emotional pain or hardship. The question format creates a sense of longing and uncertainty.",
+      "start_ms": 0,
+      "end_ms": 15000
+    },
+    {
+      "title": "Verse 1",
+      "sectionExplanation": "The first verse establishes the artist's identity and confidence, referencing Willie Colón to establish credibility in the salsa tradition. The boastful tone contrasts with the melancholic opening.",
+      "start_ms": 15000,
+      "end_ms": 45000
+    }
+  ]
+}
+
