@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YouTube Video Processor</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen py-8">
+    <div class="max-w-4xl mx-auto px-4">
+        <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+            <h1 class="text-3xl font-bold text-gray-800 mb-2">YouTube Video Processor</h1>
+            <p class="text-gray-600 mb-6">Enter YouTube URLs or video IDs (one per line) to process them</p>
+            
+            <form id="processForm" class="mb-6">
+                <div class="mb-4">
+                    <label for="urls" class="block text-sm font-medium text-gray-700 mb-2">
+                        URLs or Video IDs
+                    </label>
+                    <textarea
+                        id="urls"
+                        name="urls"
+                        rows="6"
+                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none font-mono text-sm"
+                        placeholder="https://www.youtube.com/watch?v=VIDEO_ID&#10;https://youtu.be/VIDEO_ID&#10;VIDEO_ID"
+                    ></textarea>
+                </div>
+                
+                <div class="flex items-center gap-4">
+                    <button
+                        type="submit"
+                        id="submitBtn"
+                        class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors font-medium"
+                    >
+                        Process Videos
+                    </button>
+                    <button
+                        type="button"
+                        id="refreshBtn"
+                        class="px-6 py-3 bg-gray-600 text-white rounded-lg hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors font-medium"
+                    >
+                        Refresh List
+                    </button>
+                    <div id="status" class="text-sm text-gray-600"></div>
+                </div>
+            </form>
+            
+            <div id="result" class="mb-6"></div>
+        </div>
+        
+        <div class="bg-white rounded-lg shadow-lg p-6">
+            <h2 class="text-2xl font-bold text-gray-800 mb-4">Existing Songs</h2>
+            <div id="songsList" class="space-y-2">
+                <div class="text-gray-500 text-center py-4">Loading...</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const form = document.getElementById('processForm');
+        const urlsTextarea = document.getElementById('urls');
+        const submitBtn = document.getElementById('submitBtn');
+        const refreshBtn = document.getElementById('refreshBtn');
+        const statusDiv = document.getElementById('status');
+        const resultDiv = document.getElementById('result');
+        const songsListDiv = document.getElementById('songsList');
+
+        let existingSongs = [];
+
+        // Extract video ID from URL
+        function extractVideoId(url) {
+            const patterns = [
+                /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([a-zA-Z0-9_-]{11})/,
+                /^([a-zA-Z0-9_-]{11})$/,
+            ];
+            for (const pattern of patterns) {
+                const match = url.match(pattern);
+                if (match) return match[1];
+            }
+            return null;
+        }
+
+        // Check which videos already exist
+        function checkExistingVideos(urls) {
+            const videoIds = urls
+                .map(url => extractVideoId(url.trim()))
+                .filter(id => id !== null);
+            
+            const existing = {
+                both: [],
+                raw_lyrics: [],
+                transcribed_lyrics: [],
+                new: []
+            };
+            
+            videoIds.forEach(id => {
+                if (existingSongs.includes(id)) {
+                    existing.raw_lyrics.push(id);
+                } else {
+                    existing.new.push(id);
+                }
+            });
+            
+            return existing;
+        }
+
+        // Load existing songs on page load
+        loadSongs();
+
+        // Refresh button
+        refreshBtn.addEventListener('click', () => {
+            loadSongs();
+        });
+
+        // Check for existing videos as user types
+        urlsTextarea.addEventListener('input', () => {
+            const urls = urlsTextarea.value
+                .split('\n')
+                .map(line => line.trim())
+                .filter(line => line.length > 0);
+            
+            if (urls.length === 0) {
+                statusDiv.textContent = '';
+                return;
+            }
+            
+            const existing = checkExistingVideos(urls);
+            const totalExisting = existing.raw_lyrics.length;
+            
+            if (totalExisting > 0) {
+                statusDiv.innerHTML = `<span class="text-yellow-600">⚠️ ${totalExisting} video(s) already exist (will be skipped)</span>`;
+            } else {
+                statusDiv.textContent = '';
+            }
+        });
+
+        // Form submission
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const urls = urlsTextarea.value
+                .split('\n')
+                .map(line => line.trim())
+                .filter(line => line.length > 0);
+            
+            if (urls.length === 0) {
+                showResult('error', 'Please enter at least one URL or video ID');
+                return;
+            }
+            
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Processing...';
+            statusDiv.textContent = '';
+            resultDiv.innerHTML = '';
+            
+            try {
+                const response = await fetch('/api/process', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ urls }),
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    if (data.skipped) {
+                        showResult('info', data.message || 'All videos already exist', data);
+                    } else {
+                        showResult('success', data.message || `Processing ${data.new_video_ids?.length || data.video_ids.length} video(s) in background`, data);
+                    }
+                    urlsTextarea.value = '';
+                    statusDiv.textContent = '';
+                    // Refresh songs list after a delay
+                    setTimeout(loadSongs, 2000);
+                } else {
+                    showResult('error', data.error || 'Failed to process videos', data);
+                }
+            } catch (error) {
+                showResult('error', `Error: ${error.message}`);
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Process Videos';
+            }
+        });
+
+        function showResult(type, message, data = null) {
+            let bgColor, textColor;
+            if (type === 'success') {
+                bgColor = 'bg-green-50 border-green-200';
+                textColor = 'text-green-800';
+            } else if (type === 'info') {
+                bgColor = 'bg-blue-50 border-blue-200';
+                textColor = 'text-blue-800';
+            } else {
+                bgColor = 'bg-red-50 border-red-200';
+                textColor = 'text-red-800';
+            }
+            
+            let html = `<div class="${bgColor} border rounded-lg p-4 ${textColor}">`;
+            html += `<p class="font-medium mb-2">${message}</p>`;
+            
+            if (data) {
+                // Show existing videos
+                if (data.existing) {
+                    const existing = data.existing;
+                    const totalExisting = (existing.both || []).length + (existing.raw_lyrics || []).length + (existing.transcribed_lyrics || []).length;
+                    
+                    if (totalExisting > 0) {
+                        html += `<div class="mt-3"><p class="text-sm font-semibold mb-1">Already Existing (${totalExisting}):</p><ul class="list-disc list-inside space-y-1">`;
+                        
+                        if (existing.both && existing.both.length > 0) {
+                            existing.both.forEach(id => {
+                                html += `<li class="font-mono text-xs">${id} <span class="text-gray-600">(fully processed)</span></li>`;
+                            });
+                        }
+                        if (existing.raw_lyrics && existing.raw_lyrics.length > 0) {
+                            existing.raw_lyrics.forEach(id => {
+                                html += `<li class="font-mono text-xs">${id} <span class="text-gray-600">(raw lyrics only)</span></li>`;
+                            });
+                        }
+                        if (existing.transcribed_lyrics && existing.transcribed_lyrics.length > 0) {
+                            existing.transcribed_lyrics.forEach(id => {
+                                html += `<li class="font-mono text-xs">${id} <span class="text-gray-600">(transcribed only)</span></li>`;
+                            });
+                        }
+                        html += `</ul></div>`;
+                    }
+                }
+                
+                // Show new videos being processed
+                if (data.new_video_ids && data.new_video_ids.length > 0) {
+                    html += `<div class="mt-3"><p class="text-sm font-semibold mb-1">New Videos (${data.new_video_ids.length}):</p><ul class="list-disc list-inside space-y-1">`;
+                    data.new_video_ids.forEach(id => {
+                        html += `<li class="font-mono text-xs">${id}</li>`;
+                    });
+                    html += `</ul></div>`;
+                } else if (data.video_ids && data.video_ids.length > 0) {
+                    html += `<div class="mt-3"><p class="text-sm font-semibold mb-1">Video IDs:</p><ul class="list-disc list-inside space-y-1">`;
+                    data.video_ids.forEach(id => {
+                        html += `<li class="font-mono text-xs">${id}</li>`;
+                    });
+                    html += `</ul></div>`;
+                }
+                
+                if (data.invalid_urls && data.invalid_urls.length > 0) {
+                    html += `<div class="mt-3"><p class="text-sm font-semibold mb-1 text-yellow-800">Invalid URLs (skipped):</p><ul class="list-disc list-inside space-y-1">`;
+                    data.invalid_urls.forEach(url => {
+                        html += `<li class="font-mono text-xs">${url}</li>`;
+                    });
+                    html += `</ul></div>`;
+                }
+            }
+            
+            html += `</div>`;
+            resultDiv.innerHTML = html;
+        }
+
+        async function loadSongs() {
+            songsListDiv.innerHTML = '<div class="text-gray-500 text-center py-4">Loading...</div>';
+            
+            try {
+                const response = await fetch('/api/songs');
+                const data = await response.json();
+                
+                if (data.songs && data.songs.length > 0) {
+                    existingSongs = data.songs; // Store for client-side checking
+                    songsListDiv.innerHTML = `
+                        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">
+                            ${data.songs.map(song => `
+                                <div class="bg-gray-50 border border-gray-200 rounded px-3 py-2 font-mono text-sm hover:bg-gray-100 transition-colors cursor-pointer">
+                                    <a href="/song/${song}" class="text-blue-600 hover:text-blue-800 block">
+                                        ${song}
+                                    </a>
+                                </div>
+                            `).join('')}
+                        </div>
+                        <p class="text-sm text-gray-500 mt-4">Total: ${data.songs.length} song(s)</p>
+                    `;
+                } else {
+                    existingSongs = [];
+                    songsListDiv.innerHTML = '<div class="text-gray-500 text-center py-4">No songs found</div>';
+                }
+            } catch (error) {
+                existingSongs = [];
+                songsListDiv.innerHTML = `<div class="text-red-500 text-center py-4">Error loading songs: ${error.message}</div>`;
+            }
+        }
+    </script>
+</body>
+</html>
+
