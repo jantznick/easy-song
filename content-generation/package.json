@@ -1,0 +1,16 @@
+{
+  "name": "content-generation",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {},
+  "dependencies": {
+    "dotenv": "^17.2.3",
+    "youtubei.js": "^16.0.1"
+  },
+  "devDependencies": {
+    "@types/node": "^25.0.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.3"
+  }
+}
+

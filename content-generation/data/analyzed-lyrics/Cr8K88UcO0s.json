@@ -1,0 +1,23 @@
+{
+  "videoId": "Cr8K88UcO0s",
+  "title": "Bad Bunny - Tití Me Preguntó (Video Oficial) | Un Verano Sin Ti",
+  "artist": "Bad Bunny",
+  "thumbnailUrl": "https://i.ytimg.com/vi/Cr8K88UcO0s/hqdefault.jpg?sqp=-oaymwEiCKgBEF5IWvKriqkDFQgBFQAAAAAYASUAAMhCPQCAokN4AQ==&rs=AOn4CLBee4P-nYfICNqaupYDkNw1uNlZbg",
+  "originalLanguage": "es",
+  "lyrics": [
+    {
+      "text": "Dummy lyric line",
+      "start_ms": 0,
+      "end_ms": 2000,
+      "explanation": "This is a dummy explanation for testing."
+    }
+  ],
+  "structuredSections": [
+    {
+      "title": "Intro",
+      "sectionExplanation": "This is a dummy section explanation for testing.",
+      "start_ms": 0,
+      "end_ms": 2000
+    }
+  ]
+}

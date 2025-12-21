@@ -1,0 +1,53 @@
+{
+  "videoId": "OSUxrSe5GbI",
+  "title": "BAD BUNNY x DRAKE - MÍA (Video Oficial)",
+  "artist": "Bad Bunny",
+  "thumbnailUrl": "https://i.ytimg.com/vi/OSUxrSe5GbI/hqdefault.jpg?sqp=-oaymwEiCKgBEF5IWvKriqkDFQgBFQAAAAAYASUAAMhCPQCAokN4AQ==&rs=AOn4CLDeJhZaVm3WnEw4lp6YqTNuD_xaVA",
+  "originalLanguage": "es",
+  "transcribedAt": "2025-12-21T06:54:59.714Z",
+  "lyrics": [
+    {
+      "text": "Dummy lyric line",
+      "start_ms": 0,
+      "end_ms": 2000,
+      "translations": {
+        "en": "Dummy English translation",
+        "es": "Dummy lyric line",
+        "fr": "Traduction française factice",
+        "de": "Dummy deutsche Übersetzung",
+        "zh": "虚拟中文翻译",
+        "it": "Traduzione italiana dummy"
+      },
+      "explanations": {
+        "en": "This is a dummy explanation for testing.",
+        "es": "Esta es una explicación ficticia para pruebas.",
+        "fr": "Ceci est une explication factice pour les tests.",
+        "de": "Dies ist eine Dummy-Erklärung zum Testen.",
+        "zh": "这是用于测试的虚拟说明。",
+        "it": "Questa è una spiegazione fittizia per i test."
+      }
+    }
+  ],
+  "structuredSections": [
+    {
+      "title": {
+        "en": "Intro",
+        "es": "Introducción",
+        "fr": "Introduction",
+        "de": "Einleitung",
+        "zh": "介绍",
+        "it": "Introduzione"
+      },
+      "sectionExplanation": {
+        "en": "This is a dummy section explanation for testing.",
+        "es": "Esta es una explicación de sección ficticia para pruebas.",
+        "fr": "Ceci est une explication de section factice pour les tests.",
+        "de": "Dies ist eine Dummy-Abschnittserklärung zum Testen.",
+        "zh": "这是用于测试的虚拟部分说明。",
+        "it": "Questa è una spiegazione di sezione fittizia per i test."
+      },
+      "start_ms": 0,
+      "end_ms": 2000
+    }
+  ]
+}

@@ -362,7 +362,7 @@ class VideoProcessorHandler(http.server.SimpleHTTPRequestHandler):
                 })
                 return
             
-            # Run the script (only for new videos, but --skip-existing will handle duplicates)
+            # Run the script (skip-existing is now the default behavior)
             # Note: The script only processes ONE video ID at a time, so we need to call it multiple times
             try:
                 # Use relative path from content-generation/ to the script
@@ -443,11 +443,11 @@ class VideoProcessorHandler(http.server.SimpleHTTPRequestHandler):
                     if use_nvm_bash:
                         escaped_script = script_rel_path.replace("'", "'\"'\"'")
                         escaped_video_id = video_id.replace("'", "'\"'\"'")
-                        cmd = ['bash', '-c', f'source {nvm_source} && nvm use 20 > /dev/null 2>&1 && node -r ts-node/register {escaped_script} --skip-existing {escaped_video_id}']
+                        cmd = ['bash', '-c', f'source {nvm_source} && nvm use 20 > /dev/null 2>&1 && node -r ts-node/register {escaped_script} {escaped_video_id}']
                     elif node_cmd:
-                        cmd = [node_cmd, '-r', 'ts-node/register', script_rel_path, '--skip-existing', video_id]
+                        cmd = [node_cmd, '-r', 'ts-node/register', script_rel_path, video_id]
                     else:
-                        cmd = ['node', '-r', 'ts-node/register', script_rel_path, '--skip-existing', video_id]
+                        cmd = ['node', '-r', 'ts-node/register', script_rel_path, video_id]
                     
                     # Log this individual command
                     with open(log_file, 'a') as log:

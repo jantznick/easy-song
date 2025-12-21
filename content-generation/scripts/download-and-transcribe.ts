@@ -132,7 +132,7 @@ async function transcribeWithOpenAIWhisper(audioFilePath: string, language?: str
     throw new Error(`OpenAI Whisper API error: ${response.status} ${errorText}`);
   }
   
-  return await response.json();
+  return await response.json() as WhisperResponse;
 }
 
 /**
@@ -183,86 +183,114 @@ async function getVideoMetadata(videoId: string) {
 /**
  * Process a single video: download and transcribe
  */
-async function processVideo(videoId: string, language: string = 'es', skipExisting: boolean = false): Promise<boolean> {
+async function processVideo(videoId: string, language: string = 'es', skipExisting: boolean = true): Promise<boolean> {
   console.log(`\n🎵 Processing: ${videoId}`);
   console.log('─'.repeat(50));
   
   try {
-    // Check if transcription already exists
     const rawLyricsPath = path.join(RAW_LYRICS_DIR, `${videoId}.json`);
+    const transcribedPath = path.join(TRANSCRIBED_LYRICS_DIR, `${videoId}.json`);
+    
+    // 1. Check if transcribed-lyrics already exists
+    let shouldSkipDownloadTranscribe = false;
     if (skipExisting) {
       try {
-        await fs.access(rawLyricsPath);
-        console.log(`  ⏭️  Transcription already exists, skipping...`);
-        return true;
+        await fs.access(transcribedPath);
+        console.log(`  ⏭️  Transcribed lyrics already exist, skipping download/transcribe...`);
+        shouldSkipDownloadTranscribe = true;
       } catch {
         // File doesn't exist, continue
       }
     }
     
-    // 1. Download (or use existing)
-    let audioFilePath: string | null = await isVideoDownloaded(videoId);
-    if (!audioFilePath) {
-      audioFilePath = await downloadVideo(videoId);
-      console.log(`  ✅ Downloaded: ${path.basename(audioFilePath)}`);
-    } else {
-      console.log(`  ⏭️  Using existing audio: ${path.basename(audioFilePath)}`);
+    // 2. Only download/transcribe if we need to
+    if (!shouldSkipDownloadTranscribe) {
+      let lyricSegments: Array<{ text: string; start_ms: number; end_ms: number }>;
+      
+      // 2a. Check if raw-lyrics exists - if so, use it instead of downloading/transcribing
+      try {
+        const rawContent = await fs.readFile(rawLyricsPath, 'utf-8');
+        lyricSegments = JSON.parse(rawContent);
+        console.log(`  📖 Found existing raw-lyrics, using it (${lyricSegments.length} segments)`);
+        console.log(`  ⏭️  Skipping download and transcription`);
+      } catch {
+        // No raw-lyrics, need to download and transcribe
+        // Download (or use existing)
+        let audioFilePath: string | null = await isVideoDownloaded(videoId);
+        if (!audioFilePath) {
+          audioFilePath = await downloadVideo(videoId);
+          console.log(`  ✅ Downloaded: ${path.basename(audioFilePath)}`);
+        } else {
+          console.log(`  ⏭️  Using existing audio: ${path.basename(audioFilePath)}`);
+        }
+        
+        // Transcribe with OpenAI Whisper
+        const whisperResponse = await transcribeWithOpenAIWhisper(audioFilePath, language);
+        
+        // Convert to our format
+        lyricSegments = convertToLyricSegments(whisperResponse);
+        console.log(`  ✅ Transcribed ${lyricSegments.length} segments`);
+        
+        // Save to raw-lyrics format (for compatibility with existing scripts)
+        await fs.mkdir(RAW_LYRICS_DIR, { recursive: true });
+        await fs.writeFile(rawLyricsPath, JSON.stringify(lyricSegments, null, 2));
+        console.log(`  💾 Saved raw lyrics: ${rawLyricsPath}`);
+      }
+      
+      // 3. Get metadata
+      const metadata = await getVideoMetadata(videoId);
+      
+      // 4. Save with metadata to transcribed-lyrics
+      await fs.mkdir(TRANSCRIBED_LYRICS_DIR, { recursive: true });
+      const transcribedData = {
+        videoId,
+        ...metadata,
+        language: language || 'auto',
+        segments: lyricSegments,
+        transcribedAt: new Date().toISOString(),
+      };
+      await fs.writeFile(transcribedPath, JSON.stringify(transcribedData, null, 2));
+      console.log(`  💾 Saved transcribed data: ${transcribedPath}`);
     }
     
-    // 2. Transcribe with OpenAI Whisper
-    const whisperResponse = await transcribeWithOpenAIWhisper(audioFilePath, language);
-    
-    // 3. Convert to our format
-    const lyricSegments = convertToLyricSegments(whisperResponse);
-    console.log(`  ✅ Transcribed ${lyricSegments.length} segments`);
-    
-    // 4. Get metadata
-    const metadata = await getVideoMetadata(videoId);
-    
-    // 5. Save to raw-lyrics format (for compatibility with existing scripts)
-    await fs.mkdir(RAW_LYRICS_DIR, { recursive: true });
-    await fs.writeFile(rawLyricsPath, JSON.stringify(lyricSegments, null, 2));
-    console.log(`  💾 Saved raw lyrics: ${rawLyricsPath}`);
-    
-    // 6. Also save with metadata to transcribed-lyrics
-    await fs.mkdir(TRANSCRIBED_LYRICS_DIR, { recursive: true });
-    const transcribedPath = path.join(TRANSCRIBED_LYRICS_DIR, `${videoId}.json`);
-    const transcribedData = {
-      videoId,
-      ...metadata,
-      language: language || 'auto',
-      segments: lyricSegments,
-      transcribedAt: new Date().toISOString(),
-    };
-    await fs.writeFile(transcribedPath, JSON.stringify(transcribedData, null, 2));
-    console.log(`  💾 Saved transcribed data: ${transcribedPath}`);
-    
-    // 7. Call analyze-song.ts script
-    console.log(`  🔍 Starting analysis...`);
+    // 7. Call analyze-song.ts script (if it exists)
     const analyzeScript = path.join(__dirname, 'analyze-song.ts');
-    
-    return new Promise((resolve) => {
-      const analyzeProcess = spawn('npx', ['ts-node', analyzeScript, videoId], {
-        cwd: __dirname,
-        stdio: 'inherit',
-        shell: true
-      });
+    try {
+      await fs.access(analyzeScript);
+      // Script exists, run it
+      console.log(`  🔍 Starting analysis...`);
       
-      analyzeProcess.on('close', (code: number) => {
-        if (code === 0) {
-          console.log(`  ✅ Analysis complete!`);
-          resolve(true);
-        } else {
-          console.error(`  ❌ Analysis failed with code ${code}`);
-          resolve(false);
+      return new Promise((resolve) => {
+        const analyzeArgs = [analyzeScript, videoId];
+        if (!skipExisting) {
+          analyzeArgs.push('--clean-slate');
         }
+        const analyzeProcess = spawn('npx', ['ts-node', ...analyzeArgs], {
+          cwd: __dirname,
+          stdio: 'inherit',
+          shell: true
+        });
+        
+        analyzeProcess.on('close', (code: number) => {
+          if (code === 0) {
+            console.log(`  ✅ Analysis complete!`);
+            resolve(true);
+          } else {
+            console.error(`  ❌ Analysis failed with code ${code}`);
+            resolve(false);
+          }
+        });
+        
+        analyzeProcess.on('error', (error: Error) => {
+          console.error(`  ❌ Failed to start analysis: ${error.message}`);
+          resolve(false);
+        });
       });
-      
-      analyzeProcess.on('error', (error: Error) => {
-        console.error(`  ❌ Failed to start analysis: ${error.message}`);
-        resolve(false);
-      });
-    });
+    } catch {
+      // Script doesn't exist, skip silently
+      console.log(`  ⏭️  Analysis script not found, skipping...`);
+      return true;
+    }
     
   } catch (error) {
     console.error(`  ❌ Error:`, error);
@@ -279,7 +307,8 @@ async function processVideo(videoId: string, language: string = 'es', skipExisti
 async function main() {
   // Parse arguments
   const args = process.argv.slice(2);
-  const skipExisting = args.includes('--skip-existing');
+  const cleanSlate = args.includes('--clean-slate');
+  const skipExisting = !cleanSlate; // Default to true, unless --clean-slate is used
   
   // Find language from --lang= flag or positional arg
   let language = 'es'; // Default
@@ -305,7 +334,7 @@ async function main() {
   
   if (!videoId) {
     console.error('❌ Error: Video ID is required.');
-    console.error('   Usage: npx ts-node scripts/download-and-transcribe.ts <VIDEO_ID> [--lang=es] [--skip-existing]');
+    console.error('   Usage: npx ts-node scripts/download-and-transcribe.ts <VIDEO_ID> [--lang=es] [--clean-slate]');
     process.exit(1);
   }
   
@@ -330,7 +359,7 @@ async function main() {
   console.log(`🎵 Video ID: ${videoId}`);
   console.log(`🌐 Whisper API: OpenAI`);
   console.log(`🌍 Language: ${language}`);
-  console.log(`⏭️  Skip existing: ${skipExisting ? 'Yes' : 'No'}`);
+  console.log(`⏭️  Skip existing: ${skipExisting ? 'Yes' : 'No (--clean-slate)'}`);
   console.log('═'.repeat(50));
   
   const success = await processVideo(videoId, language, skipExisting);
