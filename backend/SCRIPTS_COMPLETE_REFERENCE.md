@@ -11,6 +11,8 @@ This document provides a comprehensive reference for all scripts in the `backend
    - [fetch-lyrics-puppeteer.ts](#fetch-lyrics-puppeteerts)
    - [fetch-or-transcribe.ts](#fetch-or-transcribets)
    - [whisper-transcribe.ts](#whisper-transcribets)
+   - [download-videos.ts](#download-videosts)
+   - [download-and-transcribe.ts](#download-and-transcribets)
    - [generate-analysis.ts](#generate-analysists)
    - [process-lyrics-folder.ts](#process-lyrics-folderts)
    - [full-pipeline.ts](#full-pipelinets)
@@ -232,6 +234,117 @@ npx ts-node scripts/whisper-transcribe.ts <YOUTUBE_VIDEO_ID> [LANGUAGE] [--opena
 7. Save to `data/transcribed-lyrics/{videoId}.json` (with metadata)
 
 **Dependencies**: `fs/promises`, `path`, `child_process`, `util`, `youtubei.js`
+
+---
+
+### download-videos.ts
+
+**Purpose**: Downloads YouTube videos (audio only) from a list in `toDownload.json`. Useful for batch downloading before running Whisper transcription separately.
+
+**Usage**:
+```bash
+npx ts-node scripts/download-videos.ts [VIDEO_ID] [--skip-existing]
+```
+
+**Inputs**:
+- Command line: `VIDEO_ID` (optional, if provided downloads single video), `--skip-existing` (optional, skip already downloaded videos)
+- Files: `data/toDownload.json` (required if no VIDEO_ID provided)
+  - Format: `{ "songs": ["VIDEO_ID_1", "VIDEO_ID_2", ...] }` or `{ "videoIds": ["VIDEO_ID_1", "VIDEO_ID_2", ...] }`
+
+**Outputs**:
+- Audio files: `data/youtube-videos/{videoId}/{videoId}.wav` (or .m4a, .mp3, .opus)
+
+**Functions**:
+- `checkYtDlp(): Promise<boolean>` - Checks if yt-dlp is installed
+- `downloadVideo(videoId: string): Promise<string>` - Downloads video audio using yt-dlp
+- `isVideoDownloaded(videoId: string): Promise<boolean>` - Checks if video already exists
+- `main()` - Entry point
+
+**Flow**:
+1. Check for yt-dlp installation
+2. If single VIDEO_ID provided:
+   - Check if already downloaded (if `--skip-existing`)
+   - Download audio only (WAV format)
+3. If no VIDEO_ID:
+   - Read `data/toDownload.json`
+   - Support both `songs` and `videoIds` array formats
+   - Filter out empty strings
+   - For each video:
+     - Check if already downloaded (if `--skip-existing`)
+     - Download audio only
+     - Small delay between downloads (rate limiting)
+4. Print summary (downloaded, skipped, failed)
+
+**Dependencies**: `fs/promises`, `path`, `child_process`, `util`
+
+**Notes**:
+- Downloads audio only (faster, smaller files)
+- Supports multiple audio formats (WAV, M4A, MP3, Opus)
+- Can skip already downloaded videos with `--skip-existing`
+- After downloading, you can run `whisper-transcribe.ts` on individual videos or use `full-pipeline.ts --skip-download`
+
+---
+
+### download-and-transcribe.ts
+
+**Purpose**: Batch processes videos from `toDownload.json`: downloads audio and transcribes with Whisper in one go. This is the recommended script for processing multiple videos that don't have captions.
+
+**Usage**:
+```bash
+npx ts-node scripts/download-and-transcribe.ts [LANGUAGE] [--openai] [--skip-existing]
+npx ts-node scripts/download-and-transcribe.ts <VIDEO_ID> [LANGUAGE] [--openai] [--skip-existing]
+```
+
+**Inputs**:
+- Command line: 
+  - `LANGUAGE` (optional, default: 'es') - Language code for transcription
+  - `VIDEO_ID` (optional, if provided processes single video)
+  - `--openai` (optional, use OpenAI Whisper API instead of local)
+  - `--skip-existing` (optional, skip videos that already have transcriptions)
+- Files: `data/toDownload.json` (required if no VIDEO_ID provided)
+  - Format: `{ "songs": ["VIDEO_ID_1", "VIDEO_ID_2", ...] }` or `{ "videoIds": ["VIDEO_ID_1", "VIDEO_ID_2", ...] }`
+- Environment: `WHISPER_API_URL` (default: `http://localhost:8000`), `OPENAI_API_KEY` (if using `--openai`)
+
+**Outputs**:
+- File: `data/raw-lyrics/{videoId}.json` (compatible format with ms timestamps)
+- File: `data/transcribed-lyrics/{videoId}.json` (with metadata)
+- Audio files: `data/youtube-videos/{videoId}/{videoId}.wav` (downloaded audio, reused if exists)
+
+**Functions**:
+- `checkYtDlp(): Promise<boolean>` - Checks if yt-dlp is installed
+- `isVideoDownloaded(videoId: string): Promise<string | null>` - Checks if audio already exists
+- `downloadVideo(videoId: string): Promise<string>` - Downloads video audio using yt-dlp
+- `transcribeWithWhisper(audioFilePath: string, language?: string): Promise<WhisperResponse>` - Transcribes with local Whisper API
+- `transcribeWithOpenAIWhisper(audioFilePath: string, language?: string): Promise<WhisperResponse>` - Transcribes with OpenAI Whisper API
+- `convertToLyricSegments(whisperResponse: WhisperResponse): Array<{text, start_ms, end_ms}>` - Converts to format with millisecond timestamps
+- `getVideoMetadata(videoId: string)` - Fetches video title, artist, thumbnail
+- `processVideo(videoId: string, language: string, useOpenAI: boolean, skipExisting: boolean): Promise<boolean>` - Processes single video
+- `main()` - Entry point
+
+**Flow**:
+1. Read `data/toDownload.json` (or use single VIDEO_ID from command line)
+2. Filter out empty strings
+3. For each video:
+   - Check if transcription already exists (if `--skip-existing`)
+   - Check if audio already downloaded (reuse if exists)
+   - Download audio if needed (WAV format)
+   - Transcribe with Whisper (local or OpenAI)
+   - Convert segments to format with millisecond timestamps (`start_ms`, `end_ms`)
+   - Get video metadata
+   - Save to `data/raw-lyrics/{videoId}.json` (compatible with existing scripts)
+   - Save to `data/transcribed-lyrics/{videoId}.json` (with metadata)
+   - Small delay between videos (rate limiting)
+4. Print summary (processed, skipped, failed)
+
+**Dependencies**: `fs/promises`, `path`, `child_process`, `util`, `youtubei.js`
+
+**Notes**:
+- Combines downloading and transcribing in one script
+- Reuses already downloaded audio files (won't re-download)
+- Outputs timestamps in milliseconds (`start_ms`, `end_ms`)
+- Defaults to local Whisper API (`http://localhost:8000`)
+- Can process single video or batch from `toDownload.json`
+- Perfect for videos without captions
 
 ---
 
