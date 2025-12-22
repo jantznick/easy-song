@@ -12,9 +12,14 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 // --- Configuration ---
-const ANALYZED_LYRICS_DIR = path.resolve(__dirname, '../data/analyzed-lyrics');
-const FINAL_SONGS_DIR = path.resolve(__dirname, '../data/songs');
-const PROMPT_TEMPLATE_PATH = path.resolve(__dirname, '../prompt-translate.txt');
+// In Docker, scripts are at /app/scripts, data is at /app/data, prompts are at /app/
+// Locally, everything is relative to scripts directory
+const isDocker = process.env.DOCKER === 'true' || process.env.NODE_ENV === 'production';
+const BASE_DIR = isDocker ? '/app' : path.resolve(__dirname, '..');
+
+const ANALYZED_LYRICS_DIR = path.join(BASE_DIR, 'data', 'analyzed-lyrics');
+const FINAL_SONGS_DIR = path.join(BASE_DIR, 'data', 'songs');
+const PROMPT_TEMPLATE_PATH = path.join(BASE_DIR, 'prompt-translate.txt');
 
 interface AnalyzedLyric {
   text: string;

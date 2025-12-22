@@ -22,10 +22,15 @@ services:
       - ./data:/app/data
       # Mount scripts directory (read-only, needed for processing)
       - ./scripts:/app/scripts:ro
+      # Mount prompt files (read-only)
+      - ./prompt-analyze.txt:/app/prompt-analyze.txt:ro
+      - ./prompt-translate.txt:/app/prompt-translate.txt:ro
+      # Mount example directories (read-only)
+      - ./data/analysis-examples:/app/data/analysis-examples:ro
+      - ./data/structure-examples:/app/data/structure-examples:ro
       # Mount logs directory (writable)
       - ./logs:/app/logs
-      # Mount node_modules from content-generation (for ts-node needed by scripts)
-      # This is separate from server's own node_modules (which are in the image)
+      # Mount node_modules from content-generation (for script dependencies)
       - ./node_modules:/app/content-generation-node_modules:ro
     working_dir: /app
     # Override command - server code is already in the image

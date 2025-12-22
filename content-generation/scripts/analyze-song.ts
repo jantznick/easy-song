@@ -13,11 +13,16 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 // --- Configuration ---
-const TRANSCRIBED_LYRICS_DIR = path.resolve(__dirname, '../data/transcribed-lyrics');
-const ANALYZED_LYRICS_DIR = path.resolve(__dirname, '../data/analyzed-lyrics');
-const PROMPT_TEMPLATE_PATH = path.resolve(__dirname, '../prompt-analyze.txt');
-const ANALYSIS_EXAMPLES_DIR = path.resolve(__dirname, '../data/analysis-examples');
-const STRUCTURE_EXAMPLES_DIR = path.resolve(__dirname, '../data/structure-examples');
+// In Docker, scripts are at /app/scripts, data is at /app/data, prompts are at /app/
+// Locally, everything is relative to scripts directory
+const isDocker = process.env.DOCKER === 'true' || process.env.NODE_ENV === 'production';
+const BASE_DIR = isDocker ? '/app' : path.resolve(__dirname, '..');
+
+const TRANSCRIBED_LYRICS_DIR = path.join(BASE_DIR, 'data', 'transcribed-lyrics');
+const ANALYZED_LYRICS_DIR = path.join(BASE_DIR, 'data', 'analyzed-lyrics');
+const PROMPT_TEMPLATE_PATH = path.join(BASE_DIR, 'prompt-analyze.txt');
+const ANALYSIS_EXAMPLES_DIR = path.join(BASE_DIR, 'data', 'analysis-examples');
+const STRUCTURE_EXAMPLES_DIR = path.join(BASE_DIR, 'data', 'structure-examples');
 
 interface TranscribedSegment {
   text: string;
@@ -327,7 +332,9 @@ async function analyzeVideo(videoId: string, skipExisting: boolean = true): Prom
     }
     
     // Call translate-song.ts script (if it exists)
-    const translateScript = path.join(__dirname, 'translate-song.ts');
+    const translateScript = isDocker 
+      ? '/app/scripts/translate-song.ts'
+      : path.join(__dirname, 'translate-song.ts');
     try {
       await fs.access(translateScript);
       // Script exists, run it
@@ -339,9 +346,10 @@ async function analyzeVideo(videoId: string, skipExisting: boolean = true): Prom
           translateArgs.push('--clean-slate');
         }
         const translateProcess = spawn('npx', ['ts-node', ...translateArgs], {
-          cwd: __dirname,
+          cwd: isDocker ? '/app/scripts' : __dirname,
           stdio: 'inherit',
-          shell: true
+          shell: true,
+          env: { ...process.env, DOCKER: isDocker ? 'true' : undefined }
         });
         
         translateProcess.on('close', (code: number) => {

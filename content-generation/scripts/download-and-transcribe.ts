@@ -14,9 +14,14 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 // --- Configuration ---
-const YOUTUBE_VIDEOS_DIR = path.resolve(__dirname, '../data/youtube-videos');
-const RAW_LYRICS_DIR = path.resolve(__dirname, '../data/raw-lyrics');
-const TRANSCRIBED_LYRICS_DIR = path.resolve(__dirname, '../data/transcribed-lyrics');
+// In Docker, scripts are at /app/scripts, data is at /app/data
+// Locally, everything is relative to scripts directory
+const isDocker = process.env.DOCKER === 'true' || process.env.NODE_ENV === 'production';
+const BASE_DIR = isDocker ? '/app' : path.resolve(__dirname, '..');
+
+const YOUTUBE_VIDEOS_DIR = path.join(BASE_DIR, 'data', 'youtube-videos');
+const RAW_LYRICS_DIR = path.join(BASE_DIR, 'data', 'raw-lyrics');
+const TRANSCRIBED_LYRICS_DIR = path.join(BASE_DIR, 'data', 'transcribed-lyrics');
 
 interface TranscriptionSegment {
   text: string;
@@ -260,7 +265,9 @@ async function processVideo(videoId: string, language: string = 'es', skipExisti
     }
     
     // 7. Call analyze-song.ts script (if it exists)
-    const analyzeScript = path.join(__dirname, 'analyze-song.ts');
+    const analyzeScript = isDocker 
+      ? '/app/scripts/analyze-song.ts'
+      : path.join(__dirname, 'analyze-song.ts');
     try {
       await fs.access(analyzeScript);
       // Script exists, run it
@@ -272,9 +279,10 @@ async function processVideo(videoId: string, language: string = 'es', skipExisti
           analyzeArgs.push('--clean-slate');
         }
         const analyzeProcess = spawn('npx', ['ts-node', ...analyzeArgs], {
-          cwd: __dirname,
+          cwd: isDocker ? '/app/scripts' : __dirname,
           stdio: 'inherit',
-          shell: true
+          shell: true,
+          env: { ...process.env, DOCKER: isDocker ? 'true' : undefined }
         });
         
         analyzeProcess.on('close', (code: number) => {
