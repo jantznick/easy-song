@@ -306,37 +306,43 @@ app.post('/api/process', async (req, res) => {
     }
     
     for (const videoId of newVideoIds) {
-      // In Docker, we need to ensure ts-node is available
-      // The scripts directory is mounted, so we can use ts-node from node_modules
+      // ts-node is now in the server's node_modules (installed during Docker build)
       const spawnEnv: NodeJS.ProcessEnv = { ...process.env };
-      
-      // Set NODE_PATH to include content-generation's node_modules (where ts-node is)
       const contentGenNodeModules = process.env.DOCKER 
         ? '/app/content-generation-node_modules' 
         : join(CONTENT_GEN_DIR, 'node_modules');
       
-      // Add content-generation node_modules to NODE_PATH so ts-node can be found
+      // Add content-generation node_modules to NODE_PATH (for script dependencies)
       if (spawnEnv.NODE_PATH) {
         spawnEnv.NODE_PATH = `${contentGenNodeModules}:${spawnEnv.NODE_PATH}`;
       } else {
         spawnEnv.NODE_PATH = contentGenNodeModules;
       }
       
-      // Also add to PATH so node can find ts-node
-      const tsNodePath = join(contentGenNodeModules, '.bin');
-      if (spawnEnv.PATH) {
-        spawnEnv.PATH = `${tsNodePath}:${spawnEnv.PATH}`;
-      } else {
-        spawnEnv.PATH = tsNodePath;
-      }
+      // Try server's node_modules first (where ts-node is installed), then content-generation's
+      const serverNodeModules = process.env.DOCKER 
+        ? '/app/node_modules'
+        : join(__dirname, '..', 'node_modules');
       
-      const cmd = [
-        nodeCmd,
-        '-r',
-        'ts-node/register',
-        SCRIPT_PATH,
-        videoId,
-      ];
+      const serverTsNode = join(serverNodeModules, '.bin', 'ts-node');
+      const contentGenTsNode = join(contentGenNodeModules, '.bin', 'ts-node');
+      
+      // Use direct path to ts-node executable
+      let cmd: string[];
+      if (existsSync(serverTsNode)) {
+        cmd = [serverTsNode, SCRIPT_PATH, videoId];
+      } else if (existsSync(contentGenTsNode)) {
+        cmd = [contentGenTsNode, SCRIPT_PATH, videoId];
+      } else {
+        // Fallback: use node with ts-node/register from server's node_modules
+        cmd = [
+          nodeCmd,
+          '-r',
+          join(serverNodeModules, 'ts-node', 'register'),
+          SCRIPT_PATH,
+          videoId,
+        ];
+      }
       
       const childProcess = spawn(cmd[0], cmd.slice(1), {
         cwd: CONTENT_GEN_DIR,
@@ -403,34 +409,44 @@ async function runScript(scriptName: string, videoId: string, logFile: string): 
     throw new Error(`Script not found: ${scriptPath}`);
   }
   
-  // Set NODE_PATH to include content-generation's node_modules (where ts-node is)
+  // Set NODE_PATH to include content-generation's node_modules (for script dependencies)
   const spawnEnv: NodeJS.ProcessEnv = { ...process.env };
   const contentGenNodeModules = process.env.DOCKER 
     ? '/app/content-generation-node_modules' 
     : join(CONTENT_GEN_DIR, 'node_modules');
   
-  // Add content-generation node_modules to NODE_PATH so ts-node can be found
+  // Add content-generation node_modules to NODE_PATH (for script dependencies like youtubei.js, openai, etc.)
   if (spawnEnv.NODE_PATH) {
     spawnEnv.NODE_PATH = `${contentGenNodeModules}:${spawnEnv.NODE_PATH}`;
   } else {
     spawnEnv.NODE_PATH = contentGenNodeModules;
   }
   
-  // Also add to PATH so node can find ts-node
-  const tsNodePath = join(contentGenNodeModules, '.bin');
-  if (spawnEnv.PATH) {
-    spawnEnv.PATH = `${tsNodePath}:${spawnEnv.PATH}`;
-  } else {
-    spawnEnv.PATH = tsNodePath;
-  }
+  // ts-node is now in the server's node_modules (installed during Docker build)
+  // Try server's node_modules first, then content-generation's
+  const serverNodeModules = process.env.DOCKER 
+    ? '/app/node_modules'
+    : join(__dirname, '..', 'node_modules');
   
-  const cmd = [
-    nodeCmd,
-    '-r',
-    'ts-node/register',
-    scriptPath,
-    videoId,
-  ];
+  const serverTsNode = join(serverNodeModules, '.bin', 'ts-node');
+  const contentGenTsNode = join(contentGenNodeModules, '.bin', 'ts-node');
+  
+  // Use direct path to ts-node executable (prefer server's, fallback to content-generation's)
+  let cmd: string[];
+  if (existsSync(serverTsNode)) {
+    cmd = [serverTsNode, scriptPath, videoId];
+  } else if (existsSync(contentGenTsNode)) {
+    cmd = [contentGenTsNode, scriptPath, videoId];
+  } else {
+    // Fallback: use node with ts-node/register from server's node_modules
+    cmd = [
+      nodeCmd,
+      '-r',
+      join(serverNodeModules, 'ts-node', 'register'),
+      scriptPath,
+      videoId,
+    ];
+  }
   
   const childProcess = spawn(cmd[0], cmd.slice(1), {
     cwd: CONTENT_GEN_DIR,
