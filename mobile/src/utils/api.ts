@@ -1,5 +1,5 @@
 import { Platform } from 'react-native';
-import type { Song, SongSummary, StudyData, LyricLine, SongsResponse } from '../types/song';
+import type { Song, SongSummary, SongsResponse, Lyric, StructuredSection } from '../types/song';
 
 // Note: Cookie management is handled automatically by React Native's HTTP client via credentials: 'include'
 // No manual cookie storage needed!
@@ -96,54 +96,90 @@ export const fetchSongById = async (videoId: string): Promise<Song> => {
     if (!response.ok) {
         throw new Error(`Song not found or network error (${response.status})`);
     }
-    return response.json();
-};
-
-/**
- * Fetches the study data for a single song by its videoId.
- * @param videoId The ID of the song to fetch study data for.
- * @returns A promise that resolves to a StudyData object, or null if study data doesn't exist.
- */
-export const fetchStudyData = async (videoId: string): Promise<StudyData | null> => {
-    const url = API_MODE === 'static'
-        ? `${BASE_URL}/study/${videoId}.json`
-        : `${BASE_URL}/songs/${videoId}/study`;
     
-    const response = await fetch(url);
-    if (response.status === 404) {
-        return null;
-    }
-    if (!response.ok) {
-        throw new Error(`Failed to fetch study data (${response.status})`);
-    }
     return response.json();
 };
 
 /**
- * Computes additional content (lines not covered by structured sections).
+ * Computes additional content (lyrics not covered by structured sections).
  * @param song The song data.
- * @param studyData The study data with structured sections.
- * @returns An array of lyric lines that are not covered by structured sections.
+ * @param structuredSections The structured sections with time ranges.
+ * @returns An array of lyrics that are not covered by structured sections.
  */
-export function computeAdditionalContent(song: Song | null, studyData: StudyData | null): LyricLine[] {
-  if (!song || !studyData) return [];
+export function computeAdditionalContent(
+  song: Song | null, 
+  structuredSections: StructuredSection[] | null
+): Lyric[] {
+  if (!song || !structuredSections || structuredSections.length === 0) {
+    return song?.lyrics || [];
+  }
   
-  const allOriginalLines = song.sections.flatMap(section => section.lines);
-  
+  // Get all time ranges covered by structured sections
   const coveredTimeRanges: Array<{ start: number; end: number }> = [];
-  studyData.structuredSections.forEach(section => {
-    section.lines.forEach(line => {
-      coveredTimeRanges.push({ start: line.start_ms, end: line.end_ms });
-    });
+  structuredSections.forEach(section => {
+    coveredTimeRanges.push({ start: section.start_ms, end: section.end_ms });
   });
   
-  return allOriginalLines.filter(line => {
+  // Filter out lyrics that overlap with any structured section
+  return song.lyrics.filter(lyric => {
     return !coveredTimeRanges.some(range => {
-      return (line.start_ms >= range.start && line.start_ms <= range.end) ||
-             (line.end_ms >= range.start && line.end_ms <= range.end) ||
-             (line.start_ms <= range.start && line.end_ms >= range.end);
+      return (
+        (lyric.start_ms >= range.start && lyric.start_ms <= range.end) ||
+        (lyric.end_ms >= range.start && lyric.end_ms <= range.end) ||
+        (lyric.start_ms <= range.start && lyric.end_ms >= range.end)
+      );
     });
   });
+}
+
+/**
+ * Extracts lines from lyrics array that fall within a structured section's time range.
+ * @param lyrics All lyrics from the song.
+ * @param section The structured section with time range.
+ * @param preferredLang Language code for translations/explanations (default: 'en').
+ * @returns Array of structured lines for the section.
+ */
+export function extractSectionLines(
+  lyrics: Lyric[],
+  section: StructuredSection,
+  preferredLang: string = 'en'
+): Array<{
+  spanish: string;
+  english: string;
+  explanation: string | null;
+  start_ms: number;
+  end_ms: number;
+}> {
+  return lyrics
+    .filter(lyric => {
+      // Check if lyric overlaps with section time range
+      return (
+        (lyric.start_ms >= section.start_ms && lyric.start_ms <= section.end_ms) ||
+        (lyric.end_ms >= section.start_ms && lyric.end_ms <= section.end_ms) ||
+        (lyric.start_ms <= section.start_ms && lyric.end_ms >= section.end_ms)
+      );
+    })
+    .map(lyric => ({
+      spanish: lyric.text,
+      english: lyric.translations[preferredLang as keyof typeof lyric.translations] || lyric.translations.en || '',
+      explanation: lyric.explanations[preferredLang as keyof typeof lyric.explanations] || lyric.explanations.en || null,
+      start_ms: lyric.start_ms,
+      end_ms: lyric.end_ms,
+    }));
+}
+
+/**
+ * Gets multilingual text in preferred language, falling back to English, then Spanish, then first available.
+ */
+export function getMultilingualText(text: { en?: string; es?: string; fr?: string; de?: string; zh?: string; it?: string }, preferredLang: string = 'en'): string {
+  if (preferredLang && text[preferredLang as keyof typeof text]) {
+    return text[preferredLang as keyof typeof text]!;
+  }
+  if (text.en) return text.en;
+  if (text.es) return text.es;
+  // Return first available language
+  const keys = Object.keys(text) as Array<keyof typeof text>;
+  return keys.length > 0 ? text[keys[0]]! : '';
 }
 
 /**

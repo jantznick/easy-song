@@ -3,12 +3,12 @@ import { View, Text, SafeAreaView, ScrollView, TouchableOpacity, Switch } from '
 import { useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import type { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
-import { fetchSongById, fetchStudyData, computeAdditionalContent } from '../utils/api';
+import { fetchSongById, computeAdditionalContent, extractSectionLines, getMultilingualText } from '../utils/api';
 import StatusDisplay from '../components/StatusDisplay';
 import VideoPlayer from '../components/VideoPlayer';
 import StudyModeLimitReached from '../components/StudyModeLimitReached';
 import ConfirmationModal from '../components/ConfirmationModal';
-import type { Song, StudyData, StructuredSection, StructuredLine, LyricLine } from '../types/song';
+import type { Song, StructuredSection, Lyric } from '../types/song';
 import type { SongDetailTabParamList } from '../types/navigation';
 import { useUser } from '../hooks/useUser';
 import { useRewardedAd } from '../hooks/useRewardedAd';
@@ -57,8 +57,8 @@ export default function StudyModeScreen({ route }: Props) {
   const rewardedAd = useRewardedAd();
   const [song, setSong] = useState<Song | null>(null);
   const [playing, setPlaying] = useState<boolean>(false);
-  const [studyData, setStudyData] = useState<StudyData | null>(null);
-  const [additionalContent, setAdditionalContent] = useState<LyricLine[]>([]);
+  const [structuredSections, setStructuredSections] = useState<StructuredSection[] | null>(null);
+  const [additionalContent, setAdditionalContent] = useState<Lyric[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [showTranslations, setShowTranslations] = useState<boolean>(preferences.display.defaultTranslation);
@@ -179,20 +179,19 @@ export default function StudyModeScreen({ route }: Props) {
   useEffect(() => {
     const loadData = async () => {
       try {
-        const [songData, studyDataResult] = await Promise.all([
-          fetchSongById(videoId),
-          fetchStudyData(videoId).catch(() => null),
-        ]);
+        const songData = await fetchSongById(videoId);
         
         setSong(songData);
-        setStudyData(studyDataResult);
-        setAdditionalContent(computeAdditionalContent(songData, studyDataResult));
+        // Use structured sections directly from the song data
+        const sections = songData.structuredSections || [];
+        setStructuredSections(sections.length > 0 ? sections : null);
+        setAdditionalContent(computeAdditionalContent(songData, sections.length > 0 ? sections : null));
         
         // Reset history saved flag when videoId changes
         historySavedRef.current = false;
         
         // Auto-expand first section if study data exists
-        if (studyDataResult && studyDataResult.structuredSections.length > 0) {
+        if (sections.length > 0) {
           setExpandedSectionIndex(0);
           setExpandedExplanations(new Set([0]));
         }
@@ -224,15 +223,27 @@ export default function StudyModeScreen({ route }: Props) {
   }, [videoId]); // Only depend on videoId, not addToHistory
 
   // Get all lines from current section for active line tracking
-  const getCurrentSectionLines = (): (StructuredLine | LyricLine)[] => {
-    if (expandedSectionIndex === null || !studyData) return [];
+  const getCurrentSectionLines = (): Array<{
+    spanish: string;
+    english: string;
+    explanation: string | null;
+    start_ms: number;
+    end_ms: number;
+  }> => {
+    if (expandedSectionIndex === null || !song || !structuredSections) return [];
     
-    const sections = studyData.structuredSections || [];
-    
-    if (expandedSectionIndex < sections.length) {
-      return sections[expandedSectionIndex].lines;
-    } else if (expandedSectionIndex === sections.length) {
-      return additionalContent;
+    if (expandedSectionIndex < structuredSections.length) {
+      const section = structuredSections[expandedSectionIndex];
+      return extractSectionLines(song.lyrics, section, preferences.language.learning || 'en');
+    } else if (expandedSectionIndex === structuredSections.length) {
+      // Additional content - convert to same format
+      return additionalContent.map(lyric => ({
+        spanish: lyric.text,
+        english: lyric.translations.en || '',
+        explanation: lyric.explanations.en || null,
+        start_ms: lyric.start_ms,
+        end_ms: lyric.end_ms,
+      }));
     }
     return [];
   };
@@ -328,7 +339,7 @@ export default function StudyModeScreen({ route }: Props) {
   const fontSizes = useMemo(() => getFontSizes(preferences.display.fontSize), [preferences.display.fontSize]);
 
   const handlePlayAllClick = () => {
-    if (expandedSectionIndex === null) return;
+    if (expandedSectionIndex === null || !song) return;
     
     // If already playing, pause
     if (playing) {
@@ -340,15 +351,19 @@ export default function StudyModeScreen({ route }: Props) {
       return;
     }
     
-    const sections = studyData?.structuredSections || [];
-    let firstLine: StructuredLine | LyricLine | null = null;
-    let lastLine: StructuredLine | LyricLine | null = null;
+    const sections = structuredSections || [];
+    let firstLine: Lyric | null = null;
+    let lastLine: Lyric | null = null;
     
     if (expandedSectionIndex < sections.length) {
       const section = sections[expandedSectionIndex];
-      if (section.lines.length > 0) {
-        firstLine = section.lines[0];
-        lastLine = section.lines[section.lines.length - 1];
+      const sectionLines = extractSectionLines(song.lyrics, section, preferences.language.learning || 'en');
+      if (sectionLines.length > 0) {
+        // Find the actual lyric objects from song.lyrics
+        const firstLineTime = sectionLines[0].start_ms;
+        const lastLineTime = sectionLines[sectionLines.length - 1].end_ms;
+        firstLine = song.lyrics.find(l => l.start_ms === firstLineTime) || null;
+        lastLine = song.lyrics.find(l => l.end_ms === lastLineTime) || null;
       }
     } else if (expandedSectionIndex === sections.length && additionalContent.length > 0) {
       firstLine = additionalContent[0];
@@ -377,8 +392,8 @@ export default function StudyModeScreen({ route }: Props) {
   };
 
   const expandNextSection = (currentSectionIndex: number) => {
-    if (!studyData) return;
-    const allSections = studyData.structuredSections.length + (additionalContent.length > 0 ? 1 : 0);
+    if (!structuredSections) return;
+    const allSections = structuredSections.length + (additionalContent.length > 0 ? 1 : 0);
     const nextIndex = currentSectionIndex + 1;
     if (nextIndex < allSections) {
       setExpandedSectionIndex(nextIndex);
@@ -387,7 +402,13 @@ export default function StudyModeScreen({ route }: Props) {
     }
   };
 
-  const handleLinePlayClick = (line: StructuredLine | LyricLine, lineIndex: number) => {
+  const handleLinePlayClick = (line: {
+    spanish: string;
+    english: string;
+    explanation: string | null;
+    start_ms: number;
+    end_ms: number;
+  }, lineIndex: number) => {
     // Clear any existing interval
     if (stopVideoIntervalRef.current) {
       clearInterval(stopVideoIntervalRef.current);
@@ -398,8 +419,8 @@ export default function StudyModeScreen({ route }: Props) {
     stopVideoIntervalRef.current = stopVideo(videoPlayerRef, line.end_ms, setPlaying);
   };
 
-  const sections = studyData?.structuredSections || [];
-  const hasStudyData = studyData !== null;
+  const sections = structuredSections || [];
+  const hasStudyData = structuredSections !== null && structuredSections.length > 0;
   const currentSection = expandedSectionIndex !== null && expandedSectionIndex < sections.length 
     ? sections[expandedSectionIndex] 
     : null;
@@ -498,7 +519,7 @@ export default function StudyModeScreen({ route }: Props) {
                 <Text className="text-sm font-medium" style={{
                   color: expandedSectionIndex === index ? '#FFFFFF' : (isDark ? '#94A3B8' : '#4B5563'),
                 }}>
-                  {section.title}
+                  {getMultilingualText(section.title, preferences.language.learning || 'en')}
                 </Text>
               </TouchableOpacity>
             ))}
@@ -551,7 +572,7 @@ export default function StudyModeScreen({ route }: Props) {
               {expandedExplanations.has(expandedSectionIndex!) && (
                 <View className={theme.border('border-border', 'border-[#334155]') + ' p-4 border-t'}>
                   <Text className={theme.text('text-text-primary', 'text-[#F1F5F9]') + ' text-sm leading-6'}>
-                    {currentSection.sectionExplanation}
+                    {getMultilingualText(currentSection.sectionExplanation, preferences.language.learning || 'en')}
                   </Text>
                 </View>
               )}
@@ -613,82 +634,93 @@ export default function StudyModeScreen({ route }: Props) {
               showsVerticalScrollIndicator={true}
             >
               {/* Lines Content */}
-              {expandedSectionIndex !== null && (
+              {expandedSectionIndex !== null && song && (
                 <View className={theme.bg('bg-surface', 'bg-[#1E293B]') + ' ' + theme.border('border-border', 'border-[#334155]') + ' rounded-xl border p-4'}>
                   {expandedSectionIndex < sections.length ? (
                     <View>
-                      {sections[expandedSectionIndex].lines.map((line, lineIndex) => {
-                        const lineKey = `${expandedSectionIndex}-${lineIndex}`;
-                        const isActive = activeLineIndex === lineIndex && expandedSectionIndex < sections.length;
-                        return (
-                          <View
-                            key={lineIndex}
-                            ref={(ref) => {
-                              lineRefs.current[lineKey] = ref;
-                            }}
-                            style={{
-                              paddingBottom: 16,
-                              marginBottom: 16,
-                              borderBottomWidth: lineIndex < sections[expandedSectionIndex].lines.length - 1 ? 1 : 0,
-                              borderBottomColor: '#334155',
-                              borderLeftWidth: 4,
-                              borderLeftColor: isActive ? '#6366F1' : 'transparent',
-                              backgroundColor: isActive ? 'rgba(99, 102, 241, 0.2)' : 'transparent',
-                              paddingLeft: isActive ? 12 : 0,
-                              marginLeft: isActive ? -4 : 0,
-                              borderRadius: isActive ? 8 : 0,
-                            }}
-                          >
-                            <View className="flex-row items-start gap-3">
-                              <TouchableOpacity
-                                onPress={() => handleLinePlayClick(line, lineIndex)}
-                                className="mt-1 p-2"
-                              >
-                                <Ionicons name="play" size={20} color="#6366F1" />
-                              </TouchableOpacity>
-                              <View className="flex-1">
-                                <Text style={{
-                                  fontSize: fontSizes.main,
-                                  fontWeight: isActive ? '600' : '500',
-                                  color: isActive ? '#6366F1' : (isDark ? '#F1F5F9' : '#1A1F2E'),
-                                  marginBottom: 4,
-                                }}>
-                                  {line.spanish}
-                                </Text>
-                                {showTranslations && line.english && (
+                      {(() => {
+                        const section = sections[expandedSectionIndex];
+                        const sectionLines = extractSectionLines(song.lyrics, section, preferences.language.learning || 'en');
+                        return sectionLines.map((line, lineIndex) => {
+                          const lineKey = `${expandedSectionIndex}-${lineIndex}`;
+                          const isActive = activeLineIndex === lineIndex && expandedSectionIndex < sections.length;
+                          return (
+                            <View
+                              key={lineIndex}
+                              ref={(ref) => {
+                                lineRefs.current[lineKey] = ref;
+                              }}
+                              style={{
+                                paddingBottom: 16,
+                                marginBottom: 16,
+                                borderBottomWidth: lineIndex < sectionLines.length - 1 ? 1 : 0,
+                                borderBottomColor: '#334155',
+                                borderLeftWidth: 4,
+                                borderLeftColor: isActive ? '#6366F1' : 'transparent',
+                                backgroundColor: isActive ? 'rgba(99, 102, 241, 0.2)' : 'transparent',
+                                paddingLeft: isActive ? 12 : 0,
+                                marginLeft: isActive ? -4 : 0,
+                                borderRadius: isActive ? 8 : 0,
+                              }}
+                            >
+                              <View className="flex-row items-start gap-3">
+                                <TouchableOpacity
+                                  onPress={() => handleLinePlayClick(line, lineIndex)}
+                                  className="mt-1 p-2"
+                                >
+                                  <Ionicons name="play" size={20} color="#6366F1" />
+                                </TouchableOpacity>
+                                <View className="flex-1">
                                   <Text style={{
-                                    fontSize: fontSizes.translation,
-                                    lineHeight: fontSizes.lineHeight.translation,
-                                    color: isDark ? '#94A3B8' : '#4B5563',
-                                    fontStyle: 'italic',
-                                    marginBottom: line.explanation ? 8 : 0,
+                                    fontSize: fontSizes.main,
+                                    fontWeight: isActive ? '600' : '500',
+                                    color: isActive ? '#6366F1' : (isDark ? '#F1F5F9' : '#1A1F2E'),
+                                    marginBottom: 4,
                                   }}>
-                                    {line.english}
+                                    {line.spanish}
                                   </Text>
-                                )}
-                                {line.explanation && (
-                                  <Text style={{
-                                    fontSize: fontSizes.explanation,
-                                    color: isDark ? '#64748B' : '#9CA3AF',
-                                    lineHeight: fontSizes.lineHeight.explanation,
-                                  }}>
-                                    {line.explanation}
-                                  </Text>
-                                )}
+                                  {showTranslations && line.english && (
+                                    <Text style={{
+                                      fontSize: fontSizes.translation,
+                                      lineHeight: fontSizes.lineHeight.translation,
+                                      color: isDark ? '#94A3B8' : '#4B5563',
+                                      fontStyle: 'italic',
+                                      marginBottom: line.explanation ? 8 : 0,
+                                    }}>
+                                      {line.english}
+                                    </Text>
+                                  )}
+                                  {line.explanation && (
+                                    <Text style={{
+                                      fontSize: fontSizes.explanation,
+                                      color: isDark ? '#64748B' : '#9CA3AF',
+                                      lineHeight: fontSizes.lineHeight.explanation,
+                                    }}>
+                                      {line.explanation}
+                                    </Text>
+                                  )}
+                                </View>
                               </View>
                             </View>
-                          </View>
-                        );
-                      })}
+                          );
+                        });
+                      })()}
                     </View>
                   ) : expandedSectionIndex === sections.length && additionalContent.length > 0 ? (
                     <View>
                       <Text className={theme.text('text-text-muted', 'text-[#64748B]') + ' text-sm mb-4 italic'}>
                         {t('studyMode.additionalContentNote')}
                       </Text>
-                      {additionalContent.map((line, lineIndex) => {
+                      {additionalContent.map((lyric, lineIndex) => {
                         const lineKey = `${expandedSectionIndex}-${lineIndex}`;
                         const isActive = activeLineIndex === lineIndex && expandedSectionIndex === sections.length;
+                        const line = {
+                          spanish: lyric.text,
+                          english: lyric.translations.en || '',
+                          explanation: lyric.explanations.en || null,
+                          start_ms: lyric.start_ms,
+                          end_ms: lyric.end_ms,
+                        };
                         return (
                           <View
                             key={lineIndex}

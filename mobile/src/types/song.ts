@@ -1,14 +1,27 @@
-export interface LyricLine {
-    spanish: string;
-    english: string | null;
-    explanation: string | null;
-    start_ms: number;
-    end_ms: number;
+// Multilingual text support
+export interface MultilingualText {
+    en?: string;
+    es?: string;
+    fr?: string;
+    de?: string;
+    zh?: string;
+    it?: string;
 }
 
-export interface SongSection {
-    title: string;
-    lines: LyricLine[];
+// Song content types (new format)
+export interface Lyric {
+    text: string;
+    start_ms: number;
+    end_ms: number;
+    translations: MultilingualText;
+    explanations: MultilingualText;
+}
+
+export interface StructuredSection {
+    title: MultilingualText;
+    sectionExplanation?: MultilingualText;
+    start_ms: number;
+    end_ms: number;
 }
 
 export interface Song {
@@ -16,9 +29,22 @@ export interface Song {
     title: string;
     artist: string;
     thumbnailUrl: string;
-    sections: SongSection[];
+    originalLanguage: string;
+    transcribedAt: string;
+    lyrics: Lyric[];
+    structuredSections: StructuredSection[];
 }
 
+// Helper type for lines extracted from structured sections (for Study Mode)
+export interface StructuredLine {
+    spanish: string;
+    english: string;
+    explanation: string | null;
+    start_ms: number;
+    end_ms: number;
+}
+
+// Song list types (from backend database)
 export interface SongSummary {
     videoId: string;
     title: string;
@@ -35,27 +61,5 @@ export interface SongListSection {
 
 export interface SongsResponse {
     sections: SongListSection[];
-}
-
-// Study Mode Types
-export interface StructuredLine {
-    spanish: string;
-    english: string;
-    explanation: string | null;
-    start_ms: number;
-    end_ms: number;
-}
-
-export interface StructuredSection {
-    title: string;
-    sectionExplanation?: string;
-    lines: StructuredLine[];
-}
-
-export interface StudyData {
-    videoId: string;
-    title: string;
-    artist: string;
-    structuredSections: StructuredSection[];
 }
 

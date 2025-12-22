@@ -6,7 +6,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { fetchSongById } from '../utils/api';
 import VideoPlayer from '../components/VideoPlayer';
 import StatusDisplay from '../components/StatusDisplay';
-import type { Song, SongSection, LyricLine } from '../types/song';
+import type { Song, Lyric } from '../types/song';
 import type { SongDetailTabParamList } from '../types/navigation';
 import { useUser } from '../hooks/useUser';
 import { getFontSizes } from '../utils/fontSizes';
@@ -36,10 +36,10 @@ export default function PlayModeScreen({ route }: Props) {
   const lineRefs = useRef<{ [key: number]: View | null }>({});
   const historySavedRef = useRef<boolean>(false); // Track if history has been saved for this videoId
 
-  // Flatten all lines from all sections
+  // Get all lyrics (new format has flat lyrics array)
   const allLines = useMemo(() => {
     if (!song) return [];
-    return song.sections.flatMap(section => section.lines);
+    return song.lyrics;
   }, [song]);
 
   // Get font sizes based on preference
@@ -154,7 +154,7 @@ export default function PlayModeScreen({ route }: Props) {
     }
   };
 
-  const handleLinePress = (line: LyricLine) => {
+  const handleLinePress = (line: Lyric) => {
     if (playerRef.current) {
       try {
         playerRef.current.seekTo(line.start_ms / 1000, true);
@@ -293,6 +293,7 @@ export default function PlayModeScreen({ route }: Props) {
           >
             {allLines.map((line, index) => {
               const isActive = activeLineIndex === index;
+              const english = line.translations.en || null;
               return (
                 <TouchableOpacity
                   key={index}
@@ -317,14 +318,14 @@ export default function PlayModeScreen({ route }: Props) {
                     style={{
                       fontSize: fontSizes.main,
                       lineHeight: fontSizes.lineHeight.main,
-                      marginBottom: showTranslations && line.english ? 4 : 0,
+                      marginBottom: showTranslations && english ? 4 : 0,
                       color: isActive ? '#6366F1' : (isDark ? '#94A3B8' : '#4B5563'),
                       fontWeight: isActive ? '600' : '400',
                     }}
                   >
-                    {line.spanish}
+                    {line.text}
                   </Text>
-                  {showTranslations && line.english && (
+                  {showTranslations && english && (
                     <Text
                       style={{
                         fontSize: fontSizes.translation,
@@ -333,7 +334,7 @@ export default function PlayModeScreen({ route }: Props) {
                         fontStyle: 'italic',
                       }}
                     >
-                      {line.english}
+                      {english}
                     </Text>
                   )}
                 </TouchableOpacity>
