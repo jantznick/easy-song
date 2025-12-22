@@ -4,27 +4,1539 @@
   "artist": "Bad Bunny",
   "thumbnailUrl": "https://i.ytimg.com/vi/Cr8K88UcO0s/hqdefault.jpg?sqp=-oaymwEiCKgBEF5IWvKriqkDFQgBFQAAAAAYASUAAMhCPQCAokN4AQ==&rs=AOn4CLBee4P-nYfICNqaupYDkNw1uNlZbg",
   "originalLanguage": "es",
-  "transcribedAt": "2025-12-21T06:55:32.199Z",
+  "transcribedAt": "2025-12-21T23:45:05.050Z",
   "lyrics": [
     {
-      "text": "Dummy lyric line",
-      "start_ms": 0,
-      "end_ms": 2000,
+      "text": "Qué lindo está Ese nene de Titi Mira qué",
+      "start_ms": 15400,
+      "end_ms": 20640,
       "translations": {
-        "en": "Dummy English translation",
-        "es": "Dummy lyric line",
-        "fr": "Traduction française factice",
-        "de": "Dummy deutsche Übersetzung",
-        "zh": "虚拟中文翻译",
-        "it": "Traduzione italiana dummy"
+        "en": "How cute is that boy from Titi Look at how",
+        "es": "Qué lindo está Ese nene de Titi Mira qué",
+        "fr": "Comme il est mignon, ce petit de Titi, regarde comme",
+        "de": "Wie schön ist dieser Junge von Titi, sieh mal, wie",
+        "zh": "这个小男孩真可爱，看他多么可爱。",
+        "it": "Che bello è quel bambino di Titi Guarda che"
       },
       "explanations": {
-        "en": "This is a dummy explanation for testing.",
-        "es": "Esta es una explicación ficticia para pruebas.",
-        "fr": "Ceci est une explication factice pour les tests.",
-        "de": "Dies ist eine Dummy-Erklärung zum Testen.",
-        "zh": "这是用于测试的虚拟说明。",
-        "it": "Questa è una spiegazione fittizia per i test."
+        "en": "The line captures a familial and affectionate tone, as 'Titi' is a colloquial term for 'aunt' in Puerto Rican Spanish, indicating a close family relationship.",
+        "es": "La línea captura un tono familiar y afectuoso, ya que 'Titi' es un término coloquial para 'tía' en el español puertorriqueño, lo que indica una relación familiar cercana.",
+        "fr": "La phrase capture un ton familial et affectueux, car 'Titi' est un terme familier pour 'tante' en espagnol porto-ricain, indiquant une relation familiale proche.",
+        "de": "Die Zeile vermittelt einen familiären und liebevollen Ton, da \"Titi\" ein umgangssprachlicher Ausdruck für \"Tante\" im puertoricanischen Spanisch ist, was auf eine enge familiäre Beziehung hindeutet.",
+        "zh": "这句话表达了一种家庭和亲切的语气，因为“Titi”在波多黎各西班牙语中是“姑姑”的俗语，表明一种亲密的家庭关系。",
+        "it": "La frase cattura un tono familiare e affettuoso, poiché 'Titi' è un termine colloquiale per 'zia' nello spagnolo portoricano, indicando una stretta relazione familiare."
+      }
+    },
+    {
+      "text": "grande tú estás tú tienes muchas novias",
+      "start_ms": 18080,
+      "end_ms": 23119,
+      "translations": {
+        "en": "big you are, you have many girlfriends",
+        "es": "grande tú estás tú tienes muchas novias",
+        "fr": "tu es grand, tu as beaucoup de petites amies",
+        "de": "groß du geworden bist, du hast viele Freundinnen",
+        "zh": "你长得真快，你有很多女朋友。",
+        "it": "grande sei diventato, hai molte fidanzate"
+      },
+      "explanations": {
+        "en": "The aunt comments on the boy's growth and jokingly suggests he has many girlfriends, highlighting a common cultural trope of teasing young boys about romantic interests.",
+        "es": "La tía comenta sobre el crecimiento del niño y en broma sugiere que tiene muchas novias, destacando un tropo cultural común de bromear con los niños sobre intereses románticos.",
+        "fr": "La tante commente la croissance du garçon et suggère en plaisantant qu'il a beaucoup de petites amies, soulignant un trope culturel commun consistant à taquiner les jeunes garçons au sujet des intérêts romantiques.",
+        "de": "Die Tante kommentiert das Wachstum des Jungen und schlägt scherzhaft vor, dass er viele Freundinnen hat, was ein häufiges kulturelles Motiv ist, junge Jungen wegen romantischen Interessen zu necken.",
+        "zh": "姑姑评论男孩的成长，并开玩笑地说他有很多女朋友，突出了一个常见的文化现象，即开玩笑地调侃小男孩对浪漫兴趣。",
+        "it": "La zia commenta la crescita del ragazzo e scherzosamente suggerisce che abbia molte fidanzate, evidenziando un comune tropo culturale di prendere in giro i ragazzi sui loro interessi romantici."
+      }
+    },
+    {
+      "text": "verdad cuántas novias tú tienes Titi Yo",
+      "start_ms": 20640,
+      "end_ms": 26080,
+      "translations": {
+        "en": "really, how many girlfriends do you have Titi I",
+        "es": "verdad cuántas novias tú tienes Titi Yo",
+        "fr": "c'est vrai, combien de petites amies as-tu, Titi ? Moi",
+        "de": "wirklich, wie viele Freundinnen hast du, Titi Ich",
+        "zh": "真的，你有多少个女朋友？姑姑，我",
+        "it": "davvero quante fidanzate hai Titi Io"
+      },
+      "explanations": {
+        "en": "The aunt continues the playful questioning about the number of girlfriends, which is a lighthearted way to engage with children in conversation.",
+        "es": "La tía continúa con la pregunta juguetona sobre el número de novias, que es una forma ligera de entablar conversación con los niños.",
+        "fr": "La tante continue de poser des questions de manière ludique sur le nombre de petites amies, ce qui est une manière légère d'engager une conversation avec les enfants.",
+        "de": "Die Tante setzt das spielerische Fragen nach der Anzahl der Freundinnen fort, was eine unbeschwerte Art ist, mit Kindern ins Gespräch zu kommen.",
+        "zh": "姑姑继续轻松地询问女朋友的数量，这是一种与孩子对话的轻松方式。",
+        "it": "La zia continua a fare domande scherzose sul numero di fidanzate, che è un modo leggero per coinvolgere i bambini in una conversazione."
+      }
+    },
+    {
+      "text": "tengo como tres novia en la escuela cómo",
+      "start_ms": 23119,
+      "end_ms": 31960,
+      "translations": {
+        "en": "have like three girlfriends at school how",
+        "es": "tengo como tres novia en la escuela cómo",
+        "fr": "j'ai environ trois petites amies à l'école, comment",
+        "de": "habe etwa drei Freundinnen in der Schule, wie",
+        "zh": "我在学校有三个女朋友，怎么",
+        "it": "ho tipo tre fidanzate a scuola come"
+      },
+      "explanations": {
+        "en": "The boy humorously responds, exaggerating about having three girlfriends at school, reflecting childhood innocence and the playfulness of the conversation.",
+        "es": "El niño responde humorísticamente, exagerando sobre tener tres novias en la escuela, reflejando la inocencia infantil y la naturaleza lúdica de la conversación.",
+        "fr": "Le garçon répond de manière humoristique, exagérant en disant qu'il a trois petites amies à l'école, reflétant l'innocence de l'enfance et la nature ludique de la conversation.",
+        "de": "Der Junge antwortet humorvoll und übertreibt damit, dass er drei Freundinnen in der Schule hat, was die kindliche Unschuld und die Verspieltheit des Gesprächs widerspiegelt.",
+        "zh": "男孩幽默地回应，夸大他在学校有三个女朋友，反映了童年的天真和对话的趣味性。",
+        "it": "Il ragazzo risponde con umorismo, esagerando dicendo di avere tre fidanzate a scuola, riflettendo l'innocenza infantile e la giocosa natura della conversazione."
+      }
+    },
+    {
+      "text": "es Mira a ver que te doy un chanet",
+      "start_ms": 26080,
+      "end_ms": 31960,
+      "translations": {
+        "en": "it is Look or I'll give you a chanet",
+        "es": "es Mira a ver que te doy un chanet",
+        "fr": "regarde ça, je te donne un chanet",
+        "de": "ist Schau mal, ich gebe dir einen \"chanet\"",
+        "zh": "看着我给你一个“chanet”。",
+        "it": "è Guarda che ti do un chanet"
+      },
+      "explanations": {
+        "en": "The word 'chanet' is likely a playful or made-up term, in line with the teasing and jocular nature of the exchange.",
+        "es": "La palabra 'chanet' es probablemente un término juguetón o inventado, en línea con la naturaleza bromista y jocosa del intercambio.",
+        "fr": "Le mot 'chanet' est probablement un terme ludique ou inventé, en accord avec la nature taquine et plaisante de l'échange.",
+        "de": "Das Wort \"chanet\" ist wahrscheinlich ein spielerischer oder erfundener Begriff, passend zur neckischen und scherzhaften Natur des Austauschs.",
+        "zh": "“chanet”这个词可能是一个玩笑或虚构的词，符合这种戏谑和玩笑性质的交流。",
+        "it": "La parola 'chanet' è probabilmente un termine giocoso o inventato, in linea con il tono scherzoso e gioviale dello scambio."
+      }
+    },
+    {
+      "text": "e Titi me preguntó si tengo mucha",
+      "start_ms": 40840,
+      "end_ms": 48879,
+      "translations": {
+        "en": "Titi asked me if I have many",
+        "es": "e Titi me preguntó si tengo mucha",
+        "fr": "et Titi m'a demandé si j'ai beaucoup",
+        "de": "e Titi fragte mich, ob ich viele",
+        "zh": "姑姑问我是否有很多",
+        "it": "e Titi mi ha chiesto se ho molte"
+      },
+      "explanations": {
+        "en": "The line introduces the recurring theme of the song, where Titi (aunt) asks if he has many girlfriends. This sets up the main narrative of romantic escapades that follows.",
+        "es": "La línea introduce el tema recurrente de la canción, donde Titi (tía) pregunta si él tiene muchas novias. Esto establece la narrativa principal de las escapadas románticas que sigue.",
+        "fr": "La phrase introduit le thème récurrent de la chanson, où Titi (la tante) demande s'il a beaucoup de petites amies. Cela prépare le récit principal des escapades romantiques qui suivent.",
+        "de": "Die Zeile führt das wiederkehrende Thema des Liedes ein, bei dem Titi (die Tante) fragt, ob er viele Freundinnen hat. Dies bereitet die Haupthandlung der romantischen Eskapaden vor, die folgen.",
+        "zh": "这句话引出了歌曲的重复主题，姑姑（Titi）问他是否有很多女朋友。这为接下来的浪漫故事奠定了主线。",
+        "it": "La frase introduce il tema ricorrente della canzone, dove Titi (zia) chiede se ha molte fidanzate. Questo prepara il terreno per il racconto principale delle avventure romantiche che segue."
+      }
+    },
+    {
+      "text": "novia mucha novia hoy Tengo a una mañana",
+      "start_ms": 45039,
+      "end_ms": 52559,
+      "translations": {
+        "en": "girlfriends, many girlfriends today I have one, tomorrow",
+        "es": "novia mucha novia hoy Tengo a una mañana",
+        "fr": "de petites amies, beaucoup de petites amies aujourd'hui J'en ai une, demain",
+        "de": "Freundinnen habe, viele Freundinnen heute Habe ich eine, morgen",
+        "zh": "女朋友，很多女朋友，今天有一个，明天",
+        "it": "fidanzata, molte fidanzate oggi. Ne ho una, domani"
+      },
+      "explanations": {
+        "en": "The singer admits to having multiple girlfriends, emphasizing the number and the casual nature of these relationships.",
+        "es": "El cantante admite tener múltiples novias, enfatizando la cantidad y la naturaleza casual de estas relaciones.",
+        "fr": "Le chanteur admet avoir plusieurs petites amies, soulignant le nombre et la nature décontractée de ces relations.",
+        "de": "Der Sänger gibt zu, dass er mehrere Freundinnen hat und betont die Anzahl und die Unverbindlichkeit dieser Beziehungen.",
+        "zh": "歌手承认有很多女朋友，强调数量和这些关系的随意性。",
+        "it": "Il cantante ammette di avere molte fidanzate, enfatizzando il numero e la natura casuale di queste relazioni."
+      }
+    },
+    {
+      "text": "otra e pero no hay boda Titi me preguntó",
+      "start_ms": 48879,
+      "end_ms": 54320,
+      "translations": {
+        "en": "another, but there is no wedding Titi asked me",
+        "es": "otra e pero no hay boda Titi me preguntó",
+        "fr": "une autre, mais il n'y a pas de mariage, Titi m'a demandé",
+        "de": "eine andere e, aber es gibt keine Hochzeit, Titi fragte mich",
+        "zh": "另一个，但没有婚礼，姑姑问我",
+        "it": "un'altra, ma non c'è matrimonio Titi mi ha chiesto"
+      },
+      "explanations": {
+        "en": "Despite having many romantic partners, there is no intention of marriage, highlighting a carefree and non-committal attitude towards relationships.",
+        "es": "A pesar de tener muchas parejas románticas, no hay intención de matrimonio, destacando una actitud despreocupada y no comprometida hacia las relaciones.",
+        "fr": "Malgré de nombreux partenaires romantiques, il n'y a aucune intention de mariage, soulignant une attitude insouciante et non engagée envers les relations.",
+        "de": "Trotz vieler romantischer Partner besteht keine Absicht zu heiraten, was eine unbeschwerte und unverbindliche Haltung gegenüber Beziehungen unterstreicht.",
+        "zh": "尽管有很多恋爱对象，但没有结婚的打算，强调了对待关系的无拘无束和不承诺的态度。",
+        "it": "Nonostante abbia molti partner romantici, non c'è intenzione di sposarsi, evidenziando un atteggiamento spensierato e non impegnato verso le relazioni."
+      }
+    },
+    {
+      "text": "si tengo mucha",
+      "start_ms": 52559,
+      "end_ms": 58199,
+      "translations": {
+        "en": "if I have many",
+        "es": "si tengo mucha",
+        "fr": "si j'ai beaucoup de",
+        "de": "ob ich viele habe",
+        "zh": "如果我有很多",
+        "it": "se ho molte"
+      },
+      "explanations": {
+        "en": "Continuation of the aunt's questioning about the number of girlfriends, reinforcing the main theme of the song.",
+        "es": "Continuación de la pregunta de la tía sobre el número de novias, reforzando el tema principal de la canción.",
+        "fr": "Continuation des questions de la tante sur le nombre de petites amies, renforçant le thème principal de la chanson.",
+        "de": "Fortsetzung des Fragens der Tante nach der Anzahl der Freundinnen, was das Hauptthema des Liedes verstärkt.",
+        "zh": "继续姑姑关于女朋友数量的提问，强化了歌曲的主要主题。",
+        "it": "Continuazione del tema delle domande della zia sul numero di fidanzate, rafforzando il tema principale della canzone."
+      }
+    },
+    {
+      "text": "novia mucha novia hoy Tengo a una mañana",
+      "start_ms": 54320,
+      "end_ms": 60120,
+      "translations": {
+        "en": "girlfriends, many girlfriends today I have one, tomorrow",
+        "es": "novia mucha novia hoy Tengo a una mañana",
+        "fr": "petites amies, beaucoup de petites amies aujourd'hui J'en ai une, demain",
+        "de": "Freundinnen, viele Freundinnen heute Habe ich eine, morgen",
+        "zh": "女朋友，很多女朋友，今天有一个，明天",
+        "it": "fidanzata, molte fidanzate oggi. Ne ho una, domani"
+      },
+      "explanations": {
+        "en": "Repetition of the previous lines to emphasize the abundance of relationships and the routine nature of changing partners.",
+        "es": "Repetición de las líneas anteriores para enfatizar la abundancia de relaciones y la naturaleza rutinaria de cambiar de pareja.",
+        "fr": "Répétition des lignes précédentes pour souligner l'abondance de relations et la nature routinière du changement de partenaires.",
+        "de": "Wiederholung der vorherigen Zeilen, um die Fülle an Beziehungen und die routinemäßige Natur des Partnerwechsels zu betonen.",
+        "zh": "重复之前的歌词以强调关系的丰富性和更换伴侣的常规性。",
+        "it": "Ripetizione delle righe precedenti per enfatizzare l'abbondanza di relazioni e la natura abituale del cambio di partner."
+      }
+    },
+    {
+      "text": "otra",
+      "start_ms": 58199,
+      "end_ms": 63920,
+      "translations": {
+        "en": "another",
+        "es": "otra",
+        "fr": "une autre",
+        "de": "eine andere",
+        "zh": "另一个",
+        "it": "un'altra"
+      },
+      "explanations": {
+        "en": "The short line reinforces the pattern of having different partners each day, underscoring the transient nature of these relationships.",
+        "es": "La línea corta refuerza el patrón de tener diferentes parejas cada día, subrayando la naturaleza transitoria de estas relaciones.",
+        "fr": "La courte ligne renforce le schéma d'avoir différents partenaires chaque jour, soulignant la nature éphémère de ces relations.",
+        "de": "Die kurze Zeile verstärkt das Muster, jeden Tag andere Partner zu haben und unterstreicht die vergängliche Natur dieser Beziehungen.",
+        "zh": "简短的一句强调每天有不同伴侣的模式，突显这些关系的短暂性。",
+        "it": "La breve frase rafforza il modello di avere partner diversi ogni giorno, sottolineando la natura transitoria di queste relazioni."
+      }
+    },
+    {
+      "text": "llevar la todas para un VIP un VIP Ey",
+      "start_ms": 60120,
+      "end_ms": 66520,
+      "translations": {
+        "en": "take them all to a VIP, a VIP Hey",
+        "es": "llevar la todas para un VIP un VIP Ey",
+        "fr": "les emmener toutes dans un VIP, un VIP Hey",
+        "de": "nehme sie alle zu einem VIP, einem VIP Ey",
+        "zh": "把她们都带到VIP区，一个VIP区，嘿",
+        "it": "portarle tutte a un VIP un VIP Ehi"
+      },
+      "explanations": {
+        "en": "The singer boasts about taking all his girlfriends to a VIP section, suggesting a lifestyle of luxury and exclusivity.",
+        "es": "El cantante se jacta de llevar a todas sus novias a una sección VIP, sugiriendo un estilo de vida de lujo y exclusividad.",
+        "fr": "Le chanteur se vante de toutes les emmener dans une section VIP, suggérant un style de vie de luxe et d'exclusivité.",
+        "de": "Der Sänger prahlt damit, alle seine Freundinnen in einen VIP-Bereich zu bringen, was auf einen luxuriösen und exklusiven Lebensstil hinweist.",
+        "zh": "歌手炫耀带所有女朋友去VIP区，暗示一种奢华和独特的生活方式。",
+        "it": "Il cantante si vanta di portare tutte le sue fidanzate in una sezione VIP, suggerendo uno stile di vita di lusso ed esclusività."
+      }
+    },
+    {
+      "text": "saluden a ti ti vamos a tirar un selfie",
+      "start_ms": 63920,
+      "end_ms": 69920,
+      "translations": {
+        "en": "say hi to Titi let's take a selfie",
+        "es": "saluden a ti ti vamos a tirar un selfie",
+        "fr": "salut à toi, on va prendre un selfie",
+        "de": "grüßt Titi, wir machen ein Selfie",
+        "zh": "向姑姑问好，我们要拍个自拍",
+        "it": "salutate a te ti facciamo un selfie"
+      },
+      "explanations": {
+        "en": "The act of taking a selfie in a VIP setting is a modern cultural reference to capturing and sharing moments of perceived importance or status.",
+        "es": "El acto de tomar una selfie en un entorno VIP es una referencia cultural moderna para capturar y compartir momentos de importancia o estatus percibido.",
+        "fr": "Le fait de prendre un selfie dans un cadre VIP est une référence culturelle moderne à la capture et au partage de moments perçus comme importants ou prestigieux.",
+        "de": "Das Aufnehmen eines Selfies in einem VIP-Setting ist ein modernes kulturelles Bezugssystem, um Momente wahrgenommener Wichtigkeit oder Status festzuhalten und zu teilen.",
+        "zh": "在VIP环境中拍自拍是一种现代文化现象，指的是捕捉和分享被认为重要或有地位的时刻。",
+        "it": "L'atto di fare un selfie in un contesto VIP è un riferimento culturale moderno alla cattura e condivisione di momenti di percepita importanza o status."
+      }
+    },
+    {
+      "text": "se e que sonrían la que le metí en un",
+      "start_ms": 66520,
+      "end_ms": 74080,
+      "translations": {
+        "en": "make them smile, the ones I brought to a",
+        "es": "se e que sonrían la que le metí en un",
+        "fr": "qu'elles sourient pour la photo que j'ai prise dans un",
+        "de": "damit sie lächeln, die ich in einen",
+        "zh": "让她们微笑，我带她们去一个",
+        "it": "che sorridano quelle a cui ho fatto un"
+      },
+      "explanations": {
+        "en": "Encourages the girlfriends to smile for the photo, adding a layer of performative happiness in these public displays.",
+        "es": "Anima a las novias a sonreír para la foto, añadiendo una capa de felicidad performativa en estas exhibiciones públicas.",
+        "fr": "Encourage les petites amies à sourire pour la photo, ajoutant une couche de bonheur performatif dans ces démonstrations publiques.",
+        "de": "Fordert die Freundinnen auf, für das Foto zu lächeln, was eine Schicht performativen Glücks in diesen öffentlichen Darstellungen hinzufügt.",
+        "zh": "鼓励女朋友们为照片微笑，为这些公开展示添加了一层表演性的快乐。",
+        "it": "Incoraggia le fidanzate a sorridere per la foto, aggiungendo uno strato di felicità performativa in queste esibizioni pubbliche."
+      }
+    },
+    {
+      "text": "VIP un VIP e saluden a ti ti vamos a",
+      "start_ms": 69920,
+      "end_ms": 77040,
+      "translations": {
+        "en": "VIP, a VIP say hi to Titi let's",
+        "es": "VIP un VIP e saluden a ti ti vamos a",
+        "fr": "VIP, un VIP, salut à toi, on va",
+        "de": "VIP, ein VIP, grüßt Titi, wir werden",
+        "zh": "VIP，一个VIP，向姑姑问好，我们要",
+        "it": "VIP un VIP e salutate a te ti facciamo un"
+      },
+      "explanations": {
+        "en": "Repetition of the earlier lines reinforces the glamorous lifestyle and the importance of social media in modern relationships.",
+        "es": "La repetición de las líneas anteriores refuerza el estilo de vida glamoroso y la importancia de las redes sociales en las relaciones modernas.",
+        "fr": "La répétition des lignes précédentes renforce le style de vie glamour et l'importance des réseaux sociaux dans les relations modernes.",
+        "de": "Die Wiederholung der früheren Zeilen verstärkt den glamourösen Lebensstil und die Bedeutung von sozialen Medien in modernen Beziehungen.",
+        "zh": "重复之前的歌词，加强了奢华生活方式和现代关系中社交媒体的重要性。",
+        "it": "La ripetizione delle righe precedenti rafforza lo stile di vita glamour e l'importanza dei social media nelle relazioni moderne."
+      }
+    },
+    {
+      "text": "tirar un selfie sees que sonrían las que",
+      "start_ms": 74080,
+      "end_ms": 78600,
+      "translations": {
+        "en": "take a selfie make them smile, the ones who",
+        "es": "tirar un selfie sees que sonrían las que",
+        "fr": "prendre un selfie, qu'elles sourient, celles qui",
+        "de": "ein Selfie machen, damit die lächeln, die",
+        "zh": "拍个自拍，让那些",
+        "it": "fare un selfie che sorridano quelle che"
+      },
+      "explanations": {
+        "en": "The insistence on smiling for selfies highlights the superficial aspects of these relationships.",
+        "es": "La insistencia en sonreír para las selfies destaca los aspectos superficiales de estas relaciones.",
+        "fr": "L'insistance sur le sourire pour les selfies met en évidence les aspects superficiels de ces relations.",
+        "de": "Das Bestehen darauf, für Selfies zu lächeln, hebt die oberflächlichen Aspekte dieser Beziehungen hervor.",
+        "zh": "对自拍微笑的坚持突出了这些关系的表面性。",
+        "it": "L'insistenza sul sorridere per i selfie evidenzia gli aspetti superficiali di queste relazioni."
+      }
+    },
+    {
+      "text": "ya Se olvidaron de mí me gustan mucho",
+      "start_ms": 77040,
+      "end_ms": 82040,
+      "translations": {
+        "en": "already forgot about me I really like",
+        "es": "ya Se olvidaron de mí me gustan mucho",
+        "fr": "ont déjà oublié de moi, j'aime beaucoup",
+        "de": "mich schon vergessen haben, ich mag sehr",
+        "zh": "已经忘记了我，我很喜欢",
+        "it": "già si sono dimenticate di me mi piacciono molto"
+      },
+      "explanations": {
+        "en": "The line suggests that despite the many relationships, they are fleeting, as some partners have already forgotten him.",
+        "es": "La línea sugiere que, a pesar de las muchas relaciones, son efímeras, ya que algunas parejas ya lo han olvidado.",
+        "fr": "La phrase suggère que malgré les nombreuses relations, elles sont éphémères, car certains partenaires l'ont déjà oublié.",
+        "de": "Die Zeile deutet an, dass trotz der vielen Beziehungen diese flüchtig sind, da einige Partner ihn bereits vergessen haben.",
+        "zh": "这句歌词表明尽管有许多段关系，但它们是短暂的，因为一些伴侣已经忘记了他。",
+        "it": "La frase suggerisce che, nonostante le molte relazioni, esse sono fugaci, poiché alcuni partner lo hanno già dimenticato."
+      }
+    },
+    {
+      "text": "las gabrielas las Patricia las Nicole La",
+      "start_ms": 78600,
+      "end_ms": 84880,
+      "translations": {
+        "en": "the Gabrielas, the Patricias, the Nicoles, The",
+        "es": "las gabrielas las Patricia las Nicole La",
+        "fr": "les Gabriela, les Patricia, les Nicole, La",
+        "de": "die Gabrielas, die Patricias, die Nicoles Die",
+        "zh": "加布里埃拉们，帕特里夏们，妮可们，",
+        "it": "le Gabrielas le Patricia le Nicole La"
+      },
+      "explanations": {
+        "en": "Listing names personalizes the narrative, illustrating the variety and number of girlfriends.",
+        "es": "Enumerar nombres personaliza la narrativa, ilustrando la variedad y el número de novias.",
+        "fr": "Énumérer des noms personnalise le récit, illustrant la variété et le nombre de petites amies.",
+        "de": "Das Aufzählen von Namen personalisiert die Erzählung und verdeutlicht die Vielfalt und Anzahl der Freundinnen.",
+        "zh": "列出名字使叙述更加个性化，展示了女朋友的多样性和数量。",
+        "it": "L'elenco dei nomi personalizza il racconto, illustrando la varietà e il numero di fidanzate."
+      }
+    },
+    {
+      "text": "Sofía mi primera novia en kinder María y",
+      "start_ms": 82040,
+      "end_ms": 87079,
+      "translations": {
+        "en": "Sofía, my first girlfriend in kindergarten, María and",
+        "es": "Sofía mi primera novia en kinder María y",
+        "fr": "Sofía, ma première petite amie à la maternelle, María et",
+        "de": "Sofía, meine erste Freundin im Kindergarten, María und",
+        "zh": "索菲亚，我在幼儿园的第一个女朋友，玛丽亚和",
+        "it": "Sofía, la mia prima fidanzata all'asilo Maria e"
+      },
+      "explanations": {
+        "en": "Mentions of kindergarten relationships add a nostalgic and humorous touch, reflecting on how these patterns started in childhood.",
+        "es": "Las menciones de relaciones de kindergarten añaden un toque nostálgico y humorístico, reflexionando sobre cómo estos patrones comenzaron en la infancia.",
+        "fr": "Les mentions des relations de maternelle ajoutent une touche nostalgique et humoristique, reflétant comment ces schémas ont commencé dans l'enfance.",
+        "de": "Die Erwähnung von Kindergartenbeziehungen fügt eine nostalgische und humorvolle Note hinzu und reflektiert, wie diese Muster in der Kindheit begannen.",
+        "zh": "提到幼儿园的恋情增添了一种怀旧和幽默的色彩，反映了这些模式在童年时期就已开始。",
+        "it": "Le menzioni delle relazioni dell'asilo aggiungono un tocco nostalgico e umoristico, riflettendo su come questi schemi siano iniziati nell'infanzia."
+      }
+    },
+    {
+      "text": "mi primer amor se llama B talía tengo",
+      "start_ms": 84880,
+      "end_ms": 88720,
+      "translations": {
+        "en": "my first love is named B talía I have",
+        "es": "mi primer amor se llama B talía tengo",
+        "fr": "mon premier amour s'appelle B, Thalía, j'ai",
+        "de": "meine erste Liebe heißt B talía, ich habe",
+        "zh": "我的初恋叫B塔莉亚，我有",
+        "it": "il mio primo amore si chiama B talía ho"
+      },
+      "explanations": {
+        "en": "Refers to his first love, which contrasts with the superficial relationships discussed, adding depth to the narrative.",
+        "es": "Se refiere a su primer amor, lo que contrasta con las relaciones superficiales discutidas, añadiendo profundidad a la narrativa.",
+        "fr": "Fait référence à son premier amour, ce qui contraste avec les relations superficielles discutées, ajoutant de la profondeur au récit.",
+        "de": "Bezieht sich auf seine erste Liebe, was im Kontrast zu den oberflächlichen Beziehungen steht und der Erzählung Tiefe verleiht.",
+        "zh": "提到他的初恋，与所讨论的肤浅关系形成对比，为叙述增添深度。",
+        "it": "Si riferisce al suo primo amore, che contrasta con le relazioni superficiali discusse, aggiungendo profondità alla narrazione."
+      }
+    },
+    {
+      "text": "una colombiana que me escribe todos los",
+      "start_ms": 87079,
+      "end_ms": 91560,
+      "translations": {
+        "en": "a Colombian who writes to me every",
+        "es": "una colombiana que me escribe todos los",
+        "fr": "une Colombienne qui m'écrit tous les",
+        "de": "eine Kolumbianerin, die mir jeden Tag schreibt",
+        "zh": "一个每天给我写信的哥伦比亚女孩",
+        "it": "una colombiana che mi scrive tutti i"
+      },
+      "explanations": {
+        "en": "Mentions of a Colombian partner highlight the geographic diversity of his relationships.",
+        "es": "Las menciones de una pareja colombiana destacan la diversidad geográfica de sus relaciones.",
+        "fr": "Les mentions d'une partenaire colombienne soulignent la diversité géographique de ses relations.",
+        "de": "Die Erwähnung einer kolumbianischen Partnerin hebt die geografische Vielfalt seiner Beziehungen hervor.",
+        "zh": "提到一个哥伦比亚伴侣，突显他关系的地理多样性。",
+        "it": "Le menzioni di una partner colombiana evidenziano la diversità geografica delle sue relazioni."
+      }
+    },
+    {
+      "text": "días y una mexicana que ni yo sabía otra",
+      "start_ms": 88720,
+      "end_ms": 93560,
+      "translations": {
+        "en": "day and a Mexican one I didn't even know about, another",
+        "es": "días y una mexicana que ni yo sabía otra",
+        "fr": "jours et une Mexicaine que je ne connaissais même pas, une autre",
+        "de": "Tage, und eine Mexikanerin, von der ich nicht einmal wusste, dass es noch eine andere gibt",
+        "zh": "每天，还有一个我不知道的墨西哥女孩",
+        "it": "giorni e una messicana che neanche io sapevo un'altra"
+      },
+      "explanations": {
+        "en": "The surprise at having a Mexican girlfriend he wasn't aware of underscores the casual and disconnected nature of these interactions.",
+        "es": "La sorpresa de tener una novia mexicana de la que no estaba al tanto subraya la naturaleza casual y desconectada de estas interacciones.",
+        "fr": "La surprise d'avoir une petite amie mexicaine dont il n'était pas au courant souligne la nature décontractée et déconnectée de ces interactions.",
+        "de": "Die Überraschung, eine mexikanische Freundin zu haben, von der er nichts wusste, unterstreicht die beiläufige und distanzierte Natur dieser Interaktionen.",
+        "zh": "对有一个自己都不知道的墨西哥女朋友的惊讶突显了这些互动的随意和脱节。",
+        "it": "La sorpresa di avere una fidanzata messicana di cui non era consapevole sottolinea la natura casuale e disconnessa di queste interazioni."
+      }
+    },
+    {
+      "text": "en San Antonio que me quier todavía y",
+      "start_ms": 91560,
+      "end_ms": 95880,
+      "translations": {
+        "en": "in San Antonio who still loves me and",
+        "es": "en San Antonio que me quier todavía y",
+        "fr": "à San Antonio qui m'aime encore et",
+        "de": "in San Antonio, die mich immer noch will, und",
+        "zh": "在圣安东尼奥，还有一个仍然喜欢我的人，",
+        "it": "a San Antonio che mi vuole ancora e"
+      },
+      "explanations": {
+        "en": "Continues the theme of long-distance and varied relationships.",
+        "es": "Continúa el tema de las relaciones a larga distancia y variadas.",
+        "fr": "Continue le thème des relations à distance et variées.",
+        "de": "Setzt das Thema langfristiger und vielfältiger Beziehungen fort.",
+        "zh": "继续强调远距离和多样化的关系主题。",
+        "it": "Continua il tema delle relazioni a distanza e variegate."
+      }
+    },
+    {
+      "text": "las dpr que todita son mías una",
+      "start_ms": 93560,
+      "end_ms": 99240,
+      "translations": {
+        "en": "the DPRs, they're all mine a",
+        "es": "las dpr que todita son mías una",
+        "fr": "les dpr qui sont toutes à moi, une",
+        "de": "die aus der Dominikanischen Republik, die alle meine sind, eine",
+        "zh": "多米尼加共和国的女孩们，她们全是我的，",
+        "it": "le dpr che sono tutte mie una"
+      },
+      "explanations": {
+        "en": "The mention of 'DPR' (Dominican Republic) emphasizes the international scope of his romantic life.",
+        "es": "La mención de 'DPR' (República Dominicana) enfatiza el alcance internacional de su vida romántica.",
+        "fr": "La mention de 'DPR' (République Dominicaine) souligne l'étendue internationale de sa vie amoureuse.",
+        "de": "Die Erwähnung von 'DPR' (Dominikanische Republik) betont den internationalen Umfang seines Liebeslebens.",
+        "zh": "提到“DPR”（多米尼加共和国）强调他浪漫生活的国际范围。",
+        "it": "La menzione di 'DPR' (Repubblica Dominicana) enfatizza la portata internazionale della sua vita romantica."
+      }
+    },
+    {
+      "text": "dominicana que juga bombón uba uba",
+      "start_ms": 95880,
+      "end_ms": 102399,
+      "translations": {
+        "en": "Dominican who plays bombón uba uba",
+        "es": "dominicana que juga bombón uba uba",
+        "fr": "une Dominicaine qui joue bombón uba uba",
+        "de": "Dominikanerin, die Bombón spielt, uba uba",
+        "zh": "一个玩“bombón”的多米尼加女孩，乌巴乌巴",
+        "it": "dominicana che gioca bombón uba uba"
+      },
+      "explanations": {
+        "en": "References a Dominican partner and 'bombón,' a term of endearment or slang for something sweet or attractive.",
+        "es": "Hace referencia a una pareja dominicana y 'bombón', un término de cariño o jerga para algo dulce o atractivo.",
+        "fr": "Fait référence à une partenaire dominicaine et 'bombón', un terme affectueux ou argot pour quelque chose de sucré ou d'attirant.",
+        "de": "Bezieht sich auf eine dominikanische Partnerin und 'bombón', ein Kosewort oder Slang für etwas Süßes oder Attraktives.",
+        "zh": "提到一个多米尼加伴侣和“bombón”，这是一个爱称或指代某种甜美或有吸引力的东西的俚语。",
+        "it": "Riferimenti a una partner dominicana e 'bombón', un termine di affetto o gergo per qualcosa di dolce o attraente."
+      }
+    },
+    {
+      "text": "bombón la de Barcelona que vino en avión",
+      "start_ms": 99240,
+      "end_ms": 104759,
+      "translations": {
+        "en": "bombón, the one from Barcelona who came by plane",
+        "es": "bombón la de Barcelona que vino en avión",
+        "fr": "bombón celle de Barcelone qui est venue en avion",
+        "de": "Bombón, die aus Barcelona, die mit dem Flugzeug kam",
+        "zh": "从巴塞罗那坐飞机来的女孩",
+        "it": "bombón quella di Barcellona che è venuta in aereo"
+      },
+      "explanations": {
+        "en": "The Barcelona girlfriend arriving by plane suggests a lifestyle of travel and international connections.",
+        "es": "La novia de Barcelona que llega en avión sugiere un estilo de vida de viajes y conexiones internacionales.",
+        "fr": "La petite amie de Barcelone arrivant en avion suggère un style de vie de voyage et de connexions internationales.",
+        "de": "Die Freundin aus Barcelona, die mit dem Flugzeug ankommt, deutet auf einen Lebensstil des Reisens und internationaler Verbindungen hin.",
+        "zh": "从巴塞罗那坐飞机来的女朋友，暗示一种旅行和国际联系的生活方式。",
+        "it": "La fidanzata di Barcellona che arriva in aereo suggerisce uno stile di vita di viaggi e connessioni internazionali."
+      }
+    },
+    {
+      "text": "y dice que mi dicho está cabrón yo dejo",
+      "start_ms": 102399,
+      "end_ms": 106960,
+      "translations": {
+        "en": "and says that my saying is awesome, I let",
+        "es": "y dice que mi dicho está cabrón yo dejo",
+        "fr": "et dit que ce que je dis est cabrón, je laisse",
+        "de": "und sagt, dass mein Spruch krass ist, ich lasse",
+        "zh": "她说我的话很酷，我让",
+        "it": "e dice che il mio detto è cabrón io lascio"
+      },
+      "explanations": {
+        "en": "The use of 'cabrón' here is a slang term meaning something impressive or cool, indicating the girlfriend is impressed by him.",
+        "es": "El uso de 'cabrón' aquí es un término de jerga que significa algo impresionante o genial, indicando que la novia está impresionada por él.",
+        "fr": "L'utilisation de 'cabrón' ici est un terme d'argot signifiant quelque chose d'impressionnant ou de cool, indiquant que la petite amie est impressionnée par lui.",
+        "de": "Die Verwendung von 'cabrón' ist hier ein Slang für etwas Beeindruckendes oder Cooles, was darauf hinweist, dass die Freundin von ihm beeindruckt ist.",
+        "zh": "“cabrón”在这里是一个俚语，意思是某件事令人印象深刻或很酷，表明女友对他印象深刻。",
+        "it": "L'uso di 'cabrón' qui è un termine gergale che significa qualcosa di impressionante o cool, indicando che la fidanzata è colpita da lui."
+      }
+    },
+    {
+      "text": "que jueguen con mi corazón Quisiera",
+      "start_ms": 104759,
+      "end_ms": 108920,
+      "translations": {
+        "en": "them play with my heart I wish",
+        "es": "que jueguen con mi corazón Quisiera",
+        "fr": "qu'ils jouent avec mon cœur, je voudrais",
+        "de": "sie mit meinem Herzen spielen, ich möchte",
+        "zh": "她们玩弄我的心，我希望",
+        "it": "che giochino con il mio cuore Vorrei"
+      },
+      "explanations": {
+        "en": "Acknowledges that his heart is played with, hinting at the emotional risks of his lifestyle.",
+        "es": "Reconoce que juegan con su corazón, insinuando los riesgos emocionales de su estilo de vida.",
+        "fr": "Reconnaît que son cœur est joué avec, laissant entrevoir les risques émotionnels de son style de vie.",
+        "de": "Erkennt an, dass mit seinem Herzen gespielt wird, was auf die emotionalen Risiken seines Lebensstils hinweist.",
+        "zh": "承认自己的心被玩弄，暗示这种生活方式的情感风险。",
+        "it": "Riconosce che il suo cuore è giocato, suggerendo i rischi emotivi del suo stile di vita."
+      }
+    },
+    {
+      "text": "mudarme con todas por una mansión el día",
+      "start_ms": 106960,
+      "end_ms": 110680,
+      "translations": {
+        "en": "to move with all of them to a mansion the day",
+        "es": "mudarme con todas por una mansión el día",
+        "fr": "emménager avec toutes dans un manoir le jour",
+        "de": "mit allen in eine Villa ziehen, der Tag",
+        "zh": "和所有人一起搬进一个豪宅的那天",
+        "it": "trasferirmi con tutte in una villa il giorno"
+      },
+      "explanations": {
+        "en": "A fantastical idea of living with all his partners in one mansion, illustrating a humorous and exaggerated view of his romantic life.",
+        "es": "Una idea fantástica de vivir con todas sus parejas en una mansión, ilustrando una visión humorística y exagerada de su vida romántica.",
+        "fr": "Une idée fantastique de vivre avec toutes ses partenaires dans un seul manoir, illustrant une vision humoristique et exagérée de sa vie amoureuse.",
+        "de": "Eine fantastische Idee, mit all seinen Partnerinnen in einer Villa zu leben, die eine humorvolle und übertriebene Sicht auf sein Liebesleben darstellt.",
+        "zh": "幻想和所有伴侣住在一个豪宅里，展现了对他浪漫生活的幽默和夸张的看法。",
+        "it": "Un'idea fantastica di vivere con tutte le sue partner in una villa, illustrando una visione umoristica ed esagerata della sua vita sentimentale."
+      }
+    },
+    {
+      "text": "que me cases te envío la invitación",
+      "start_ms": 108920,
+      "end_ms": 114000,
+      "translations": {
+        "en": "I get married I'll send you the invitation",
+        "es": "que me cases te envío la invitación",
+        "fr": "où je me marie, je t'enverrai l'invitation",
+        "de": "an dem ich heirate, schicke ich dir die Einladung",
+        "zh": "我结婚的那天会给你寄邀请函",
+        "it": "in cui mi sposo ti mando l'invito"
+      },
+      "explanations": {
+        "en": "Promises an invitation to his wedding, despite the unlikely nature of such a commitment given his lifestyle.",
+        "es": "Promete una invitación a su boda, a pesar de la naturaleza poco probable de tal compromiso dado su estilo de vida.",
+        "fr": "Promet une invitation à son mariage, malgré la nature peu probable d'un tel engagement compte tenu de son style de vie.",
+        "de": "Verspricht eine Einladung zu seiner Hochzeit, trotz der unwahrscheinlichen Natur eines solchen Engagements angesichts seines Lebensstils.",
+        "zh": "承诺给他的婚礼寄邀请函，尽管考虑到他的生活方式，这种承诺不太可能实现。",
+        "it": "Promette un invito al suo matrimonio, nonostante la natura improbabile di un tale impegno dato il suo stile di vita."
+      }
+    },
+    {
+      "text": "muchacho deja eso e Titi me preguntó si",
+      "start_ms": 110680,
+      "end_ms": 115280,
+      "translations": {
+        "en": "boy, stop that and Titi asked me if",
+        "es": "muchacho deja eso e Titi me preguntó si",
+        "fr": "gamin, laisse ça e Titi m'a demandé si",
+        "de": "Junge, lass das, und Titi fragte mich, ob",
+        "zh": "小伙子放弃吧，姑姑问我是否",
+        "it": "ragazzo lascia stare e Titi mi ha chiesto se"
+      },
+      "explanations": {
+        "en": "'Muchacho deja eso' is likely advice to abandon this lifestyle, emphasizing the song's recurring theme of non-commitment.",
+        "es": "'Muchacho deja eso' es probablemente un consejo para abandonar este estilo de vida, enfatizando el tema recurrente de la canción de no compromiso.",
+        "fr": "'Muchacho deja eso' est probablement un conseil d'abandonner ce style de vie, soulignant le thème récurrent de la chanson sur le non-engagement.",
+        "de": "'Muchacho deja eso' ist wahrscheinlich ein Rat, diesen Lebensstil aufzugeben, und betont das wiederkehrende Thema des Liedes der Unverbindlichkeit.",
+        "zh": "“Muchacho deja eso”可能是放弃这种生活方式的建议，强调了歌曲的反复主题——不承诺。",
+        "it": "\"Muchacho deja eso\" è probabilmente un consiglio a lasciare questo stile di vita, enfatizzando il tema ricorrente della canzone di non impegno."
+      }
+    },
+    {
+      "text": "tengo muchas",
+      "start_ms": 114000,
+      "end_ms": 119000,
+      "translations": {
+        "en": "I have many",
+        "es": "tengo muchas",
+        "fr": "j'ai beaucoup de",
+        "de": "ich viele habe",
+        "zh": "我有很多",
+        "it": "ho molte"
+      },
+      "explanations": {
+        "en": "Continuation of the aunt's questioning theme about many girlfriends.",
+        "es": "Continuación del tema de la tía preguntando sobre muchas novias.",
+        "fr": "Continuation du thème des questions de la tante sur les nombreuses petites amies.",
+        "de": "Fortsetzung des Themas der Fragerei der Tante nach vielen Freundinnen.",
+        "zh": "继续姑姑关于女朋友数量的提问主题。",
+        "it": "Continuazione del tema delle domande della zia su molte fidanzate."
+      }
+    },
+    {
+      "text": "novia muchas novia hoy tengo una mañana",
+      "start_ms": 115280,
+      "end_ms": 122920,
+      "translations": {
+        "en": "girlfriends, many girlfriends today I have one, tomorrow",
+        "es": "novia muchas novia hoy tengo una mañana",
+        "fr": "petites amies, beaucoup de petites amies aujourd'hui j'en ai une, demain",
+        "de": "Freundinnen, viele Freundinnen heute habe ich eine, morgen",
+        "zh": "女朋友，很多女朋友，今天有一个，明天",
+        "it": "fidanzata, molte fidanzate oggi ne ho una, domani"
+      },
+      "explanations": {
+        "en": "Reiterates the pattern of having multiple partners and the temporary nature of these relationships.",
+        "es": "Reitera el patrón de tener múltiples parejas y la naturaleza temporal de estas relaciones.",
+        "fr": "Répète le schéma d'avoir plusieurs partenaires et la nature temporaire de ces relations.",
+        "de": "Wiederholt das Muster, mehrere Partner zu haben und die vorübergehende Natur dieser Beziehungen.",
+        "zh": "重申有多个伴侣的模式和这些关系的暂时性。",
+        "it": "Ripete il modello di avere più partner e la natura temporanea di queste relazioni."
+      }
+    },
+    {
+      "text": "otra e pero no hay me preguntó si tengo",
+      "start_ms": 119000,
+      "end_ms": 126560,
+      "translations": {
+        "en": "another, but there is no she asked me if I have",
+        "es": "otra e pero no hay me preguntó si tengo",
+        "fr": "une autre, mais il n'y a pas, elle m'a demandé si j'ai",
+        "de": "eine andere e, aber es gibt keine, fragte mich, ob ich",
+        "zh": "另一个，但没有，她问我是否有",
+        "it": "un'altra e ma non c'è mi ha chiesto se ho"
+      },
+      "explanations": {
+        "en": "The repetition highlights the main theme of the song—numerous and fleeting relationships without serious commitment.",
+        "es": "La repetición resalta el tema principal de la canción: relaciones numerosas y fugaces sin compromiso serio.",
+        "fr": "La répétition met en évidence le thème principal de la chanson : de nombreuses relations éphémères sans engagement sérieux.",
+        "de": "Die Wiederholung hebt das Hauptthema des Liedes hervor - zahlreiche und flüchtige Beziehungen ohne ernsthafte Verpflichtung.",
+        "zh": "这种重复强调了歌曲的主要主题——众多且短暂的关系没有严肃的承诺。",
+        "it": "La ripetizione evidenzia il tema principale della canzone—numerose e fugaci relazioni senza impegno serio."
+      }
+    },
+    {
+      "text": "mucha novia e e mucha novia hoy tengo",
+      "start_ms": 122920,
+      "end_ms": 129360,
+      "translations": {
+        "en": "many girlfriends, many girlfriends today I have",
+        "es": "mucha novia e e mucha novia hoy tengo",
+        "fr": "beaucoup de petites amies, beaucoup de petites amies aujourd'hui j'ai",
+        "de": "viele Freundinnen e e viele Freundinnen heute habe ich",
+        "zh": "很多女朋友，很多女朋友，今天有",
+        "it": "molte fidanzate e e molte fidanzate oggi ne ho"
+      },
+      "explanations": {
+        "en": "The emphasis on numerous girlfriends continues, reinforcing the carefree lifestyle portrayed.",
+        "es": "El énfasis en numerosas novias continúa, reforzando el estilo de vida despreocupado retratado.",
+        "fr": "L'accent sur le grand nombre de petites amies continue, renforçant le style de vie insouciant décrit.",
+        "de": "Die Betonung auf zahlreiche Freundinnen setzt sich fort und unterstreicht den sorglosen Lebensstil.",
+        "zh": "继续强调众多女朋友，强化了无拘无束的生活方式。",
+        "it": "L'enfasi su numerose fidanzate continua, rafforzando lo stile di vita spensierato descritto."
+      }
+    },
+    {
+      "text": "una mañana",
+      "start_ms": 126560,
+      "end_ms": 132520,
+      "translations": {
+        "en": "one tomorrow",
+        "es": "una mañana",
+        "fr": "une, demain",
+        "de": "eine, morgen",
+        "zh": "一个，明天",
+        "it": "una domani"
+      },
+      "explanations": {
+        "en": "Repetition of having a different partner each day.",
+        "es": "Repetición de tener una pareja diferente cada día.",
+        "fr": "Répétition du fait d'avoir un partenaire différent chaque jour.",
+        "de": "Wiederholung, jeden Tag einen anderen Partner zu haben.",
+        "zh": "重复每天有不同伴侣。",
+        "it": "Ripetizione di avere un partner diverso ogni giorno."
+      }
+    },
+    {
+      "text": "otra me",
+      "start_ms": 129360,
+      "end_ms": 132520,
+      "translations": {
+        "en": "another I",
+        "es": "otra me",
+        "fr": "une autre, moi",
+        "de": "eine andere, mich",
+        "zh": "另一个",
+        "it": "un'altra me"
+      },
+      "explanations": {
+        "en": "Reiterates the idea of interchangeable relationships.",
+        "es": "Reitera la idea de relaciones intercambiables.",
+        "fr": "Réitère l'idée de relations interchangeables.",
+        "de": "Betont die Idee austauschbarer Beziehungen.",
+        "zh": "重申关系的可替代性。",
+        "it": "Reitera l'idea di relazioni intercambiabili."
+      }
+    },
+    {
+      "text": "preguntó me",
+      "start_ms": 133680,
+      "end_ms": 138040,
+      "translations": {
+        "en": "asked me",
+        "es": "preguntó me",
+        "fr": "m'a demandé, moi",
+        "de": "fragte mich",
+        "zh": "她问我",
+        "it": "chiese me"
+      },
+      "explanations": {
+        "en": "Repetition to emphasize the main theme of the song.",
+        "es": "Repetición para enfatizar el tema principal de la canción.",
+        "fr": "Répétition pour souligner le thème principal de la chanson.",
+        "de": "Wiederholung, um das Hauptthema des Liedes zu betonen.",
+        "zh": "重复强调歌曲的主要主题。",
+        "it": "Ripetizione per enfatizzare il tema principale della canzone."
+      }
+    },
+    {
+      "text": "preguntó me",
+      "start_ms": 138040,
+      "end_ms": 142319,
+      "translations": {
+        "en": "asked me",
+        "es": "preguntó me",
+        "fr": "m'a demandé, moi",
+        "de": "fragte mich",
+        "zh": "她问我",
+        "it": "chiese me"
+      },
+      "explanations": {
+        "en": "Continues the theme of questioning about romantic life.",
+        "es": "Continúa el tema de cuestionar sobre la vida romántica.",
+        "fr": "Continue le thème du questionnement sur la vie amoureuse.",
+        "de": "Setzt das Thema des Fragens nach dem Liebesleben fort.",
+        "zh": "继续关于浪漫生活提问的主题。",
+        "it": "Continua il tema delle domande sulla vita sentimentale."
+      }
+    },
+    {
+      "text": "pregun me",
+      "start_ms": 142319,
+      "end_ms": 147519,
+      "translations": {
+        "en": "ask me",
+        "es": "pregun me",
+        "fr": "m'interroge, moi",
+        "de": "fragte mich",
+        "zh": "问我",
+        "it": "chiedi me"
+      },
+      "explanations": {
+        "en": "Further reinforces the song's main thematic element.",
+        "es": "Refuerza aún más el elemento temático principal de la canción.",
+        "fr": "Renforce encore l'élément thématique principal de la chanson.",
+        "de": "Verstärkt weiter das Hauptelement des Liedes.",
+        "zh": "进一步强化歌曲的主题元素。",
+        "it": "Rafforza ulteriormente l'elemento tematico principale della canzone."
+      }
+    },
+    {
+      "text": "pregun Pero ven acá muchach para que tú",
+      "start_ms": 144959,
+      "end_ms": 150040,
+      "translations": {
+        "en": "ask But come here boy, why do you",
+        "es": "pregun Pero ven acá muchach para que tú",
+        "fr": "interroge Mais viens ici, gamin, pourquoi veux-tu",
+        "de": "fragte, aber komm her, Junge, warum willst du",
+        "zh": "问，但过来小伙子，你要",
+        "it": "chiedi Ma vieni qui ragazzo per cosa tu"
+      },
+      "explanations": {
+        "en": "Starts a rhetorical questioning about the need for so many girlfriends.",
+        "es": "Comienza un cuestionamiento retórico sobre la necesidad de tantas novias.",
+        "fr": "Commence un questionnement rhétorique sur la nécessité d'avoir tant de petites amies.",
+        "de": "Beginnt eine rhetorische Frage über die Notwendigkeit so vieler Freundinnen.",
+        "zh": "开始一个关于为何需要这么多女朋友的修辞性提问。",
+        "it": "Inizia una domanda retorica sulla necessità di avere tante fidanzate."
+      }
+    },
+    {
+      "text": "quieres tanta novia me voy levar to un",
+      "start_ms": 147519,
+      "end_ms": 154560,
+      "translations": {
+        "en": "want so many girlfriends, I'm going to take you to a",
+        "es": "quieres tanta novia me voy levar to un",
+        "fr": "tant de petites amies, je vais t'emmener dans un",
+        "de": "so viele Freundinnen, ich werde dich in einen",
+        "zh": "这么多女朋友？我要带你去一个",
+        "it": "vuoi tante fidanzate mi porto tutte in un"
+      },
+      "explanations": {
+        "en": "Questions the necessity of having so many partners, leading into the VIP lifestyle narrative.",
+        "es": "Cuestiona la necesidad de tener tantas parejas, llevando al relato del estilo de vida VIP.",
+        "fr": "Questionne la nécessité d'avoir tant de partenaires, menant au récit du style de vie VIP.",
+        "de": "Fragt nach der Notwendigkeit, so viele Partner zu haben, was in die VIP-Lebensstil-Erzählung übergeht.",
+        "zh": "质疑拥有这么多伴侣的必要性，进入VIP生活方式的叙述。",
+        "it": "Si chiede la necessità di avere tanti partner, portando alla narrazione dello stile di vita VIP."
+      }
+    },
+    {
+      "text": "VIP un VIP e saluden a ti vamos a tirar",
+      "start_ms": 150040,
+      "end_ms": 155480,
+      "translations": {
+        "en": "VIP, a VIP say hi to Titi let's take",
+        "es": "VIP un VIP e saluden a ti vamos a tirar",
+        "fr": "VIP, un VIP, salut à toi, on va prendre",
+        "de": "VIP, ein VIP, grüßt dich, wir werden ein",
+        "zh": "一个VIP，向姑姑问好，我们要拍",
+        "it": "VIP un VIP e salutate a te facciamo un"
+      },
+      "explanations": {
+        "en": "Reintroduces the VIP and social media lifestyle elements.",
+        "es": "Reintroduce los elementos del estilo de vida VIP y de las redes sociales.",
+        "fr": "Réintroduit les éléments du style de vie VIP et des réseaux sociaux.",
+        "de": "Stellt die VIP- und Social-Media-Lifestyle-Elemente wieder vor.",
+        "zh": "再次介绍VIP和社交媒体生活方式的元素。",
+        "it": "Reintroduce gli elementi dello stile di vita VIP e dei social media."
+      }
+    },
+    {
+      "text": "un",
+      "start_ms": 154560,
+      "end_ms": 159519,
+      "translations": {
+        "en": "a",
+        "es": "un",
+        "fr": "un",
+        "de": "ein",
+        "zh": "一个",
+        "it": "un"
+      },
+      "explanations": {
+        "en": "Continuation of the social media theme.",
+        "es": "Continuación del tema de las redes sociales.",
+        "fr": "Continuation du thème des réseaux sociaux.",
+        "de": "Fortsetzung des Social-Media-Themas.",
+        "zh": "社交媒体主题的延续。",
+        "it": "Continuazione del tema dei social media."
+      }
+    },
+    {
+      "text": "selfie que sonrían la que le Met un VIP",
+      "start_ms": 155480,
+      "end_ms": 160319,
+      "translations": {
+        "en": "selfie make them smile, the ones I brought to a VIP",
+        "es": "selfie que sonrían la que le Met un VIP",
+        "fr": "selfie, qu'elles sourient, celle que j'ai mise dans un VIP",
+        "de": "Selfie machen, damit die lächeln, die ich in einen VIP gebracht habe",
+        "zh": "自拍，让她们微笑，我带她们去一个VIP",
+        "it": "selfie che sorridano quelle che ho portato in un VIP"
+      },
+      "explanations": {
+        "en": "Repetition of the social media and VIP lifestyle.",
+        "es": "Repetición del estilo de vida VIP y de redes sociales.",
+        "fr": "Répétition du style de vie des réseaux sociaux et du VIP.",
+        "de": "Wiederholung des Social-Media- und VIP-Lifestyles.",
+        "zh": "重复社交媒体和VIP生活方式。",
+        "it": "Ripetizione dello stile di vita dei social media e VIP."
+      }
+    },
+    {
+      "text": "un",
+      "start_ms": 159519,
+      "end_ms": 163879,
+      "translations": {
+        "en": "a",
+        "es": "un",
+        "fr": "un",
+        "de": "ein",
+        "zh": "一个",
+        "it": "un"
+      },
+      "explanations": {
+        "en": "Continuation of repeated themes.",
+        "es": "Continuación de los temas repetidos.",
+        "fr": "Continuation des thèmes répétés.",
+        "de": "Fortsetzung wiederholter Themen.",
+        "zh": "重复主题的延续。",
+        "it": "Continuazione dei temi ripetuti."
+      }
+    },
+    {
+      "text": "VIP saluden vamos a tirar un",
+      "start_ms": 160319,
+      "end_ms": 166480,
+      "translations": {
+        "en": "VIP say hi let's take a",
+        "es": "VIP saluden vamos a tirar un",
+        "fr": "VIP, salut à toi, on va prendre un",
+        "de": "VIP grüßt, wir machen ein",
+        "zh": "VIP，向大家问好，我们要拍一个",
+        "it": "VIP salutate facciamo un"
+      },
+      "explanations": {
+        "en": "Reinforces the glamorous and social media-driven lifestyle.",
+        "es": "Refuerza el estilo de vida glamuroso y centrado en las redes sociales.",
+        "fr": "Renforce le style de vie glamour et axé sur les réseaux sociaux.",
+        "de": "Verstärkt den glamourösen und von sozialen Medien getriebenen Lebensstil.",
+        "zh": "强调奢华和社交媒体驱动的生活方式。",
+        "it": "Rafforza lo stile di vita glamour e guidato dai social media."
+      }
+    },
+    {
+      "text": "selfie que sonrían las que ya olvidaron",
+      "start_ms": 163879,
+      "end_ms": 169959,
+      "translations": {
+        "en": "selfie make them smile, the ones who already forgot",
+        "es": "selfie que sonrían las que ya olvidaron",
+        "fr": "selfie, qu'elles sourient, celles qui ont déjà oublié",
+        "de": "Selfie, damit die lächeln, die mich schon vergessen haben",
+        "zh": "自拍，让那些已经忘记我的人微笑",
+        "it": "selfie che sorridano quelle che già si sono dimenticate"
+      },
+      "explanations": {
+        "en": "Suggests some girlfriends have already forgotten him, highlighting the transient nature of these relationships.",
+        "es": "Sugiere que algunas novias ya lo han olvidado, destacando la naturaleza transitoria de estas relaciones.",
+        "fr": "Suggère que certaines petites amies l'ont déjà oublié, soulignant la nature éphémère de ces relations.",
+        "de": "Deutet an, dass einige Freundinnen ihn bereits vergessen haben, was die flüchtige Natur dieser Beziehungen hervorhebt.",
+        "zh": "暗示一些女朋友已经忘记了他，突显这些关系的短暂性。",
+        "it": "Suggerisce che alcune fidanzate si siano già dimenticate di lui, evidenziando la natura transitoria di queste relazioni."
+      }
+    },
+    {
+      "text": "de mí Oye muchacho el azaroso",
+      "start_ms": 166480,
+      "end_ms": 172200,
+      "translations": {
+        "en": "about me Hey boy, the reckless",
+        "es": "de mí Oye muchacho el azaroso",
+        "fr": "de moi, écoute gamin, le chanceux",
+        "de": "mich. Hör mal, Junge, der leichtsinnige",
+        "zh": "听着，小伙子，你这个无所顾忌的人",
+        "it": "di me Ehi ragazzo il disgraziato"
+      },
+      "explanations": {
+        "en": "'Azaroso' is a slang term for someone who is reckless or living without care, which fits the narrative of the song.",
+        "es": "'Azaroso' es un término de jerga para alguien que es imprudente o vive sin cuidado, lo cual encaja con la narrativa de la canción.",
+        "fr": "'Azaroso' est un terme d'argot pour quelqu'un qui est imprudent ou vit sans souci, ce qui correspond au récit de la chanson.",
+        "de": "'Azaroso' ist ein Slang-Ausdruck für jemanden, der sorglos oder ohne Bedacht lebt, was zur Erzählung des Liedes passt.",
+        "zh": "“Azaroso”是一个俚语，指一个鲁莽或无所顾忌地生活的人，符合歌曲的叙述。",
+        "it": "\"Azaroso\" è un termine gergale per qualcuno che è spericolato o vive senza preoccuparsi, che si adatta alla narrazione della canzone."
+      }
+    },
+    {
+      "text": "sutese vivir que tú tienes en la calle",
+      "start_ms": 169959,
+      "end_ms": 175200,
+      "translations": {
+        "en": "crazy life you have in the streets",
+        "es": "sutese vivir que tú tienes en la calle",
+        "fr": "la vie que tu mènes dans la rue",
+        "de": "Leben, das du auf der Straße führst",
+        "zh": "你在街上无忧无虑地生活",
+        "it": "stile di vita che hai per strada"
+      },
+      "explanations": {
+        "en": "References a carefree lifestyle, living in the streets, further emphasizing the nonchalant attitude.",
+        "es": "Hace referencia a un estilo de vida despreocupado, viviendo en la calle, enfatizando aún más la actitud desenfadada.",
+        "fr": "Fait référence à un style de vie insouciant, vivant dans la rue, soulignant encore l'attitude nonchalante.",
+        "de": "Bezieht sich auf einen sorglosen Lebensstil, der in den Straßen lebt, was weiter die lässige Haltung betont.",
+        "zh": "提到一种无拘无束的生活方式，进一步强调无动于衷的态度。",
+        "it": "Fa riferimento a uno stile di vita spensierato, vivendo per strada, sottolineando ulteriormente l'atteggiamento disinvolto."
+      }
+    },
+    {
+      "text": "Búscate una mujer seria para tio el",
+      "start_ms": 172200,
+      "end_ms": 179159,
+      "translations": {
+        "en": "Find yourself a serious woman for uncle the",
+        "es": "Búscate una mujer seria para tio el",
+        "fr": "Trouve-toi une femme sérieuse pour toi, l'",
+        "de": "Such dir eine ernsthafte Frau für deinen Onkel, der",
+        "zh": "找一个认真对待生活的女人，",
+        "it": "Cercati una donna seria per zio il"
+      },
+      "explanations": {
+        "en": "Advice to find a serious relationship, contrasting with the singer's current lifestyle.",
+        "es": "Consejo para encontrar una relación seria, contrastando con el estilo de vida actual del cantante.",
+        "fr": "Conseil de trouver une relation sérieuse, contrastant avec le style de vie actuel du chanteur.",
+        "de": "Rat, eine ernsthafte Beziehung zu finden, im Gegensatz zum derzeitigen Lebensstil des Sängers.",
+        "zh": "建议找一个严肃的关系，与歌手当前的生活方式形成对比。",
+        "it": "Consiglio di trovare una relazione seria, in contrasto con lo stile di vita attuale del cantante."
+      }
+    },
+    {
+      "text": "pero no",
+      "start_ms": 181040,
+      "end_ms": 185799,
+      "translations": {
+        "en": "but I can't",
+        "es": "pero no",
+        "fr": "mais non",
+        "de": "aber nicht",
+        "zh": "但不",
+        "it": "ma no"
+      },
+      "explanations": {
+        "en": "The singer admits to not being able to commit to such advice.",
+        "es": "El cantante admite no poder comprometerse a tal consejo.",
+        "fr": "Le chanteur admet qu'il ne peut pas s'engager à suivre un tel conseil.",
+        "de": "Der Sänger gibt zu, nicht in der Lage zu sein, einen solchen Rat umzusetzen.",
+        "zh": "歌手承认无法遵循这样的建议。",
+        "it": "Il cantante ammette di non riuscire a impegnarsi in tale consiglio."
+      }
+    },
+    {
+      "text": "puedo pero no",
+      "start_ms": 182280,
+      "end_ms": 191480,
+      "translations": {
+        "en": "I can't but I can't",
+        "es": "puedo pero no",
+        "fr": "je peux, mais non",
+        "de": "kann, aber nicht",
+        "zh": "我可以，但不",
+        "it": "posso ma no"
+      },
+      "explanations": {
+        "en": "Repetition of the inability to form a serious relationship.",
+        "es": "Repetición de la incapacidad de formar una relación seria.",
+        "fr": "Répétition de l'incapacité à former une relation sérieuse.",
+        "de": "Wiederholung der Unfähigkeit, eine ernsthafte Beziehung zu führen.",
+        "zh": "重复无法形成严肃关系的情况。",
+        "it": "Ripetizione dell'incapacità di formare una relazione seria."
+      }
+    },
+    {
+      "text": "puedo Yo quisiera enamor alma pero no",
+      "start_ms": 185799,
+      "end_ms": 196120,
+      "translations": {
+        "en": "I can't I wish I could fall in love but I can't",
+        "es": "puedo Yo quisiera enamor alma pero no",
+        "fr": "je peux, je voudrais tomber amoureux sincèrement mais non",
+        "de": "kann. Ich würde gerne meine Seele verlieben, aber nicht",
+        "zh": "我想真心相爱，但不",
+        "it": "posso Vorrei innamorarmi dell'anima ma non"
+      },
+      "explanations": {
+        "en": "Expresses a desire to fall in love sincerely but acknowledges an inability to do so.",
+        "es": "Expresa un deseo de enamorarse sinceramente pero reconoce una incapacidad para hacerlo.",
+        "fr": "Exprime un désir de tomber amoureux sincèrement mais reconnaît une incapacité à le faire.",
+        "de": "Drückt den Wunsch aus, sich aufrichtig zu verlieben, erkennt jedoch die Unfähigkeit dazu an.",
+        "zh": "表达想要真诚坠入爱河的愿望，但承认自己无法做到。",
+        "it": "Esprime il desiderio di innamorarsi sinceramente ma riconosce l'incapacità di farlo."
+      }
+    },
+    {
+      "text": "puedo pero no puedo Sorry Yo no confío",
+      "start_ms": 191480,
+      "end_ms": 199760,
+      "translations": {
+        "en": "I can't but I can't Sorry I don't trust",
+        "es": "puedo pero no puedo Sorry Yo no confío",
+        "fr": "je peux, mais je ne peux pas, désolé, je ne fais pas confiance",
+        "de": "kann, aber nicht kann, Entschuldigung, ich vertraue nicht",
+        "zh": "我可以，但不行，对不起，我不信任",
+        "it": "posso ma non posso Scusa Io non mi fido"
+      },
+      "explanations": {
+        "en": "The singer's lack of trust in himself and in others is a barrier to forming meaningful relationships.",
+        "es": "La falta de confianza del cantante en sí mismo y en los demás es una barrera para formar relaciones significativas.",
+        "fr": "Le manque de confiance du chanteur en soi et en les autres est un obstacle à la formation de relations significatives.",
+        "de": "Das mangelnde Vertrauen des Sängers in sich selbst und in andere ist ein Hindernis für die Bildung bedeutungsvoller Beziehungen.",
+        "zh": "歌手不信任自己和他人，这是形成有意义关系的障碍。",
+        "it": "La mancanza di fiducia del cantante in sé stesso e negli altri è un ostacolo per formare relazioni significative."
+      }
+    },
+    {
+      "text": "Yo no confío n ni en mí mismo confío si",
+      "start_ms": 196120,
+      "end_ms": 202040,
+      "translations": {
+        "en": "I don't trust, not even myself, trust if",
+        "es": "Yo no confío n ni en mí mismo confío si",
+        "fr": "Je ne fais pas confiance, même pas à moi-même, si",
+        "de": "Ich vertraue nicht, nicht einmal mir selbst, vertraue ich, wenn",
+        "zh": "我不信任，甚至不信任自己，如果",
+        "it": "Io non mi fido nemmeno di me stesso se"
+      },
+      "explanations": {
+        "en": "Reaffirms the theme of mistrust, even towards himself.",
+        "es": "Reafirma el tema de la desconfianza, incluso hacia sí mismo.",
+        "fr": "Réaffirme le thème de la méfiance, même envers soi-même.",
+        "de": "Bestätigt das Thema des Misstrauens, sogar gegenüber sich selbst.",
+        "zh": "重申不信任的主题，甚至对自己。",
+        "it": "Riafferma il tema della sfiducia, anche verso sé stesso."
+      }
+    },
+    {
+      "text": "quieres quedarte hoy que hace frío y",
+      "start_ms": 199760,
+      "end_ms": 204920,
+      "translations": {
+        "en": "you want to stay today because it's cold and",
+        "es": "quieres quedarte hoy que hace frío y",
+        "fr": "tu veux rester aujourd'hui qu'il fait froid et",
+        "de": "du heute bleiben möchtest, weil es kalt ist, und",
+        "zh": "如果你想今天留下来，因为很冷，",
+        "it": "vuoi restare oggi che fa freddo e"
+      },
+      "explanations": {
+        "en": "Offers a temporary connection due to the cold weather, suggesting transient comfort.",
+        "es": "Ofrece una conexión temporal debido al clima frío, sugiriendo un consuelo transitorio.",
+        "fr": "Offre une connexion temporaire en raison du froid, suggérant un réconfort éphémère.",
+        "de": "Bietet wegen des kalten Wetters eine vorübergehende Verbindung an, was auf vorübergehenden Trost hindeutet.",
+        "zh": "由于天气寒冷，提供一种暂时的连接，暗示短暂的安慰。",
+        "it": "Offre una connessione temporanea a causa del freddo, suggerendo un conforto transitorio."
+      }
+    },
+    {
+      "text": "mañana te vas n muchas quieren mi baby",
+      "start_ms": 202040,
+      "end_ms": 207879,
+      "translations": {
+        "en": "tomorrow you leave many want my baby",
+        "es": "mañana te vas n muchas quieren mi baby",
+        "fr": "demain tu pars, beaucoup veulent mon bébé",
+        "de": "morgen gehst du, viele wollen mein Baby",
+        "zh": "明天你就走了，很多人想要我的孩子",
+        "it": "domani te ne vai molte vogliono il mio bambino"
+      },
+      "explanations": {
+        "en": "Many women are interested in him for superficial reasons, like having his child, emphasizing the transactional nature of these relationships.",
+        "es": "Muchas mujeres están interesadas en él por razones superficiales, como tener su hijo, enfatizando la naturaleza transaccional de estas relaciones.",
+        "fr": "Beaucoup de femmes s'intéressent à lui pour des raisons superficielles, comme avoir son enfant, soulignant la nature transactionnelle de ces relations.",
+        "de": "Viele Frauen interessieren sich aus oberflächlichen Gründen für ihn, wie zum Beispiel, um sein Kind zu bekommen, was die transaktionale Natur dieser Beziehungen betont.",
+        "zh": "很多女人因为肤浅的原因对他感兴趣，比如拥有他的孩子，强调这些关系的交易性质。",
+        "it": "Molte donne sono interessate a lui per ragioni superficiali, come avere un suo figlio, enfatizzando la natura transazionale di queste relazioni."
+      }
+    },
+    {
+      "text": "gry quieren tener mi primogénito e y",
+      "start_ms": 204920,
+      "end_ms": 210000,
+      "translations": {
+        "en": "they want to have my firstborn and",
+        "es": "gry quieren tener mi primogénito e y",
+        "fr": "gry veulent avoir mon premier-né et",
+        "de": "gry wollen mein Erstgeborenes haben und",
+        "zh": "她们想要我的长子，和",
+        "it": "gry vogliono avere il mio primogenito e e"
+      },
+      "explanations": {
+        "en": "Continues the theme of superficial interest in him for status or legacy.",
+        "es": "Continúa el tema del interés superficial en él por estatus o legado.",
+        "fr": "Continue le thème de l'intérêt superficiel pour lui pour le statut ou l'héritage.",
+        "de": "Setzt das Thema des oberflächlichen Interesses an ihm wegen Status oder Erbe fort.",
+        "zh": "继续强调对他感兴趣的肤浅理由，例如地位或继承。",
+        "it": "Continua il tema dell'interesse superficiale in lui per status o eredità."
+      }
+    },
+    {
+      "text": "llevarse el crédito ya me aburr hoy",
+      "start_ms": 207879,
+      "end_ms": 212439,
+      "translations": {
+        "en": "take the credit I'm already bored today",
+        "es": "llevarse el crédito ya me aburr hoy",
+        "fr": "prendre le crédit, je m'ennuie déjà aujourd'hui",
+        "de": "sich das Verdienst nehmen, ich bin schon heute gelangweilt",
+        "zh": "获得声誉，我已经厌倦了今天",
+        "it": "prendersi il merito già mi annoia oggi"
+      },
+      "explanations": {
+        "en": "He becomes bored with the superficial nature of these interactions.",
+        "es": "Se aburre de la naturaleza superficial de estas interacciones.",
+        "fr": "Il s'ennuie de la nature superficielle de ces interactions.",
+        "de": "Er wird der oberflächlichen Natur dieser Interaktionen überdrüssig.",
+        "zh": "他对这些互动的肤浅性质感到厌倦。",
+        "it": "Si annoia della natura superficiale di queste interazioni."
+      }
+    },
+    {
+      "text": "quiero un totito inédito e uno nuevo uno",
+      "start_ms": 210000,
+      "end_ms": 215560,
+      "translations": {
+        "en": "I want an unpublished little one, a new one, a",
+        "es": "quiero un totito inédito e uno nuevo uno",
+        "fr": "je veux un totito inédit et un nouveau, un",
+        "de": "ich will einen unberührten totito, einen neuen, einen",
+        "zh": "我想要一个未见过的新鲜事物",
+        "it": "voglio un totito inedito e uno nuovo uno"
+      },
+      "explanations": {
+        "en": "Expresses a desire for novelty in relationships, illustrating dissatisfaction with the current state.",
+        "es": "Expresa un deseo de novedad en las relaciones, ilustrando insatisfacción con el estado actual.",
+        "fr": "Exprime un désir de nouveauté dans les relations, illustrant l'insatisfaction de l'état actuel.",
+        "de": "Drückt den Wunsch nach Neuheit in Beziehungen aus und veranschaulicht die Unzufriedenheit mit dem gegenwärtigen Zustand.",
+        "zh": "表达对关系中新鲜感的渴望，说明对现状的不满。",
+        "it": "Esprime il desiderio di novità nelle relazioni, illustrando insoddisfazione per lo stato attuale."
+      }
+    },
+    {
+      "text": "nuevo uno nuevo uno nuevo hazle caso a",
+      "start_ms": 212439,
+      "end_ms": 218560,
+      "translations": {
+        "en": "new one, new one, new one, listen to",
+        "es": "nuevo uno nuevo uno nuevo hazle caso a",
+        "fr": "nouveau, nouveau, nouveau, écoute",
+        "de": "neuen, einen neuen, einen neuen, hör auf",
+        "zh": "新的，新的，新的，听你朋友说，",
+        "it": "nuovo uno nuovo uno nuovo dai retta a"
+      },
+      "explanations": {
+        "en": "Repetition emphasizes the desire for something new and different.",
+        "es": "La repetición enfatiza el deseo de algo nuevo y diferente.",
+        "fr": "La répétition souligne le désir de quelque chose de nouveau et différent.",
+        "de": "Die Wiederholung betont den Wunsch nach etwas Neuem und Anderem.",
+        "zh": "重复强调对新鲜事物的渴望。",
+        "it": "La ripetizione enfatizza il desiderio di qualcosa di nuovo e diverso."
+      }
+    },
+    {
+      "text": "tu amiga ya tiene razón Yo voy a",
+      "start_ms": 215560,
+      "end_ms": 222319,
+      "translations": {
+        "en": "your friend, she's right I'm going to",
+        "es": "tu amiga ya tiene razón Yo voy a",
+        "fr": "ton amie a raison, je vais",
+        "de": "deine Freundin hat recht, ich werde",
+        "zh": "她是对的，我会",
+        "it": "la tua amica ha già ragione io vado a"
+      },
+      "explanations": {
+        "en": "Acknowledges that warnings from others about his behavior are correct.",
+        "es": "Reconoce que las advertencias de otros sobre su comportamiento son correctas.",
+        "fr": "Reconnaît que les avertissements des autres concernant son comportement sont corrects.",
+        "de": "Erkennt an, dass Warnungen von anderen über sein Verhalten korrekt sind.",
+        "zh": "承认他人对他行为的警告是正确的。",
+        "it": "Riconosce che gli avvertimenti degli altri sul suo comportamento sono corretti."
+      }
+    },
+    {
+      "text": "romperte el corazón voy a romperte el",
+      "start_ms": 218560,
+      "end_ms": 226200,
+      "translations": {
+        "en": "break your heart I'm going to break your",
+        "es": "romperte el corazón voy a romperte el",
+        "fr": "te briser le cœur, je vais te briser le",
+        "de": "dir das Herz brechen, ich werde dir das Herz brechen",
+        "zh": "伤你的心，我会伤你的心，",
+        "it": "spezzarti il cuore ti spezzerò il"
+      },
+      "explanations": {
+        "en": "Admits that his behavior likely leads to heartbreak for partners.",
+        "es": "Admite que su comportamiento probablemente lleva a romper el corazón de las parejas.",
+        "fr": "Admet que son comportement conduit probablement à briser le cœur des partenaires.",
+        "de": "Gibt zu, dass sein Verhalten wahrscheinlich zu Herzschmerz für Partner führt.",
+        "zh": "承认他的行为可能会导致伴侣心碎。",
+        "it": "Ammette che il suo comportamento probabilmente porta a spezzare il cuore ai partner."
+      }
+    },
+    {
+      "text": "corazón e No te enamores de mí No te",
+      "start_ms": 222319,
+      "end_ms": 230920,
+      "translations": {
+        "en": "heart Don't fall in love with me Don't",
+        "es": "corazón e No te enamores de mí No te",
+        "fr": "cœur, ne tombe pas amoureux de moi, ne te",
+        "de": "Herz. Verliebe dich nicht in mich. Verliebe dich nicht",
+        "zh": "心，不要爱上我，不要",
+        "it": "cuore e Non innamorarti di me Non ti"
+      },
+      "explanations": {
+        "en": "Warns others not to fall in love with him, as he is aware of his inability to commit.",
+        "es": "Advierte a otros que no se enamoren de él, ya que es consciente de su incapacidad para comprometerse.",
+        "fr": "Avertit les autres de ne pas tomber amoureux de lui, car il est conscient de son incapacité à s'engager.",
+        "de": "Warnt andere davor, sich in ihn zu verlieben, da er sich seiner Unfähigkeit, sich zu binden, bewusst ist.",
+        "zh": "警告他人不要爱上他，因为他意识到自己无法承诺。",
+        "it": "Avvisa gli altri di non innamorarsi di lui, poiché è consapevole della sua incapacità di impegnarsi."
+      }
+    },
+    {
+      "text": "enamores de mí Sor Yo soy así e no sé",
+      "start_ms": 226200,
+      "end_ms": 235000,
+      "translations": {
+        "en": "fall in love with me Sorry I'm like this and I don't know",
+        "es": "enamores de mí Sor Yo soy así e no sé",
+        "fr": "enamores de moi, sor, je suis comme ça et je ne sais pas",
+        "de": "in mich. Sor, ich bin so und weiß nicht",
+        "zh": "爱上我，抱歉，我就是这样，不知道",
+        "it": "innamorare di me Sor Io sono così e non so"
+      },
+      "explanations": {
+        "en": "Acknowledges his nature is not conducive to serious relationships and expresses confusion or acceptance of this fact.",
+        "es": "Reconoce que su naturaleza no es propicia para relaciones serias y expresa confusión o aceptación de este hecho.",
+        "fr": "Reconnaît que sa nature n'est pas propice aux relations sérieuses et exprime une confusion ou une acceptation de ce fait.",
+        "de": "Erkennt an, dass seine Natur nicht förderlich für ernsthafte Beziehungen ist und drückt Verwirrung oder Akzeptanz dieses Fakts aus.",
+        "zh": "承认自己的本性不适合严肃关系，并对这种情况感到困惑或接受。",
+        "it": "Riconosce che la sua natura non è adatta a relazioni serie ed esprime confusione o accettazione di questo fatto."
+      }
+    },
+    {
+      "text": "por qué soy así hazle caso a tu amiga",
+      "start_ms": 230920,
+      "end_ms": 238720,
+      "translations": {
+        "en": "why I'm like this listen to your friend",
+        "es": "por qué soy así hazle caso a tu amiga",
+        "fr": "pourquoi je suis comme ça, écoute ton amie",
+        "de": "warum ich so bin, hör auf deine Freundin",
+        "zh": "我为什么这样，听你朋友说，",
+        "it": "perché sono così ascolta la tua amica"
+      },
+      "explanations": {
+        "en": "Encourages others to heed advice that warns against him, further underscoring his self-awareness.",
+        "es": "Anima a otros a seguir el consejo que advierte contra él, subrayando aún más su autoconciencia.",
+        "fr": "Encourage les autres à écouter les conseils qui mettent en garde contre lui, renforçant sa conscience de soi.",
+        "de": "Ermutigt andere, Ratschläge zu beachten, die vor ihm warnen, und unterstreicht weiter sein Selbstbewusstsein.",
+        "zh": "鼓励他人听取警告，避免爱上他，进一步强调他的自我意识。",
+        "it": "Incoraggia gli altri a seguire i consigli che mettono in guardia contro di lui, sottolineando ulteriormente la sua consapevolezza di sé."
+      }
+    },
+    {
+      "text": "ella tiene razón Yo voy a romperte el",
+      "start_ms": 235000,
+      "end_ms": 241760,
+      "translations": {
+        "en": "she's right I'm going to break your",
+        "es": "ella tiene razón Yo voy a romperte el",
+        "fr": "elle a raison, je vais te briser le",
+        "de": "sie hat recht, ich werde dir das Herz brechen",
+        "zh": "她是对的，我会伤你的",
+        "it": "lei ha ragione ti spezzerò il"
+      },
+      "explanations": {
+        "en": "Reiterates the inevitability of causing heartbreak.",
+        "es": "Reitera la inevitabilidad de causar desamor.",
+        "fr": "Réitère l'inévitabilité de causer des chagrins d'amour.",
+        "de": "Wiederholt die Unvermeidbarkeit, Herzschmerz zu verursachen.",
+        "zh": "重申导致心碎的必然性。",
+        "it": "Ripete l'inevitabilità di causare dolore."
+      }
+    },
+    {
+      "text": "corazón compte el",
+      "start_ms": 238720,
+      "end_ms": 244879,
+      "translations": {
+        "en": "heart break the",
+        "es": "corazón compte el",
+        "fr": "cœur, compte le",
+        "de": "Herz. Zähle das",
+        "zh": "心，",
+        "it": "cuore spezza il"
+      },
+      "explanations": {
+        "en": "Continuation of the previous sentiment.",
+        "es": "Continuación del sentimiento anterior.",
+        "fr": "Continuation du sentiment précédent.",
+        "de": "Fortsetzung des vorherigen Gefühls.",
+        "zh": "延续之前的情感。",
+        "it": "Continuazione del sentimento precedente."
+      }
+    },
+    {
+      "text": "corazón No te enamores de mí No te",
+      "start_ms": 241760,
+      "end_ms": 249560,
+      "translations": {
+        "en": "heart Don't fall in love with me Don't",
+        "es": "corazón No te enamores de mí No te",
+        "fr": "cœur, ne tombe pas amoureux de moi, ne te",
+        "de": "Herz. Verliebe dich nicht in mich. Verliebe dich nicht",
+        "zh": "心，不要爱上我，不要",
+        "it": "cuore Non innamorarti di me Non ti"
+      },
+      "explanations": {
+        "en": "Repetition reinforces the warning against getting emotionally involved with him.",
+        "es": "La repetición refuerza la advertencia de no involucrarse emocionalmente con él.",
+        "fr": "La répétition renforce l'avertissement de ne pas s'impliquer émotionnellement avec lui.",
+        "de": "Die Wiederholung verstärkt die Warnung, sich nicht emotional auf ihn einzulassen.",
+        "zh": "重复警告不要与他产生情感联系。",
+        "it": "La ripetizione rafforza l'avvertimento contro l'impegnarsi emotivamente con lui."
+      }
+    },
+    {
+      "text": "enamores de mí no Sor Yo soy así ya no",
+      "start_ms": 244879,
+      "end_ms": 253200,
+      "translations": {
+        "en": "fall in love with me no Sorry I'm like this I don't",
+        "es": "enamores de mí no Sor Yo soy así ya no",
+        "fr": "enamores de moi, non, sor, je suis comme ça, je ne",
+        "de": "in mich, nicht. Sor, ich bin so, ich will nicht mehr",
+        "zh": "爱上我，不，抱歉，我就是这样，不再",
+        "it": "innamorare di me no Sor Io sono così ormai non"
+      },
+      "explanations": {
+        "en": "Expresses a desire to change but highlights the difficulty in doing so.",
+        "es": "Expresa un deseo de cambiar pero destaca la dificultad de hacerlo.",
+        "fr": "Exprime un désir de changer mais souligne la difficulté de le faire.",
+        "de": "Drückt den Wunsch aus, sich zu ändern, hebt jedoch die Schwierigkeit hervor, dies zu tun.",
+        "zh": "表达改变的愿望，但强调改变的困难。",
+        "it": "Esprime il desiderio di cambiare ma evidenzia la difficoltà nel farlo."
+      }
+    },
+    {
+      "text": "quiero ser así",
+      "start_ms": 249560,
+      "end_ms": 253200,
+      "translations": {
+        "en": "want to be like this",
+        "es": "quiero ser así",
+        "fr": "je ne veux plus être comme ça",
+        "de": "so sein",
+        "zh": "不想再这样。",
+        "it": "voglio essere così"
+      },
+      "explanations": {
+        "en": "Ends on a note of self-reflection, indicating a wish to change his nature.",
+        "es": "Termina con una nota de autorreflexión, indicando un deseo de cambiar su naturaleza.",
+        "fr": "Se termine sur une note de réflexion personnelle, indiquant un souhait de changer sa nature.",
+        "de": "Endet mit einem selbstreflektiven Ton, der den Wunsch zeigt, seine Natur zu ändern.",
+        "zh": "以自我反省的语气结尾，表明希望改变自己的本性。",
+        "it": "Termina con una nota di auto-riflessione, indicando un desiderio di cambiare la propria natura."
+      }
+    },
+    {
+      "text": "ah",
+      "start_ms": 269840,
+      "end_ms": 272840,
+      "translations": {
+        "en": "ah",
+        "es": "ah",
+        "fr": "ah",
+        "de": "ah",
+        "zh": "啊",
+        "it": "ah"
+      },
+      "explanations": {
+        "en": "A simple sound, often used to express a range of emotions or as a musical filler.",
+        "es": "Un sonido simple, a menudo usado para expresar una gama de emociones o como un relleno musical.",
+        "fr": "Un simple son, souvent utilisé pour exprimer une gamme d'émotions ou comme remplissage musical.",
+        "de": "Ein einfacher Laut, der oft verwendet wird, um eine Reihe von Emotionen auszudrücken oder als musikalischer Füller.",
+        "zh": "一个简单的声音，通常用于表达各种情感或作为音乐填充。",
+        "it": "Un semplice suono, spesso usato per esprimere una gamma di emozioni o come riempitivo musicale."
       }
     }
   ],
@@ -32,22 +1544,122 @@
     {
       "title": {
         "en": "Intro",
-        "es": "Introducción",
+        "es": "Intro",
         "fr": "Introduction",
-        "de": "Einleitung",
+        "de": "Intro",
         "zh": "介绍",
         "it": "Introduzione"
       },
       "sectionExplanation": {
-        "en": "This is a dummy section explanation for testing.",
-        "es": "Esta es una explicación de sección ficticia para pruebas.",
-        "fr": "Ceci est une explication de section factice pour les tests.",
-        "de": "Dies ist eine Dummy-Abschnittserklärung zum Testen.",
-        "zh": "这是用于测试的虚拟部分说明。",
-        "it": "Questa è una spiegazione di sezione fittizia per i test."
+        "en": "The introduction features an exchange between the artist and a family member, setting up the song's theme of numerous romantic relationships through playful conversation and cultural references to family dynamics.",
+        "es": "La introducción presenta un intercambio entre el artista y un miembro de la familia, estableciendo el tema de la canción sobre numerosas relaciones románticas a través de una conversación juguetona y referencias culturales a la dinámica familiar.",
+        "fr": "L'introduction présente un échange entre l'artiste et un membre de sa famille, mettant en place le thème de la chanson sur les nombreuses relations amoureuses à travers une conversation ludique et des références culturelles à la dynamique familiale.",
+        "de": "Die Einführung enthält einen Austausch zwischen dem Künstler und einem Familienmitglied, der das Thema des Liedes über zahlreiche romantische Beziehungen durch ein spielerisches Gespräch und kulturelle Anspielungen auf Familiendynamik einleitet.",
+        "zh": "开头部分是艺术家与家人之间的对话，通过轻松的交流和对家庭动态的文化引用，引出了歌曲关于众多浪漫关系的主题。",
+        "it": "L'introduzione presenta uno scambio tra l'artista e un membro della famiglia, preparando il tema della canzone sulle numerose relazioni romantiche attraverso una conversazione giocosa e riferimenti culturali alle dinamiche familiari."
       },
-      "start_ms": 0,
-      "end_ms": 2000
+      "start_ms": 15400,
+      "end_ms": 31960
+    },
+    {
+      "title": {
+        "en": "Chorus",
+        "es": "Chorus",
+        "fr": "Refrain",
+        "de": "Refrain",
+        "zh": "副歌",
+        "it": "Ritornello"
+      },
+      "sectionExplanation": {
+        "en": "The chorus emphasizes the recurring theme of having many girlfriends, with a carefree attitude towards commitment and relationships, highlighting the artist's nonchalant lifestyle.",
+        "es": "El coro enfatiza el tema recurrente de tener muchas novias, con una actitud despreocupada hacia el compromiso y las relaciones, destacando el estilo de vida indiferente del artista.",
+        "fr": "Le refrain souligne le thème récurrent d'avoir de nombreuses petites amies, avec une attitude insouciante envers l'engagement et les relations, mettant en avant le style de vie nonchalant de l'artiste.",
+        "de": "Der Refrain betont das wiederkehrende Thema vieler Freundinnen und vermittelt eine unbekümmerte Einstellung zu Verpflichtungen und Beziehungen, was den lässigen Lebensstil des Künstlers hervorhebt.",
+        "zh": "副歌强调了拥有众多女友的反复主题，表现出对承诺和关系的无所谓态度，突出了艺术家漫不经心的生活方式。",
+        "it": "Il ritornello sottolinea il tema ricorrente dell'avere molte fidanzate, con un atteggiamento spensierato nei confronti dell'impegno e delle relazioni, evidenziando lo stile di vita disinvolto dell'artista."
+      },
+      "start_ms": 40840,
+      "end_ms": 60120
+    },
+    {
+      "title": {
+        "en": "Verse 1",
+        "es": "Verse 1",
+        "fr": "Couplet 1",
+        "de": "Strophe 1",
+        "zh": "第一段",
+        "it": "Verso 1"
+      },
+      "sectionExplanation": {
+        "en": "This verse delves into the artist's various relationships, listing numerous women from different backgrounds, showcasing the diversity and superficial nature of these connections.",
+        "es": "Este verso profundiza en las diversas relaciones del artista, enumerando numerosas mujeres de diferentes orígenes, mostrando la diversidad y la naturaleza superficial de estas conexiones.",
+        "fr": "Ce couplet explore les diverses relations de l'artiste, énumérant de nombreuses femmes de divers horizons, mettant en avant la diversité et la superficialité de ces liaisons.",
+        "de": "Diese Strophe taucht in die verschiedenen Beziehungen des Künstlers ein und listet zahlreiche Frauen aus unterschiedlichen Hintergründen auf, was die Vielfalt und oberflächliche Natur dieser Verbindungen zeigt.",
+        "zh": "这一段深入探讨了艺术家的各种关系，列举了来自不同背景的众多女性，展示了这些关系的多样性和表面性。",
+        "it": "Questo verso esplora le varie relazioni dell'artista, elencando numerose donne di diversi contesti, mostrando la diversità e la natura superficiale di queste connessioni."
+      },
+      "start_ms": 77040,
+      "end_ms": 110680
+    },
+    {
+      "title": {
+        "en": "Chorus",
+        "es": "Chorus",
+        "fr": "Refrain",
+        "de": "Refrain",
+        "zh": "副歌",
+        "it": "Ritornello"
+      },
+      "sectionExplanation": {
+        "en": "The chorus repeats, reinforcing the main theme of the song with its catchy hook about having many girlfriends and the lack of serious commitment.",
+        "es": "El coro se repite, reforzando el tema principal de la canción con su pegajoso gancho sobre tener muchas novias y la falta de compromiso serio.",
+        "fr": "Le refrain se répète, renforçant le thème principal de la chanson avec son refrain accrocheur sur le fait d'avoir de nombreuses petites amies et l'absence d'engagement sérieux.",
+        "de": "Der Refrain wiederholt sich und verstärkt das Hauptthema des Liedes mit seinem eingängigen Hook über viele Freundinnen und den Mangel an ernsthafter Verpflichtung.",
+        "zh": "副歌重复出现，通过其关于拥有众多女友和缺乏认真承诺的朗朗上口的旋律，强化了歌曲的主要主题。",
+        "it": "Il ritornello si ripete, rafforzando il tema principale della canzone con il suo ritornello accattivante sull'avere molte fidanzate e la mancanza di impegno serio."
+      },
+      "start_ms": 110680,
+      "end_ms": 132520
+    },
+    {
+      "title": {
+        "en": "Bridge",
+        "es": "Bridge",
+        "fr": "Pont",
+        "de": "Bridge",
+        "zh": "桥段",
+        "it": "Ponte"
+      },
+      "sectionExplanation": {
+        "en": "The bridge reflects on the artist's internal thoughts and feelings about his lifestyle, revealing a desire for change but recognizing personal limitations and mistrust.",
+        "es": "El puente refleja los pensamientos y sentimientos internos del artista sobre su estilo de vida, revelando un deseo de cambio pero reconociendo limitaciones personales y desconfianza.",
+        "fr": "Le pont reflète les pensées et sentiments internes de l'artiste à propos de son style de vie, révélant un désir de changement mais reconnaissant ses limites personnelles et sa méfiance.",
+        "de": "Die Bridge reflektiert die inneren Gedanken und Gefühle des Künstlers über seinen Lebensstil und zeigt den Wunsch nach Veränderung, erkennt jedoch persönliche Grenzen und Misstrauen an.",
+        "zh": "桥段反映了艺术家对自己生活方式的内心思考和感受，揭示了改变的愿望，但也认识到个人的局限性和不信任。",
+        "it": "Il ponte riflette sui pensieri e sentimenti interni dell'artista riguardo al suo stile di vita, rivelando un desiderio di cambiamento ma riconoscendo i limiti personali e la sfiducia."
+      },
+      "start_ms": 181040,
+      "end_ms": 253200
+    },
+    {
+      "title": {
+        "en": "Outro",
+        "es": "Outro",
+        "fr": "Outro",
+        "de": "Outro",
+        "zh": "结尾",
+        "it": "Conclusione"
+      },
+      "sectionExplanation": {
+        "en": "The outro concludes with a reflection on the artist's nature and a wish to change, leaving the listener with a sense of introspection and unresolved tension about personal growth.",
+        "es": "El outro concluye con una reflexión sobre la naturaleza del artista y un deseo de cambio, dejando al oyente con un sentido de introspección y tensión no resuelta sobre el crecimiento personal.",
+        "fr": "L'outro se conclut par une réflexion sur la nature de l'artiste et un souhait de changement, laissant l'auditeur avec un sentiment d'introspection et une tension non résolue sur la croissance personnelle.",
+        "de": "Das Outro endet mit einer Reflexion über die Natur des Künstlers und einem Wunsch nach Veränderung, was dem Zuhörer ein Gefühl der Selbstbetrachtung und ungelöster Spannung über persönliches Wachstum hinterlässt.",
+        "zh": "结尾部分对艺术家的本性进行了反思，并表达了改变的愿望，给听众留下了对个人成长的内省和未解决的紧张感。",
+        "it": "La conclusione si chiude con una riflessione sulla natura dell'artista e un desiderio di cambiamento, lasciando l'ascoltatore con un senso di introspezione e tensione irrisolta riguardo alla crescita personale."
+      },
+      "start_ms": 253200,
+      "end_ms": 272840
     }
   ]
 }

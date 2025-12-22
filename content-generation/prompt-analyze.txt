@@ -6,10 +6,8 @@ You need to provide two things:
 
 ## Response Format
 
-Your response must be a JSON object with two keys:
+Your response must be a JSON object with exactly two keys: `lyrics` and `structuredSections`. The exact format is:
 
-### 1. "lyrics"
-An array of lyric objects with explanations:
 ```json
 {
   "lyrics": [
@@ -19,17 +17,7 @@ An array of lyric objects with explanations:
       "end_ms": 2000,
       "explanation": "Detailed explanation of meaning, culture, or slang in English. Can be null for grouping."
     }
-  ]
-}
-```
-
-**Explanation Grouping:**
-To explain a phrase that spans multiple lines, set `explanation` to `null` for the initial lines. The next line with a non-null `explanation` should explain the entire group.
-
-### 2. "structuredSections"
-An array of section objects with timestamps:
-```json
-{
+  ],
   "structuredSections": [
     {
       "title": "Intro",
@@ -47,16 +35,42 @@ An array of section objects with timestamps:
 }
 ```
 
+### Required Fields
+
+**For each lyric object:**
+- `text` (string): The original lyric text
+- `start_ms` (number): Start timestamp in milliseconds
+- `end_ms` (number): End timestamp in milliseconds
+- `explanation` (string | null): Detailed explanation in English, or null for grouping
+
+**For each structured section object:**
+- `title` (string): Section name (e.g., "Intro", "Verse 1", "Chorus")
+- `sectionExplanation` (string): Explanation of the section's purpose or theme
+- `start_ms` (number): Start timestamp in milliseconds
+- `end_ms` (number): End timestamp in milliseconds
+
+**Explanation Grouping:**
+To explain a phrase that spans multiple lines, set `explanation` to `null` for the initial lines. The next line with a non-null `explanation` should explain the entire group.
+
 **Section Guidelines:**
 - Use standard section names when appropriate: Intro, Verse, Verse 1/2/3, Chorus, Bridge, Outro, Interlude, etc
 - Sections can repeat (e.g., multiple Choruses with different timestamp ranges)
 - Provide meaningful section explanations that describe the section as a whole
 - Timestamps should match the lyric segments provided
 
+## Transcription Correction
+
+**Important:** These lyrics are transcribed from music videos using AI. Some lyrics might be slightly off. You have the freedom to correct the transcription text if you notice errors. If something doesn't look quite right, feel free to adjust the word to what you think the singer is actually saying. There are times when words might be improperly transcribed. When unsure, just leave it as is, but it's okay to change what you're seeing. For example, some words might be misspelled or generally missheard:
+'uba' might be heard but the word is actually 'uva'
+Keep in note that misshearings often involve sounds like 'b'/'v', 'j'/'y', 'll'/'y', silent 'h', and tricky 'tr' sounds. But don't limit it to that.
+
+The `text` field in your response should contain the **corrected** lyric text. This corrected text will be used throughout the rest of the pipeline, so accuracy is important.
+
 ## Notes
-- All explanations should be in English (they will be translated in the next step)
-- Section titles should be standard English names (e.g., "Intro", "Verse 1", "Chorus") - they will be translated later
+- All explanations should be in English 
+- Section titles should be standard English names (e.g., "Intro", "Verse 1", "Chorus")
 - Include `start_ms` and `end_ms` timestamps for each lyric line (from the input segments)
 - Focus on cultural context, slang, and deeper meaning
 - Be thorough but concise
+- The `text` field should contain corrected/improved transcriptions when needed
 

@@ -1,67 +1,29 @@
-Your task is to translate the song lyrics and explanations into multiple languages.
+# Translation Guidelines
 
-You will receive:
-1. Lyrics with explanations
-2. Section information with explanations
+This document contains general guidelines for translating song lyrics and explanations. These guidelines are used when translating into any target language.
 
-## Response Format
+## Important Notes
 
-Your response must be a JSON object with two keys:
+- **Corrected Lyrics**: The lyrics you receive have already been analyzed and corrected for transcription errors. Please use the provided text as-is for translation. Do not modify the lyric text during translation.
 
-### 1. "translations"
-An array of translation objects for each lyric line:
-```json
-{
-  "translations": [
-    {
-      "text": "Original lyric text",
-      "translations": {
-        "en": "English translation",
-        "es": "Spanish translation (original)",
-        "fr": "French translation",
-        "de": "German translation",
-        "zh": "Chinese translation",
-        "it": "Italian translation"
-      }
-    }
-  ]
-}
-```
+- **Meaning and Tone**: Maintain the meaning and tone of the original text. Preserve the emotional impact and stylistic choices.
 
-### 2. "sectionExplanations"
-An array of section explanation translations:
-```json
-{
-  "sectionExplanations": [
-    {
-      "title": {
-        "en": "Intro",
-        "es": "Introducción",
-        "fr": "Introduction",
-        "de": "Einleitung",
-        "zh": "介绍",
-        "it": "Introduzione"
-      },
-      "sectionExplanation": {
-        "en": "The introduction sets the stage...",
-        "es": "La introducción establece el escenario...",
-        "fr": "L'introduction établit le décor...",
-        "de": "Die Einleitung setzt die Bühne...",
-        "zh": "介绍为歌曲奠定了基础...",
-        "it": "L'introduzione prepara il terreno..."
-      }
-    }
-  ]
-}
-```
+- **Cultural Context**: Preserve cultural references and context. When translating, consider how cultural elements should be handled (kept as-is, explained, or adapted).
 
-## Translation Guidelines
-- Maintain the meaning and tone of the original
-- Preserve cultural references and context
-- For explanations, ensure the translated explanation makes sense in the target language
-- Section titles must be translated into all languages as i18n objects (not strings)
+- **Explanations**: For explanations, ensure the translated explanation makes sense in the target language. The explanation should be natural and clear, not a literal word-for-word translation.
+
+- **Null Explanations**: If an explanation was `null` in the input, the translation should also be `null`. This is used for grouping multiple lines that share a single explanation.
+
+## Translation Approach
+
+Translations are done language-by-language:
+- Each language is translated in a separate API call
+- All lyrics are translated into one target language at a time
+- All sections are translated into one target language at a time
+- This approach ensures quality and avoids length limits
 
 ## Supported Languages
+
 - `en` - English
 - `es` - Spanish
 - `fr` - French

@@ -6,18 +6,480 @@
   "originalLanguage": "es",
   "lyrics": [
     {
-      "text": "Dummy lyric line",
-      "start_ms": 0,
-      "end_ms": 2000,
-      "explanation": "This is a dummy explanation for testing."
+      "text": "Qué lindo está Ese nene de Titi Mira qué",
+      "start_ms": 15400,
+      "end_ms": 20640,
+      "explanation": "The line captures a familial and affectionate tone, as 'Titi' is a colloquial term for 'aunt' in Puerto Rican Spanish, indicating a close family relationship."
+    },
+    {
+      "text": "grande tú estás tú tienes muchas novias",
+      "start_ms": 18080,
+      "end_ms": 23119,
+      "explanation": "The aunt comments on the boy's growth and jokingly suggests he has many girlfriends, highlighting a common cultural trope of teasing young boys about romantic interests."
+    },
+    {
+      "text": "verdad cuántas novias tú tienes Titi Yo",
+      "start_ms": 20640,
+      "end_ms": 26080,
+      "explanation": "The aunt continues the playful questioning about the number of girlfriends, which is a lighthearted way to engage with children in conversation."
+    },
+    {
+      "text": "tengo como tres novia en la escuela cómo",
+      "start_ms": 23119,
+      "end_ms": 31960,
+      "explanation": "The boy humorously responds, exaggerating about having three girlfriends at school, reflecting childhood innocence and the playfulness of the conversation."
+    },
+    {
+      "text": "es Mira a ver que te doy un chanet",
+      "start_ms": 26080,
+      "end_ms": 31960,
+      "explanation": "The word 'chanet' is likely a playful or made-up term, in line with the teasing and jocular nature of the exchange."
+    },
+    {
+      "text": "e Titi me preguntó si tengo mucha",
+      "start_ms": 40840,
+      "end_ms": 48879,
+      "explanation": "The line introduces the recurring theme of the song, where Titi (aunt) asks if he has many girlfriends. This sets up the main narrative of romantic escapades that follows."
+    },
+    {
+      "text": "novia mucha novia hoy Tengo a una mañana",
+      "start_ms": 45039,
+      "end_ms": 52559,
+      "explanation": "The singer admits to having multiple girlfriends, emphasizing the number and the casual nature of these relationships."
+    },
+    {
+      "text": "otra e pero no hay boda Titi me preguntó",
+      "start_ms": 48879,
+      "end_ms": 54320,
+      "explanation": "Despite having many romantic partners, there is no intention of marriage, highlighting a carefree and non-committal attitude towards relationships."
+    },
+    {
+      "text": "si tengo mucha",
+      "start_ms": 52559,
+      "end_ms": 58199,
+      "explanation": "Continuation of the aunt's questioning about the number of girlfriends, reinforcing the main theme of the song."
+    },
+    {
+      "text": "novia mucha novia hoy Tengo a una mañana",
+      "start_ms": 54320,
+      "end_ms": 60120,
+      "explanation": "Repetition of the previous lines to emphasize the abundance of relationships and the routine nature of changing partners."
+    },
+    {
+      "text": "otra",
+      "start_ms": 58199,
+      "end_ms": 63920,
+      "explanation": "The short line reinforces the pattern of having different partners each day, underscoring the transient nature of these relationships."
+    },
+    {
+      "text": "llevar la todas para un VIP un VIP Ey",
+      "start_ms": 60120,
+      "end_ms": 66520,
+      "explanation": "The singer boasts about taking all his girlfriends to a VIP section, suggesting a lifestyle of luxury and exclusivity."
+    },
+    {
+      "text": "saluden a ti ti vamos a tirar un selfie",
+      "start_ms": 63920,
+      "end_ms": 69920,
+      "explanation": "The act of taking a selfie in a VIP setting is a modern cultural reference to capturing and sharing moments of perceived importance or status."
+    },
+    {
+      "text": "se e que sonrían la que le metí en un",
+      "start_ms": 66520,
+      "end_ms": 74080,
+      "explanation": "Encourages the girlfriends to smile for the photo, adding a layer of performative happiness in these public displays."
+    },
+    {
+      "text": "VIP un VIP e saluden a ti ti vamos a",
+      "start_ms": 69920,
+      "end_ms": 77040,
+      "explanation": "Repetition of the earlier lines reinforces the glamorous lifestyle and the importance of social media in modern relationships."
+    },
+    {
+      "text": "tirar un selfie sees que sonrían las que",
+      "start_ms": 74080,
+      "end_ms": 78600,
+      "explanation": "The insistence on smiling for selfies highlights the superficial aspects of these relationships."
+    },
+    {
+      "text": "ya Se olvidaron de mí me gustan mucho",
+      "start_ms": 77040,
+      "end_ms": 82040,
+      "explanation": "The line suggests that despite the many relationships, they are fleeting, as some partners have already forgotten him."
+    },
+    {
+      "text": "las gabrielas las Patricia las Nicole La",
+      "start_ms": 78600,
+      "end_ms": 84880,
+      "explanation": "Listing names personalizes the narrative, illustrating the variety and number of girlfriends."
+    },
+    {
+      "text": "Sofía mi primera novia en kinder María y",
+      "start_ms": 82040,
+      "end_ms": 87079,
+      "explanation": "Mentions of kindergarten relationships add a nostalgic and humorous touch, reflecting on how these patterns started in childhood."
+    },
+    {
+      "text": "mi primer amor se llama B talía tengo",
+      "start_ms": 84880,
+      "end_ms": 88720,
+      "explanation": "Refers to his first love, which contrasts with the superficial relationships discussed, adding depth to the narrative."
+    },
+    {
+      "text": "una colombiana que me escribe todos los",
+      "start_ms": 87079,
+      "end_ms": 91560,
+      "explanation": "Mentions of a Colombian partner highlight the geographic diversity of his relationships."
+    },
+    {
+      "text": "días y una mexicana que ni yo sabía otra",
+      "start_ms": 88720,
+      "end_ms": 93560,
+      "explanation": "The surprise at having a Mexican girlfriend he wasn't aware of underscores the casual and disconnected nature of these interactions."
+    },
+    {
+      "text": "en San Antonio que me quier todavía y",
+      "start_ms": 91560,
+      "end_ms": 95880,
+      "explanation": "Continues the theme of long-distance and varied relationships."
+    },
+    {
+      "text": "las dpr que todita son mías una",
+      "start_ms": 93560,
+      "end_ms": 99240,
+      "explanation": "The mention of 'DPR' (Dominican Republic) emphasizes the international scope of his romantic life."
+    },
+    {
+      "text": "dominicana que juga bombón uba uba",
+      "start_ms": 95880,
+      "end_ms": 102399,
+      "explanation": "References a Dominican partner and 'bombón,' a term of endearment or slang for something sweet or attractive."
+    },
+    {
+      "text": "bombón la de Barcelona que vino en avión",
+      "start_ms": 99240,
+      "end_ms": 104759,
+      "explanation": "The Barcelona girlfriend arriving by plane suggests a lifestyle of travel and international connections."
+    },
+    {
+      "text": "y dice que mi dicho está cabrón yo dejo",
+      "start_ms": 102399,
+      "end_ms": 106960,
+      "explanation": "The use of 'cabrón' here is a slang term meaning something impressive or cool, indicating the girlfriend is impressed by him."
+    },
+    {
+      "text": "que jueguen con mi corazón Quisiera",
+      "start_ms": 104759,
+      "end_ms": 108920,
+      "explanation": "Acknowledges that his heart is played with, hinting at the emotional risks of his lifestyle."
+    },
+    {
+      "text": "mudarme con todas por una mansión el día",
+      "start_ms": 106960,
+      "end_ms": 110680,
+      "explanation": "A fantastical idea of living with all his partners in one mansion, illustrating a humorous and exaggerated view of his romantic life."
+    },
+    {
+      "text": "que me cases te envío la invitación",
+      "start_ms": 108920,
+      "end_ms": 114000,
+      "explanation": "Promises an invitation to his wedding, despite the unlikely nature of such a commitment given his lifestyle."
+    },
+    {
+      "text": "muchacho deja eso e Titi me preguntó si",
+      "start_ms": 110680,
+      "end_ms": 115280,
+      "explanation": "'Muchacho deja eso' is likely advice to abandon this lifestyle, emphasizing the song's recurring theme of non-commitment."
+    },
+    {
+      "text": "tengo muchas",
+      "start_ms": 114000,
+      "end_ms": 119000,
+      "explanation": "Continuation of the aunt's questioning theme about many girlfriends."
+    },
+    {
+      "text": "novia muchas novia hoy tengo una mañana",
+      "start_ms": 115280,
+      "end_ms": 122920,
+      "explanation": "Reiterates the pattern of having multiple partners and the temporary nature of these relationships."
+    },
+    {
+      "text": "otra e pero no hay me preguntó si tengo",
+      "start_ms": 119000,
+      "end_ms": 126560,
+      "explanation": "The repetition highlights the main theme of the song—numerous and fleeting relationships without serious commitment."
+    },
+    {
+      "text": "mucha novia e e mucha novia hoy tengo",
+      "start_ms": 122920,
+      "end_ms": 129360,
+      "explanation": "The emphasis on numerous girlfriends continues, reinforcing the carefree lifestyle portrayed."
+    },
+    {
+      "text": "una mañana",
+      "start_ms": 126560,
+      "end_ms": 132520,
+      "explanation": "Repetition of having a different partner each day."
+    },
+    {
+      "text": "otra me",
+      "start_ms": 129360,
+      "end_ms": 132520,
+      "explanation": "Reiterates the idea of interchangeable relationships."
+    },
+    {
+      "text": "preguntó me",
+      "start_ms": 133680,
+      "end_ms": 138040,
+      "explanation": "Repetition to emphasize the main theme of the song."
+    },
+    {
+      "text": "preguntó me",
+      "start_ms": 138040,
+      "end_ms": 142319,
+      "explanation": "Continues the theme of questioning about romantic life."
+    },
+    {
+      "text": "pregun me",
+      "start_ms": 142319,
+      "end_ms": 147519,
+      "explanation": "Further reinforces the song's main thematic element."
+    },
+    {
+      "text": "pregun Pero ven acá muchach para que tú",
+      "start_ms": 144959,
+      "end_ms": 150040,
+      "explanation": "Starts a rhetorical questioning about the need for so many girlfriends."
+    },
+    {
+      "text": "quieres tanta novia me voy levar to un",
+      "start_ms": 147519,
+      "end_ms": 154560,
+      "explanation": "Questions the necessity of having so many partners, leading into the VIP lifestyle narrative."
+    },
+    {
+      "text": "VIP un VIP e saluden a ti vamos a tirar",
+      "start_ms": 150040,
+      "end_ms": 155480,
+      "explanation": "Reintroduces the VIP and social media lifestyle elements."
+    },
+    {
+      "text": "un",
+      "start_ms": 154560,
+      "end_ms": 159519,
+      "explanation": "Continuation of the social media theme."
+    },
+    {
+      "text": "selfie que sonrían la que le Met un VIP",
+      "start_ms": 155480,
+      "end_ms": 160319,
+      "explanation": "Repetition of the social media and VIP lifestyle."
+    },
+    {
+      "text": "un",
+      "start_ms": 159519,
+      "end_ms": 163879,
+      "explanation": "Continuation of repeated themes."
+    },
+    {
+      "text": "VIP saluden vamos a tirar un",
+      "start_ms": 160319,
+      "end_ms": 166480,
+      "explanation": "Reinforces the glamorous and social media-driven lifestyle."
+    },
+    {
+      "text": "selfie que sonrían las que ya olvidaron",
+      "start_ms": 163879,
+      "end_ms": 169959,
+      "explanation": "Suggests some girlfriends have already forgotten him, highlighting the transient nature of these relationships."
+    },
+    {
+      "text": "de mí Oye muchacho el azaroso",
+      "start_ms": 166480,
+      "end_ms": 172200,
+      "explanation": "'Azaroso' is a slang term for someone who is reckless or living without care, which fits the narrative of the song."
+    },
+    {
+      "text": "sutese vivir que tú tienes en la calle",
+      "start_ms": 169959,
+      "end_ms": 175200,
+      "explanation": "References a carefree lifestyle, living in the streets, further emphasizing the nonchalant attitude."
+    },
+    {
+      "text": "Búscate una mujer seria para tio el",
+      "start_ms": 172200,
+      "end_ms": 179159,
+      "explanation": "Advice to find a serious relationship, contrasting with the singer's current lifestyle."
+    },
+    {
+      "text": "pero no",
+      "start_ms": 181040,
+      "end_ms": 185799,
+      "explanation": "The singer admits to not being able to commit to such advice."
+    },
+    {
+      "text": "puedo pero no",
+      "start_ms": 182280,
+      "end_ms": 191480,
+      "explanation": "Repetition of the inability to form a serious relationship."
+    },
+    {
+      "text": "puedo Yo quisiera enamor alma pero no",
+      "start_ms": 185799,
+      "end_ms": 196120,
+      "explanation": "Expresses a desire to fall in love sincerely but acknowledges an inability to do so."
+    },
+    {
+      "text": "puedo pero no puedo Sorry Yo no confío",
+      "start_ms": 191480,
+      "end_ms": 199760,
+      "explanation": "The singer's lack of trust in himself and in others is a barrier to forming meaningful relationships."
+    },
+    {
+      "text": "Yo no confío n ni en mí mismo confío si",
+      "start_ms": 196120,
+      "end_ms": 202040,
+      "explanation": "Reaffirms the theme of mistrust, even towards himself."
+    },
+    {
+      "text": "quieres quedarte hoy que hace frío y",
+      "start_ms": 199760,
+      "end_ms": 204920,
+      "explanation": "Offers a temporary connection due to the cold weather, suggesting transient comfort."
+    },
+    {
+      "text": "mañana te vas n muchas quieren mi baby",
+      "start_ms": 202040,
+      "end_ms": 207879,
+      "explanation": "Many women are interested in him for superficial reasons, like having his child, emphasizing the transactional nature of these relationships."
+    },
+    {
+      "text": "gry quieren tener mi primogénito e y",
+      "start_ms": 204920,
+      "end_ms": 210000,
+      "explanation": "Continues the theme of superficial interest in him for status or legacy."
+    },
+    {
+      "text": "llevarse el crédito ya me aburr hoy",
+      "start_ms": 207879,
+      "end_ms": 212439,
+      "explanation": "He becomes bored with the superficial nature of these interactions."
+    },
+    {
+      "text": "quiero un totito inédito e uno nuevo uno",
+      "start_ms": 210000,
+      "end_ms": 215560,
+      "explanation": "Expresses a desire for novelty in relationships, illustrating dissatisfaction with the current state."
+    },
+    {
+      "text": "nuevo uno nuevo uno nuevo hazle caso a",
+      "start_ms": 212439,
+      "end_ms": 218560,
+      "explanation": "Repetition emphasizes the desire for something new and different."
+    },
+    {
+      "text": "tu amiga ya tiene razón Yo voy a",
+      "start_ms": 215560,
+      "end_ms": 222319,
+      "explanation": "Acknowledges that warnings from others about his behavior are correct."
+    },
+    {
+      "text": "romperte el corazón voy a romperte el",
+      "start_ms": 218560,
+      "end_ms": 226200,
+      "explanation": "Admits that his behavior likely leads to heartbreak for partners."
+    },
+    {
+      "text": "corazón e No te enamores de mí No te",
+      "start_ms": 222319,
+      "end_ms": 230920,
+      "explanation": "Warns others not to fall in love with him, as he is aware of his inability to commit."
+    },
+    {
+      "text": "enamores de mí Sor Yo soy así e no sé",
+      "start_ms": 226200,
+      "end_ms": 235000,
+      "explanation": "Acknowledges his nature is not conducive to serious relationships and expresses confusion or acceptance of this fact."
+    },
+    {
+      "text": "por qué soy así hazle caso a tu amiga",
+      "start_ms": 230920,
+      "end_ms": 238720,
+      "explanation": "Encourages others to heed advice that warns against him, further underscoring his self-awareness."
+    },
+    {
+      "text": "ella tiene razón Yo voy a romperte el",
+      "start_ms": 235000,
+      "end_ms": 241760,
+      "explanation": "Reiterates the inevitability of causing heartbreak."
+    },
+    {
+      "text": "corazón compte el",
+      "start_ms": 238720,
+      "end_ms": 244879,
+      "explanation": "Continuation of the previous sentiment."
+    },
+    {
+      "text": "corazón No te enamores de mí No te",
+      "start_ms": 241760,
+      "end_ms": 249560,
+      "explanation": "Repetition reinforces the warning against getting emotionally involved with him."
+    },
+    {
+      "text": "enamores de mí no Sor Yo soy así ya no",
+      "start_ms": 244879,
+      "end_ms": 253200,
+      "explanation": "Expresses a desire to change but highlights the difficulty in doing so."
+    },
+    {
+      "text": "quiero ser así",
+      "start_ms": 249560,
+      "end_ms": 253200,
+      "explanation": "Ends on a note of self-reflection, indicating a wish to change his nature."
+    },
+    {
+      "text": "ah",
+      "start_ms": 269840,
+      "end_ms": 272840,
+      "explanation": "A simple sound, often used to express a range of emotions or as a musical filler."
     }
   ],
   "structuredSections": [
     {
       "title": "Intro",
-      "sectionExplanation": "This is a dummy section explanation for testing.",
-      "start_ms": 0,
-      "end_ms": 2000
+      "sectionExplanation": "The introduction features an exchange between the artist and a family member, setting up the song's theme of numerous romantic relationships through playful conversation and cultural references to family dynamics.",
+      "start_ms": 15400,
+      "end_ms": 31960
+    },
+    {
+      "title": "Chorus",
+      "sectionExplanation": "The chorus emphasizes the recurring theme of having many girlfriends, with a carefree attitude towards commitment and relationships, highlighting the artist's nonchalant lifestyle.",
+      "start_ms": 40840,
+      "end_ms": 60120
+    },
+    {
+      "title": "Verse 1",
+      "sectionExplanation": "This verse delves into the artist's various relationships, listing numerous women from different backgrounds, showcasing the diversity and superficial nature of these connections.",
+      "start_ms": 77040,
+      "end_ms": 110680
+    },
+    {
+      "title": "Chorus",
+      "sectionExplanation": "The chorus repeats, reinforcing the main theme of the song with its catchy hook about having many girlfriends and the lack of serious commitment.",
+      "start_ms": 110680,
+      "end_ms": 132520
+    },
+    {
+      "title": "Bridge",
+      "sectionExplanation": "The bridge reflects on the artist's internal thoughts and feelings about his lifestyle, revealing a desire for change but recognizing personal limitations and mistrust.",
+      "start_ms": 181040,
+      "end_ms": 253200
+    },
+    {
+      "title": "Outro",
+      "sectionExplanation": "The outro concludes with a reflection on the artist's nature and a wish to change, leaving the listener with a sense of introspection and unresolved tension about personal growth.",
+      "start_ms": 253200,
+      "end_ms": 272840
     }
   ]
 }

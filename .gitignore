@@ -32,3 +32,9 @@ mobile/ios/*
 mobile/android/
 backend/Easy Song API/
 content-generation/data/raw-lyrics/*
+content-generation/data/analyzed-lyrics/Cr8K88UcO0s.json
+content-generation/data/analyzed-lyrics/OSUxrSe5GbI.json
+content-generation/data/analyzed-lyrics/UJxtuIz3W1g.json
+content-generation/data/songs/Cr8K88UcO0s.json
+content-generation/data/songs/OSUxrSe5GbI.json
+content-generation/data/songs/UJxtuIz3W1g.json
