@@ -17,6 +17,10 @@ services:
       - SCRIPTS_DIR=/app/scripts
       - LOGS_DIR=/app/logs
       - DOCKER=true
+      # Load OPENAI_API_KEY from .env file (mounted below)
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+    env_file:
+      - .env
     volumes:
       # Mount data directory for persistence (writable)
       - ./data:/app/data
@@ -30,6 +34,8 @@ services:
       - ./data/structure-examples:/app/data/structure-examples:ro
       # Mount logs directory (writable)
       - ./logs:/app/logs
+      # Mount .env file (for API keys)
+      - ./.env:/app/.env:ro
       # Mount node_modules from content-generation (for script dependencies)
       - ./node_modules:/app/content-generation-node_modules:ro
     working_dir: /app
