@@ -28,8 +28,8 @@ export default function Notification({ message, type, onClose, duration = 5000 }
   };
 
   return (
-    <div className="fixed top-4 right-4 z-50 animate-slide-in">
-      <div className={`${bgColors[type]} border rounded-lg shadow-lg p-4 max-w-md`}>
+    <div className="fixed top-4 right-4 left-4 sm:left-auto z-50 animate-slide-in max-w-md sm:max-w-lg mx-auto sm:mx-0">
+      <div className={`${bgColors[type]} border rounded-lg shadow-lg p-3 sm:p-4`}>
         <div className="flex items-start gap-3">
           <div className={`flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-sm font-bold ${
             type === 'success' ? 'bg-green-200' : type === 'error' ? 'bg-red-200' : 'bg-blue-200'

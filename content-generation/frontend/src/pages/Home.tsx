@@ -197,10 +197,10 @@ export default function Home() {
           onClose={() => setNotification(null)}
         />
       )}
-      <div className="max-w-6xl mx-auto px-4">
-        <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
-          <h1 className="text-3xl font-bold text-gray-800 mb-2">YouTube Video Processor</h1>
-          <p className="text-gray-600 mb-6">Enter YouTube URLs or video IDs (one per line) to process them</p>
+      <div className="max-w-6xl mx-auto px-4 sm:px-6">
+        <div className="bg-white rounded-lg shadow-lg p-4 sm:p-6 mb-4 sm:mb-6">
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-2">YouTube Video Processor</h1>
+          <p className="text-sm sm:text-base text-gray-600 mb-4 sm:mb-6">Enter YouTube URLs or video IDs (one per line) to process them</p>
 
           <form onSubmit={handleSubmit} className="mb-6">
             <div className="mb-4">
@@ -217,28 +217,28 @@ export default function Home() {
               />
             </div>
 
-            <div className="flex items-center gap-4">
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-4">
               <button
                 type="submit"
                 disabled={loading}
-                className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                className="px-4 sm:px-6 py-2 sm:py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base"
               >
                 {loading ? 'Processing...' : 'Process Videos'}
               </button>
               <button
                 type="button"
                 onClick={loadSongs}
-                className="px-6 py-3 bg-gray-600 text-white rounded-lg hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors font-medium"
+                className="px-4 sm:px-6 py-2 sm:py-3 bg-gray-600 text-white rounded-lg hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors font-medium text-sm sm:text-base"
               >
                 Refresh List
               </button>
               <Link
                 to="/logs"
-                className="px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 transition-colors font-medium"
+                className="px-4 sm:px-6 py-2 sm:py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 transition-colors font-medium text-center text-sm sm:text-base"
               >
                 View Logs
               </Link>
-              {status && <div className="text-sm text-yellow-600">{status}</div>}
+              {status && <div className="text-xs sm:text-sm text-yellow-600 py-2 sm:py-0">{status}</div>}
             </div>
           </form>
 
@@ -273,8 +273,8 @@ export default function Home() {
           )}
         </div>
 
-        <div className="bg-white rounded-lg shadow-lg p-6">
-          <h2 className="text-2xl font-bold text-gray-800 mb-4">Existing Songs</h2>
+        <div className="bg-white rounded-lg shadow-lg p-4 sm:p-6">
+          <h2 className="text-xl sm:text-2xl font-bold text-gray-800 mb-4">Existing Songs</h2>
           {songs.length > 0 ? (
             <div className="space-y-2">
               {songs.map((song) => {
@@ -286,44 +286,45 @@ export default function Home() {
                 return (
                   <div
                     key={song.videoId}
-                    className="block bg-gray-50 border border-gray-200 rounded px-4 py-3 hover:bg-gray-100 transition-colors"
+                    className="block bg-gray-50 border border-gray-200 rounded px-3 sm:px-4 py-2 sm:py-3 hover:bg-gray-100 transition-colors"
                   >
-                    <div className="flex items-center justify-between">
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-4">
                       <Link
                         to={`/song/${song.videoId}`}
-                        className="flex-1"
+                        className="flex-1 min-w-0"
                       >
                         <div>
-                          <div className="font-mono text-sm text-blue-600 hover:text-blue-800">
+                          <div className="font-mono text-xs sm:text-sm text-blue-600 hover:text-blue-800 truncate">
                             {song.url}
                           </div>
                           {song.title && (
-                            <div className="text-sm text-gray-600 mt-1">
+                            <div className="text-xs sm:text-sm text-gray-600 mt-1 line-clamp-2">
                               {song.title} {song.artist && `- ${song.artist}`}
                             </div>
                           )}
+                          <div className="text-xs text-gray-500 mt-1 sm:hidden">{song.videoId}</div>
                         </div>
                       </Link>
-                      <div className="flex items-center gap-2 ml-4">
-                        <div className="text-xs text-gray-500">{song.videoId}</div>
+                      <div className="flex items-center gap-2 sm:ml-4 flex-shrink-0">
+                        <div className="hidden sm:block text-xs text-gray-500">{song.videoId}</div>
                         {needsAnalyze && (
                           <button
                             onClick={(e) => handleAnalyze(song.videoId, e)}
                             disabled={isProcessing}
-                            className="px-3 py-1 bg-yellow-600 text-white text-xs rounded hover:bg-yellow-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="px-2 sm:px-3 py-1 bg-yellow-600 text-white text-xs rounded hover:bg-yellow-700 disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
                             title="Analyze song (will auto-translate after)"
                           >
-                            {isProcessing ? 'Processing...' : 'Analyze'}
+                            {isProcessing ? '...' : 'Analyze'}
                           </button>
                         )}
                         {needsTranslate && (
                           <button
                             onClick={(e) => handleTranslate(song.videoId, e)}
                             disabled={isProcessing}
-                            className="px-3 py-1 bg-green-600 text-white text-xs rounded hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="px-2 sm:px-3 py-1 bg-green-600 text-white text-xs rounded hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
                             title="Translate song"
                           >
-                            {isProcessing ? 'Processing...' : 'Translate'}
+                            {isProcessing ? '...' : 'Translate'}
                           </button>
                         )}
                       </div>

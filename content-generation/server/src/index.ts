@@ -306,7 +306,8 @@ app.post('/api/process', async (req, res) => {
     }
     
     for (const videoId of newVideoIds) {
-      // ts-node is now in the server's node_modules (installed during Docker build)
+      // tsx is now in the server's node_modules (installed during Docker build)
+      // tsx handles ESM TypeScript files better than ts-node
       const spawnEnv: NodeJS.ProcessEnv = { ...process.env };
       const contentGenNodeModules = process.env.DOCKER 
         ? '/app/content-generation-node_modules' 
@@ -319,29 +320,28 @@ app.post('/api/process', async (req, res) => {
         spawnEnv.NODE_PATH = contentGenNodeModules;
       }
       
-      // Try server's node_modules first (where ts-node is installed), then content-generation's
+      // Try server's node_modules first (where tsx is installed), then content-generation's
       const serverNodeModules = process.env.DOCKER 
         ? '/app/node_modules'
         : join(__dirname, '..', 'node_modules');
       
-      const serverTsNode = join(serverNodeModules, '.bin', 'ts-node');
-      const contentGenTsNode = join(contentGenNodeModules, '.bin', 'ts-node');
+      const serverTsx = join(serverNodeModules, '.bin', 'tsx');
+      const contentGenTsx = join(contentGenNodeModules, '.bin', 'tsx');
       
-      // Use direct path to ts-node executable
+      // Use direct path to tsx executable
       let cmd: string[];
-      if (existsSync(serverTsNode)) {
-        cmd = [serverTsNode, SCRIPT_PATH, videoId];
-      } else if (existsSync(contentGenTsNode)) {
-        cmd = [contentGenTsNode, SCRIPT_PATH, videoId];
+      if (existsSync(serverTsx)) {
+        cmd = [serverTsx, SCRIPT_PATH, videoId];
+      } else if (existsSync(contentGenTsx)) {
+        cmd = [contentGenTsx, SCRIPT_PATH, videoId];
       } else {
-        // Fallback: use node with ts-node/register from server's node_modules
-        cmd = [
-          nodeCmd,
-          '-r',
-          join(serverNodeModules, 'ts-node', 'register'),
-          SCRIPT_PATH,
-          videoId,
-        ];
+        // Fallback: try ts-node with --esm flag
+        const serverTsNode = join(serverNodeModules, '.bin', 'ts-node');
+        if (existsSync(serverTsNode)) {
+          cmd = [serverTsNode, '--esm', SCRIPT_PATH, videoId];
+        } else {
+          throw new Error('Neither tsx nor ts-node found in node_modules');
+        }
       }
       
       const childProcess = spawn(cmd[0], cmd.slice(1), {
@@ -422,30 +422,29 @@ async function runScript(scriptName: string, videoId: string, logFile: string): 
     spawnEnv.NODE_PATH = contentGenNodeModules;
   }
   
-  // ts-node is now in the server's node_modules (installed during Docker build)
-  // Try server's node_modules first, then content-generation's
+  // tsx is now in the server's node_modules (installed during Docker build)
+  // tsx handles ESM TypeScript files better than ts-node
   const serverNodeModules = process.env.DOCKER 
     ? '/app/node_modules'
     : join(__dirname, '..', 'node_modules');
   
-  const serverTsNode = join(serverNodeModules, '.bin', 'ts-node');
-  const contentGenTsNode = join(contentGenNodeModules, '.bin', 'ts-node');
+  const serverTsx = join(serverNodeModules, '.bin', 'tsx');
+  const contentGenTsx = join(contentGenNodeModules, '.bin', 'tsx');
   
-  // Use direct path to ts-node executable (prefer server's, fallback to content-generation's)
+  // Use direct path to tsx executable (prefer server's, fallback to content-generation's)
   let cmd: string[];
-  if (existsSync(serverTsNode)) {
-    cmd = [serverTsNode, scriptPath, videoId];
-  } else if (existsSync(contentGenTsNode)) {
-    cmd = [contentGenTsNode, scriptPath, videoId];
+  if (existsSync(serverTsx)) {
+    cmd = [serverTsx, scriptPath, videoId];
+  } else if (existsSync(contentGenTsx)) {
+    cmd = [contentGenTsx, scriptPath, videoId];
   } else {
-    // Fallback: use node with ts-node/register from server's node_modules
-    cmd = [
-      nodeCmd,
-      '-r',
-      join(serverNodeModules, 'ts-node', 'register'),
-      scriptPath,
-      videoId,
-    ];
+    // Fallback: try ts-node with --esm flag
+    const serverTsNode = join(serverNodeModules, '.bin', 'ts-node');
+    if (existsSync(serverTsNode)) {
+      cmd = [serverTsNode, '--esm', scriptPath, videoId];
+    } else {
+      throw new Error('Neither tsx nor ts-node found in node_modules');
+    }
   }
   
   const childProcess = spawn(cmd[0], cmd.slice(1), {

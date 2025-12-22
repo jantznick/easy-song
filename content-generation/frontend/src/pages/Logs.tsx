@@ -50,18 +50,18 @@ export default function Logs() {
   }, [logs]);
 
   return (
-    <div className="bg-gray-100 min-h-screen py-8">
-      <div className="max-w-7xl mx-auto px-4">
+    <div className="bg-gray-100 min-h-screen py-4 sm:py-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6">
         <div className="mb-4">
-          <Link to="/" className="text-blue-600 hover:text-blue-800 font-medium">
+          <Link to="/" className="text-blue-600 hover:text-blue-800 font-medium text-sm sm:text-base">
             ← Back to Home
           </Link>
         </div>
 
-        <div className="bg-white rounded-lg shadow-lg p-6">
-          <div className="flex items-center justify-between mb-4">
-            <h1 className="text-3xl font-bold text-gray-800">Process Logs</h1>
-            <div className="flex items-center gap-4">
+        <div className="bg-white rounded-lg shadow-lg p-4 sm:p-6">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
+            <h1 className="text-2xl sm:text-3xl font-bold text-gray-800">Process Logs</h1>
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-4">
               <label className="flex items-center gap-2">
                 <input
                   type="checkbox"
@@ -69,14 +69,14 @@ export default function Logs() {
                   onChange={(e) => setAutoRefresh(e.target.checked)}
                   className="rounded"
                 />
-                <span className="text-sm text-gray-700">Auto-refresh</span>
+                <span className="text-xs sm:text-sm text-gray-700">Auto-refresh</span>
               </label>
               <div className="flex items-center gap-2">
-                <label className="text-sm text-gray-700">Lines:</label>
+                <label className="text-xs sm:text-sm text-gray-700">Lines:</label>
                 <select
                   value={lines}
                   onChange={(e) => setLines(parseInt(e.target.value, 10))}
-                  className="border border-gray-300 rounded px-2 py-1 text-sm"
+                  className="border border-gray-300 rounded px-2 py-1 text-xs sm:text-sm"
                 >
                   <option value="50">50</option>
                   <option value="100">100</option>
@@ -87,7 +87,7 @@ export default function Logs() {
               </div>
               <button
                 onClick={loadLogs}
-                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm"
+                className="px-3 sm:px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-xs sm:text-sm"
               >
                 Refresh
               </button>
@@ -108,7 +108,7 @@ export default function Logs() {
               <p className="text-sm mt-1">{error}</p>
             </div>
           ) : (
-            <div className="bg-gray-900 rounded-lg p-4 overflow-auto max-h-[70vh]">
+            <div className="bg-gray-900 rounded-lg p-2 sm:p-4 overflow-auto max-h-[50vh] sm:max-h-[70vh]">
               <pre className="text-green-400 text-xs font-mono whitespace-pre-wrap break-words">
                 {logs || 'No logs available yet. Logs will appear here once processing starts.'}
               </pre>
@@ -116,9 +116,9 @@ export default function Logs() {
             </div>
           )}
 
-          <div className="mt-4 text-sm text-gray-600">
-            <p>Log file location: <code className="bg-gray-100 px-2 py-1 rounded">content-generation/logs/process.log</code></p>
-            <p className="mt-2">In Docker: <code className="bg-gray-100 px-2 py-1 rounded">./logs/process.log</code></p>
+          <div className="mt-4 text-xs sm:text-sm text-gray-600">
+            <p className="break-words">Log file location: <code className="bg-gray-100 px-1 sm:px-2 py-1 rounded text-xs">content-generation/logs/process.log</code></p>
+            <p className="mt-2 break-words">In Docker: <code className="bg-gray-100 px-1 sm:px-2 py-1 rounded text-xs">./logs/process.log</code></p>
           </div>
         </div>
       </div>
