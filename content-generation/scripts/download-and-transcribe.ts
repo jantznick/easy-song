@@ -1,11 +1,17 @@
 import 'dotenv/config';
 import fs from 'fs/promises';
 import path from 'path';
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
 import { exec, spawn } from 'child_process';
 import { promisify } from 'util';
 import { Innertube } from 'youtubei.js';
 
 const execAsync = promisify(exec);
+
+// ES module equivalent of __dirname
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 // --- Configuration ---
 const YOUTUBE_VIDEOS_DIR = path.resolve(__dirname, '../data/youtube-videos');
