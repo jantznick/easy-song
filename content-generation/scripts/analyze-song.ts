@@ -340,17 +340,56 @@ async function analyzeVideo(videoId: string, skipExisting: boolean = true): Prom
       // Script exists, run it
       console.log(`  🌍 Starting translation...`);
       
+      // Find tsx executable (same logic as server uses)
+      const serverNodeModules = isDocker 
+        ? '/app/node_modules'
+        : path.resolve(__dirname, '../../server/node_modules');
+      const contentGenNodeModules = isDocker 
+        ? '/app/content-generation-node_modules'
+        : path.resolve(__dirname, '../node_modules');
+      
+      const serverTsx = path.join(serverNodeModules, '.bin', 'tsx');
+      const contentGenTsx = path.join(contentGenNodeModules, '.bin', 'tsx');
+      
+      // Use tsx (handles ESM better than ts-node)
+      let tsxPath: string;
+      let useNpx = false;
+      try {
+        await fs.access(serverTsx);
+        tsxPath = serverTsx;
+      } catch {
+        try {
+          await fs.access(contentGenTsx);
+          tsxPath = contentGenTsx;
+        } catch {
+          // Fallback to npx tsx
+          useNpx = true;
+          tsxPath = 'npx';
+        }
+      }
+      
       return new Promise((resolve) => {
-        const translateArgs = [translateScript, videoId];
+        const translateArgs: string[] = [];
+        if (useNpx) {
+          translateArgs.push('--yes', 'tsx', translateScript, videoId);
+        } else {
+          translateArgs.push(translateScript, videoId);
+        }
+        
         if (!skipExisting) {
           translateArgs.push('--clean-slate');
         }
-        const translateProcess = spawn('npx', ['ts-node', ...translateArgs], {
-          cwd: isDocker ? '/app/scripts' : __dirname,
-          stdio: 'inherit',
-          shell: true,
-          env: { ...process.env, DOCKER: isDocker ? 'true' : undefined }
-        });
+        
+        const translateProcess = spawn(
+          useNpx ? 'npx' : tsxPath,
+          translateArgs,
+          {
+            cwd: isDocker ? '/app/scripts' : __dirname,
+            stdio: 'inherit',
+            shell: true,
+            env: { ...process.env, DOCKER: isDocker ? 'true' : undefined }
+          }
+        );
         
         translateProcess.on('close', (code: number) => {
           if (code === 0) {

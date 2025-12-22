@@ -273,17 +273,51 @@ async function processVideo(videoId: string, language: string = 'es', skipExisti
       // Script exists, run it
       console.log(`  🔍 Starting analysis...`);
       
+      // Find tsx executable (same logic as server uses)
+      const serverNodeModules = isDocker 
+        ? '/app/node_modules'
+        : path.resolve(__dirname, '../../server/node_modules');
+      const contentGenNodeModules = isDocker 
+        ? '/app/content-generation-node_modules'
+        : path.resolve(__dirname, '../node_modules');
+      
+      const serverTsx = path.join(serverNodeModules, '.bin', 'tsx');
+      const contentGenTsx = path.join(contentGenNodeModules, '.bin', 'tsx');
+      
+      // Use tsx (handles ESM better than ts-node)
+      let tsxPath: string;
+      try {
+        await fs.access(serverTsx);
+        tsxPath = serverTsx;
+      } catch {
+        try {
+          await fs.access(contentGenTsx);
+          tsxPath = contentGenTsx;
+        } catch {
+          // Fallback to npx tsx
+          tsxPath = 'npx';
+        }
+      }
+      
       return new Promise((resolve) => {
-        const analyzeArgs = [analyzeScript, videoId];
+        const analyzeArgs = tsxPath === 'npx' 
+          ? ['--yes', 'tsx', analyzeScript, videoId]
+          : [analyzeScript, videoId];
+        
         if (!skipExisting) {
           analyzeArgs.push('--clean-slate');
         }
-        const analyzeProcess = spawn('npx', ['ts-node', ...analyzeArgs], {
-          cwd: isDocker ? '/app/scripts' : __dirname,
-          stdio: 'inherit',
-          shell: true,
-          env: { ...process.env, DOCKER: isDocker ? 'true' : undefined }
-        });
+        
+        const analyzeProcess = spawn(
+          tsxPath === 'npx' ? 'npx' : tsxPath,
+          analyzeArgs,
+          {
+            cwd: isDocker ? '/app/scripts' : __dirname,
+            stdio: 'inherit',
+            shell: true,
+            env: { ...process.env, DOCKER: isDocker ? 'true' : undefined }
+          }
+        );
         
         analyzeProcess.on('close', (code: number) => {
           if (code === 0) {
