@@ -317,11 +317,13 @@ app.post('/api/process', async (req, res) => {
       ];
       
       // Add NODE_PATH if in Docker to help find modules
+      // In Docker, content-generation node_modules are mounted at /app/content-generation-node_modules
       const spawnEnv: NodeJS.ProcessEnv = { ...process.env };
+      const contentGenNodeModules = process.env.DOCKER ? '/app/content-generation-node_modules' : join(CONTENT_GEN_DIR, 'node_modules');
       if (process.env.NODE_PATH) {
-        spawnEnv.NODE_PATH = `${join(CONTENT_GEN_DIR, 'node_modules')}:${process.env.NODE_PATH}`;
+        spawnEnv.NODE_PATH = `${contentGenNodeModules}:${process.env.NODE_PATH}`;
       } else {
-        spawnEnv.NODE_PATH = join(CONTENT_GEN_DIR, 'node_modules');
+        spawnEnv.NODE_PATH = contentGenNodeModules;
       }
       
       const childProcess = spawn(cmd[0], cmd.slice(1), {

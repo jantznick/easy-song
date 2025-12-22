@@ -12,23 +12,24 @@ services:
       - NODE_ENV=production
       - PORT=8000
       - HOME=/app
-      - CONTENT_GEN_DIR=/app/content-generation
-      - DATA_DIR=/app/content-generation/data
-      - SCRIPTS_DIR=/app/content-generation/scripts
-      - LOGS_DIR=/app/content-generation/logs
-      - NODE_PATH=/usr/local/lib/node_modules
+      - CONTENT_GEN_DIR=/app
+      - DATA_DIR=/app/data
+      - SCRIPTS_DIR=/app/scripts
+      - LOGS_DIR=/app/logs
+      - DOCKER=true
     volumes:
-      # Mount the entire content-generation directory (read-only for most, but data/logs are writable)
-      - ..:/app/content-generation:ro
       # Mount data directory for persistence (writable)
-      - ./data:/app/content-generation/data
+      - ./data:/app/data
       # Mount scripts directory (read-only, needed for processing)
-      - ./scripts:/app/content-generation/scripts:ro
+      - ./scripts:/app/scripts:ro
       # Mount logs directory (writable)
-      - ./logs:/app/content-generation/logs
-    working_dir: /app/content-generation
-    # Override command to use the mounted scripts
-    command: sh -c "cd server && node -r ts-node/register dist/index.js"
+      - ./logs:/app/logs
+      # Mount node_modules from content-generation (for ts-node needed by scripts)
+      # This is separate from server's own node_modules (which are in the image)
+      - ./node_modules:/app/content-generation-node_modules:ro
+    working_dir: /app
+    # Override command - server code is already in the image
+    command: node dist/index.js
     networks:
       - content-generation-network
     restart: unless-stopped
