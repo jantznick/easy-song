@@ -1,0 +1,54 @@
+version: '3.8'
+
+services:
+  server:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    container_name: content-generation-server
+    ports:
+      - "${SERVER_PORT:-8000}:8000"
+    environment:
+      - NODE_ENV=production
+      - PORT=8000
+      - HOME=/app
+      - CONTENT_GEN_DIR=/app/content-generation
+      - DATA_DIR=/app/content-generation/data
+      - SCRIPTS_DIR=/app/content-generation/scripts
+      - LOGS_DIR=/app/content-generation/logs
+      - NODE_PATH=/usr/local/lib/node_modules
+    volumes:
+      # Mount the entire content-generation directory (read-only for most, but data/logs are writable)
+      - ..:/app/content-generation:ro
+      # Mount data directory for persistence (writable)
+      - ./data:/app/content-generation/data
+      # Mount scripts directory (read-only, needed for processing)
+      - ./scripts:/app/content-generation/scripts:ro
+      # Mount logs directory (writable)
+      - ./logs:/app/content-generation/logs
+    working_dir: /app/content-generation
+    # Override command to use the mounted scripts
+    command: sh -c "cd server && node -r ts-node/register dist/index.js"
+    networks:
+      - content-generation-network
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        - VITE_API_URL=http://server:8000
+    container_name: content-generation-frontend
+    ports:
+      - "${FRONTEND_PORT:-5173}:80"
+    depends_on:
+      - server
+    networks:
+      - content-generation-network
+    restart: unless-stopped
+
+networks:
+  content-generation-network:
+    driver: bridge
+
