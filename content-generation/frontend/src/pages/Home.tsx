@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import Notification from '../components/Notification';
 
 interface FileStatus {
   raw: boolean;
@@ -23,6 +24,7 @@ export default function Home() {
   const [status, setStatus] = useState('');
   const [result, setResult] = useState<{ type: string; message: string; data?: any } | null>(null);
   const [processing, setProcessing] = useState<Set<string>>(new Set());
+  const [notification, setNotification] = useState<{ message: string; type: 'success' | 'error' | 'info' } | null>(null);
 
   useEffect(() => {
     loadSongs();
@@ -134,16 +136,16 @@ export default function Home() {
       
       if (data.success) {
         if (data.alreadyExists) {
-          alert('Song is already analyzed');
+          setNotification({ message: 'Song is already analyzed', type: 'info' });
         } else {
-          alert('Analysis started! Translation will follow automatically.');
+          setNotification({ message: 'Analysis started! Translation will follow automatically.', type: 'success' });
           setTimeout(loadSongs, 2000);
         }
       } else {
-        alert(`Error: ${data.error}`);
+        setNotification({ message: `Error: ${data.error}`, type: 'error' });
       }
     } catch (error) {
-      alert(`Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      setNotification({ message: `Error: ${error instanceof Error ? error.message : 'Unknown error'}`, type: 'error' });
     } finally {
       setProcessing(prev => {
         const next = new Set(prev);
@@ -167,16 +169,16 @@ export default function Home() {
       
       if (data.success) {
         if (data.alreadyExists) {
-          alert('Song is already translated');
+          setNotification({ message: 'Song is already translated', type: 'info' });
         } else {
-          alert('Translation started!');
+          setNotification({ message: 'Translation started!', type: 'success' });
           setTimeout(loadSongs, 2000);
         }
       } else {
-        alert(`Error: ${data.error}`);
+        setNotification({ message: `Error: ${data.error}`, type: 'error' });
       }
     } catch (error) {
-      alert(`Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      setNotification({ message: `Error: ${error instanceof Error ? error.message : 'Unknown error'}`, type: 'error' });
     } finally {
       setProcessing(prev => {
         const next = new Set(prev);
@@ -188,6 +190,13 @@ export default function Home() {
 
   return (
     <div className="bg-gray-100 min-h-screen py-8">
+      {notification && (
+        <Notification
+          message={notification.message}
+          type={notification.type}
+          onClose={() => setNotification(null)}
+        />
+      )}
       <div className="max-w-6xl mx-auto px-4">
         <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
           <h1 className="text-3xl font-bold text-gray-800 mb-2">YouTube Video Processor</h1>
