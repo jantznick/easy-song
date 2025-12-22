@@ -3,10 +3,9 @@ import { useState } from 'react';
 interface JsonViewerProps {
   data: any;
   level?: number;
-  path?: string;
 }
 
-function JsonViewer({ data, level = 0, path = '' }: JsonViewerProps) {
+function JsonViewer({ data, level = 0 }: JsonViewerProps) {
   const [collapsed, setCollapsed] = useState<Set<string>>(new Set());
 
   const toggleCollapse = (key: string) => {
@@ -21,7 +20,7 @@ function JsonViewer({ data, level = 0, path = '' }: JsonViewerProps) {
 
   const isCollapsed = (key: string) => collapsed.has(key);
 
-  const renderValue = (value: any, key: string, currentPath: string): JSX.Element => {
+  const renderValue = (value: any, _key: string, currentPath: string): React.ReactElement => {
     const indent = level * 20;
     const fullPath = currentPath;
 
