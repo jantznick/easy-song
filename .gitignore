@@ -28,6 +28,10 @@ backend/data/
 
 .env
 
+# YouTube cookies for yt-dlp (never commit)
+cookies.txt
+**/cookies.txt
+
 mobile/ios/*
 mobile/android/
 backend/Easy Song API/

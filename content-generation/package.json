@@ -2,7 +2,13 @@
   "name": "content-generation",
   "version": "1.0.0",
   "main": "index.js",
-  "scripts": {},
+  "type": "module",
+  "scripts": {
+    "process:video": "tsx scripts/download-and-transcribe.ts",
+    "process:playlist": "tsx scripts/process-playlist.ts",
+    "analyze": "tsx scripts/analyze-song.ts",
+    "translate": "tsx scripts/translate-song.ts"
+  },
   "dependencies": {
     "dotenv": "^17.2.3",
     "youtubei.js": "^16.0.1",
@@ -12,6 +18,7 @@
   "devDependencies": {
     "@types/node": "^25.0.0",
     "ts-node": "^10.9.2",
+    "tsx": "^4.19.2",
     "typescript": "^5.9.3"
   }
 }

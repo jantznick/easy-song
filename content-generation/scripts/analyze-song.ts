@@ -258,7 +258,11 @@ async function analyzeWithOpenAI(
 /**
  * Process a single video: analyze lyrics
  */
-async function analyzeVideo(videoId: string, skipExisting: boolean = true): Promise<boolean> {
+async function analyzeVideo(
+  videoId: string,
+  skipExisting: boolean = true,
+  skipTranslation: boolean = false
+): Promise<boolean> {
   console.log(`\n🔍 Analyzing: ${videoId}`);
   console.log('─'.repeat(50));
   
@@ -329,6 +333,11 @@ async function analyzeVideo(videoId: string, skipExisting: boolean = true): Prom
       await fs.mkdir(ANALYZED_LYRICS_DIR, { recursive: true });
       await fs.writeFile(analyzedPath, JSON.stringify(analyzedData, null, 2));
       console.log(`  💾 Saved analyzed data: ${analyzedPath}`);
+    }
+
+    if (skipTranslation) {
+      console.log(`  ⏭️  Skipping translation (--skip-translation)`);
+      return true;
     }
     
     // Call translate-song.ts script (if it exists)
@@ -427,15 +436,16 @@ async function main() {
   const args = process.argv.slice(2);
   const cleanSlate = args.includes('--clean-slate');
   const skipExisting = !cleanSlate;
+  const skipTranslation = args.includes('--skip-translation');
   const videoId = args.find(arg => !arg.startsWith('--'));
   
   if (!videoId) {
     console.error('❌ Error: Video ID is required.');
-    console.error('   Usage: npx ts-node scripts/analyze-song.ts <VIDEO_ID> [--clean-slate]');
+    console.error('   Usage: npx ts-node scripts/analyze-song.ts <VIDEO_ID> [--clean-slate] [--skip-translation]');
     process.exit(1);
   }
   
-  const success = await analyzeVideo(videoId, skipExisting);
+  const success = await analyzeVideo(videoId, skipExisting, skipTranslation);
   process.exit(success ? 0 : 1);
 }
 
