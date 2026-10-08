@@ -60,3 +60,14 @@ npm run build  # Production build
 - **Song Detail Page**: Tabbed interface to view all intermediate files (raw, transcribed, analyzed, translated)
 - **Video Processing**: Submit YouTube URLs to start the full pipeline
 
+## Playlist cron (no frontend required)
+
+To process an entire YouTube playlist from cron (or the CLI), use:
+
+```bash
+cd content-generation
+npm run process:playlist -- 'PLAYLIST_URL_OR_ID' --skip-translation --lang=es
+```
+
+See [README.md](./README.md) for flags, cookies.txt support, and a cron example.
+

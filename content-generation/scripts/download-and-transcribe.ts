@@ -22,6 +22,33 @@ const BASE_DIR = isDocker ? '/app' : path.resolve(__dirname, '..');
 const YOUTUBE_VIDEOS_DIR = path.join(BASE_DIR, 'data', 'youtube-videos');
 const RAW_LYRICS_DIR = path.join(BASE_DIR, 'data', 'raw-lyrics');
 const TRANSCRIBED_LYRICS_DIR = path.join(BASE_DIR, 'data', 'transcribed-lyrics');
+const DEFAULT_COOKIES_PATH = path.join(BASE_DIR, 'cookies.txt');
+
+/**
+ * Resolve cookies file path for yt-dlp.
+ * Prefers --cookies=..., then YTDLP_COOKIES / COOKIES_FILE env, then cookies.txt in project root.
+ */
+async function resolveCookiesPath(explicitPath?: string): Promise<string | null> {
+  const candidates = [
+    explicitPath,
+    process.env.YTDLP_COOKIES,
+    process.env.COOKIES_FILE,
+    DEFAULT_COOKIES_PATH,
+  ].filter((p): p is string => Boolean(p && p.trim()));
+
+  for (const candidate of candidates) {
+    const resolved = path.isAbsolute(candidate)
+      ? candidate
+      : path.resolve(BASE_DIR, candidate);
+    try {
+      await fs.access(resolved);
+      return resolved;
+    } catch {
+      // try next candidate
+    }
+  }
+  return null;
+}
 
 interface TranscriptionSegment {
   text: string;
@@ -39,15 +66,19 @@ interface WhisperResponse {
 }
 
 /**
- * Check if yt-dlp is installed
+ * Resolve yt-dlp executable (PATH or ~/.local/bin)
  */
-async function checkYtDlp(): Promise<boolean> {
-  try {
-    await execAsync('which yt-dlp');
-    return true;
-  } catch {
-    return false;
+async function resolveYtDlp(): Promise<string | null> {
+  const candidates = ['yt-dlp', path.join(process.env.HOME || '', '.local', 'bin', 'yt-dlp')];
+  for (const candidate of candidates) {
+    try {
+      await execAsync(`"${candidate}" --version`);
+      return candidate;
+    } catch {
+      // try next
+    }
   }
+  return null;
 }
 
 /**
@@ -67,7 +98,11 @@ async function isVideoDownloaded(videoId: string): Promise<string | null> {
 /**
  * Download video using yt-dlp (audio only)
  */
-async function downloadVideo(videoId: string): Promise<string> {
+async function downloadVideo(
+  videoId: string,
+  cookiesPath?: string | null,
+  ytDlpPath: string = 'yt-dlp'
+): Promise<string> {
   const outputDir = path.join(YOUTUBE_VIDEOS_DIR, videoId);
   await fs.mkdir(outputDir, { recursive: true });
   
@@ -78,7 +113,8 @@ async function downloadVideo(videoId: string): Promise<string> {
   // Download audio only
   // Use m4a for smaller files (better for OpenAI API 25MB limit)
   const audioFormat = 'm4a';
-  const command = `yt-dlp -x --audio-format ${audioFormat} -o "${outputPath}" "https://www.youtube.com/watch?v=${videoId}"`;
+  const cookiesArg = cookiesPath ? ` --cookies "${cookiesPath}"` : '';
+  const command = `"${ytDlpPath}" -x --audio-format ${audioFormat}${cookiesArg} -o "${outputPath}" "https://www.youtube.com/watch?v=${videoId}"`;
   
   try {
     const { stdout, stderr } = await execAsync(command);
@@ -194,7 +230,14 @@ async function getVideoMetadata(videoId: string) {
 /**
  * Process a single video: download and transcribe
  */
-async function processVideo(videoId: string, language: string = 'es', skipExisting: boolean = true): Promise<boolean> {
+async function processVideo(
+  videoId: string,
+  language: string = 'es',
+  skipExisting: boolean = true,
+  skipTranslation: boolean = false,
+  cookiesPath?: string | null,
+  ytDlpPath: string = 'yt-dlp'
+): Promise<boolean> {
   console.log(`\n🎵 Processing: ${videoId}`);
   console.log('─'.repeat(50));
   
@@ -229,7 +272,7 @@ async function processVideo(videoId: string, language: string = 'es', skipExisti
         // Download (or use existing)
         let audioFilePath: string | null = await isVideoDownloaded(videoId);
         if (!audioFilePath) {
-          audioFilePath = await downloadVideo(videoId);
+          audioFilePath = await downloadVideo(videoId, cookiesPath, ytDlpPath);
           console.log(`  ✅ Downloaded: ${path.basename(audioFilePath)}`);
         } else {
           console.log(`  ⏭️  Using existing audio: ${path.basename(audioFilePath)}`);
@@ -307,6 +350,9 @@ async function processVideo(videoId: string, language: string = 'es', skipExisti
         if (!skipExisting) {
           analyzeArgs.push('--clean-slate');
         }
+        if (skipTranslation) {
+          analyzeArgs.push('--skip-translation');
+        }
         
         const analyzeProcess = spawn(
           tsxPath === 'npx' ? 'npx' : tsxPath,
@@ -357,6 +403,7 @@ async function main() {
   const args = process.argv.slice(2);
   const cleanSlate = args.includes('--clean-slate');
   const skipExisting = !cleanSlate; // Default to true, unless --clean-slate is used
+  const skipTranslation = args.includes('--skip-translation');
   
   // Find language from --lang= flag or positional arg
   let language = 'es'; // Default
@@ -364,6 +411,9 @@ async function main() {
   if (langFlag) {
     language = langFlag.split('=')[1];
   }
+
+  const cookiesFlag = args.find(arg => arg.startsWith('--cookies='));
+  const cookiesPath = await resolveCookiesPath(cookiesFlag?.split('=')[1]);
   
   // Find video ID (11 alphanumeric characters, not a flag)
   const videoId = args.find(arg => 
@@ -382,13 +432,13 @@ async function main() {
   
   if (!videoId) {
     console.error('❌ Error: Video ID is required.');
-    console.error('   Usage: npx ts-node scripts/download-and-transcribe.ts <VIDEO_ID> [--lang=es] [--clean-slate]');
+    console.error('   Usage: npx tsx scripts/download-and-transcribe.ts <VIDEO_ID> [--lang=es] [--clean-slate] [--skip-translation] [--cookies=cookies.txt]');
     process.exit(1);
   }
   
   // Check for yt-dlp
-  const hasYtDlp = await checkYtDlp();
-  if (!hasYtDlp) {
+  const ytDlpPath = await resolveYtDlp();
+  if (!ytDlpPath) {
     console.error('❌ Error: yt-dlp is not installed.');
     console.error('   Install it with: pip install yt-dlp');
     console.error('   Or: brew install yt-dlp');
@@ -408,9 +458,18 @@ async function main() {
   console.log(`🌐 Whisper API: OpenAI`);
   console.log(`🌍 Language: ${language}`);
   console.log(`⏭️  Skip existing: ${skipExisting ? 'Yes' : 'No (--clean-slate)'}`);
+  console.log(`🌍 Skip translation: ${skipTranslation ? 'Yes' : 'No'}`);
+  console.log(`🍪 Cookies: ${cookiesPath || 'none'}`);
   console.log('═'.repeat(50));
   
-  const success = await processVideo(videoId, language, skipExisting);
+  const success = await processVideo(
+    videoId,
+    language,
+    skipExisting,
+    skipTranslation,
+    cookiesPath,
+    ytDlpPath
+  );
   process.exit(success ? 0 : 1);
 }
 
